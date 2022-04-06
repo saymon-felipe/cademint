@@ -119,7 +119,7 @@ export default {
                         self.logoutUser(true);
                         setTimeout(() => {
                             if (self.joined_group) { // Se vier o parametro joined_group na url, o registro redireciona para o login e passa esse parâmetro.
-                                self.updateUserGroup(self.gid, response2.data.response.usuario_criado.id_usuario);
+                                self.addUserToGroup(self.gid, self.tk, response2.data.response.usuario_criado.id_usuario, self.email);
                                 self.$router.push("/login?joined_group=true");
                             } else {
                                 self.$router.push("/login");

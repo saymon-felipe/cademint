@@ -23,10 +23,10 @@ export default {
     },
     methods: {
         enterGroup: function () {
-            let self = this, url = new URLSearchParams(window.location.search), tokenParam, emailParam, groupIdParam;
-            tokenParam = url.get("tk"); // Armazena cada parametro da URL em variáveis.
-            emailParam = decodeURIComponent(url.get("email")); 
-            groupIdParam = url.get("gid");
+            let self = this, url = new URLSearchParams(window.location.search);
+            let tokenParam = url.get("tk"); // Armazena cada parametro da URL em variáveis.
+            let emailParam = decodeURIComponent(url.get("email")); 
+            let groupIdParam = url.get("gid");
             
             api.post("/usuarios/return_user_by_email", {
                 email: emailParam
@@ -51,16 +51,6 @@ export default {
                 }
             }).catch(function () {
                 self.$router.push(`/register?joined_group=true&email=${emailParam}&gid=${groupIdParam}&tk=${tokenParam}`);
-            })
-        },
-        addUserToGroup: function (group_id, token, user_id, user_email) { // Função adiciona usuário ao grupo.
-            api.post("/projects/enter_group_with_token", {
-                token: token,
-                email_requested: user_email,
-                user_id: user_id,
-                group_id: group_id
-            }).catch(function(){
-                self.response = "Ocorreu um erro ao entrar no grupo" // Se der erro, o mesmo é exibido.
             })
         }
     }
