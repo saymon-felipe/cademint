@@ -11,7 +11,7 @@ const production_environment = "https://cademint-api.herokuapp.com"; //Ambiente 
 // 1 - Ambiente de produção
 // 
 // ==============================
-let test_or_prod = 0;
+let test_or_prod = 1;
 // ==============================
 //
 
