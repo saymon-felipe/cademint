@@ -3,7 +3,7 @@
         <div class="new-project-modal">
             <div class="modal-header">
                 <h1>Novo projeto</h1>
-                <i class="fas fa-times" v-on:click="hideModal"></i>
+                <span class="material-icons" v-on:click="hideModal">close</span>
             </div>
             <div class="modal-body">
                 <form action="create_group" id="form_create_group">
@@ -38,15 +38,18 @@ export default {
     methods: {
         createNewProject: function (input_id) {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage(), input = $(input_id), inputVal = input.val();
-
+            let data = {
+                group_name: inputVal,
+                group_members: self.user.id_usuario,
+                group_owner: self.user.id_usuario,
+                id_usuario: self.user.id_usuario
+            }
             if (inputVal.length <= 0) {
                 input.addClass("invalid-value");
                 self.response = "Nome de grupo inválido";
             } else {
                 input.removeClass("invalid-value");
-                api.post("/projects", {
-                    group_name: inputVal
-                }, {
+                api.post("/projects", data, {
                     headers: {
                         Authorization: jwt
                     }
@@ -142,7 +145,7 @@ export default {
             margin: 0;
         }
 
-        .new-project-modal .modal-header i {
+        .new-project-modal .modal-header .material-icons {
             font-size: 1.2rem;
             color: black!important;
             cursor: pointer;
@@ -196,7 +199,7 @@ export default {
     }
 
     .new-project-modal .modal-footer .create-button {
-        background: var(--blue-high);
+        background: var(--blue);
         color: white;
     }
 

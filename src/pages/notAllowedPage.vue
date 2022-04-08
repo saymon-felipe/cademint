@@ -1,7 +1,7 @@
 <template>
     <section class="not-allowed">
         <div class="not-allowed-container">
-            <i class="fas fa-ban"></i>
+            <span class="material-icons">block</span>
             <div class="not-allowed-text">
                 <h1>Você não tem acesso à essa área!</h1>
             </div>
@@ -43,14 +43,14 @@ export default {
         padding: 1rem;
     }
 
-        .not-allowed-container i {
+        .not-allowed-container .material-icons {
             font-size: 5rem;
-            margin-left: 2rem;
+            margin-left: 5rem;
             color: var(--red);
         }
 
     .not-allowed-text {
-        margin-left: 6.5rem;
+        margin-left: 3.5rem;
     }
 
         .not-allowed-text h1 {
@@ -64,7 +64,7 @@ export default {
             flex-direction: column;
         }
 
-            .not-allowed-container i {
+            .not-allowed-container .material-icons {
                 margin: 0;
                 margin-bottom: 2rem;
             }
@@ -80,7 +80,7 @@ export default {
             font-size: 2rem;
         }
 
-        .not-allowed-container i {
+        .not-allowed-container .material-icons {
             font-size: 4.5rem;
         }
     }

@@ -1,14 +1,46 @@
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(../assets/fonts/MaterialIcons-Regular.ttf);
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;  /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+  
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+  
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+  
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+  }
+
 :root {
-    --yellow: #FFCA37!important;
-    --blue: rgb(0, 162, 232)!important;
-    --blue-high: #24bde8!important;
-    --blue-low: #0090ce!important;
+    --yellow-high: #FFD970 !important;
+    --yellow: #FFCA37 !important;
+    --blue: #5D7BFD !important;
+    --blue-low: #355AFD !important;
     --gray-high-3: rgb(230, 230, 230);
     --gray-high-2: rgb(218, 218, 218);
     --gray-high: rgb(157, 157, 157);
     --gray-low: rgb(126, 126, 126);
-    --red: #d64a2e!important;
-    --red-low: #b14934!important;
+    --red: #D64A2E !important;
+    --red-low: #b14934 !important;
     --green: #86cd82!important;
     --green-high: #96e292!important;
     --green-low: #76b672!important;
@@ -98,6 +130,7 @@ body {
     height: 35px;
     border-radius: 50%;
     object-fit: cover;
+    box-shadow: 0 0 0 3px var(--blue);
 }
 
 .invalid-value {

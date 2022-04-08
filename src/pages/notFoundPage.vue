@@ -2,7 +2,7 @@
     <section class="not-allowed">
         <div class="not-allowed-container">
             <div class="not-allowed-inner">
-                <i class="fas fa-exclamation-circle"></i>
+                <span class="material-icons">error</span>
                 <div class="not-allowed-text">
                     <h1>Ops!</h1>
                     <h4>A página que você está procurando não existe.</h4>
@@ -77,7 +77,7 @@ export default {
         margin-bottom: 5rem;
     }
 
-        .not-allowed-container i {
+        .not-allowed-container .material-icons {
             font-size: 5rem;
             margin-left: 2rem;
             color: var(--red);
@@ -98,7 +98,7 @@ export default {
             flex-direction: column;
         }
 
-            .not-allowed-container i {
+            .not-allowed-container .material-icons {
                 margin: 0;
                 margin-bottom: 2rem;
             }
@@ -114,7 +114,7 @@ export default {
             font-size: 2rem;
         }
 
-        .not-allowed-container i {
+        .not-allowed-container .material-icons {
             font-size: 4.5rem;
         }
     }

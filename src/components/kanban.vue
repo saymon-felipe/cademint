@@ -8,7 +8,8 @@
                     <h5>A fazer</h5>
                     <div class="new-os-container">
                         <router-link to="/home/new/todo" class="new-os">
-                            <i class="fas fa-plus-circle"></i>
+                            <!--<i class="fas fa-plus-circle"></i>-->
+                            <span class="material-icons">add_circle</span>
                             <h6>Novo</h6>
                         </router-link>
                     </div>
@@ -17,7 +18,8 @@
                     <h5>Fazendo</h5>
                     <div class="new-os-container">
                         <router-link to="/home/new/doing" class="new-os">
-                            <i class="fas fa-plus-circle"></i>
+                            <!--<i class="fas fa-plus-circle"></i>-->
+                            <span class="material-icons md-24">add_circle</span>
                             <h6>Novo</h6>
                         </router-link>
                     </div>
@@ -34,7 +36,8 @@
                     <div class="kanban-title-responsive">
                         <h5>A fazer</h5>
                         <router-link to="/home/new/todo" class="new-os">
-                            <i class="fas fa-plus-circle"></i>
+                            <!--<i class="fas fa-plus-circle"></i>-->
+                            <span class="material-icons md-24">add_circle</span>
                             <h6>Novo</h6>
                         </router-link>
                     </div>
@@ -52,7 +55,8 @@
                         <h5>Fazendo</h5>
                     </div>
                     <router-link to="/home/new/doing" class="new-os">
-                        <i class="fas fa-plus-circle"></i>
+                        <!--<i class="fas fa-plus-circle"></i>-->
+                        <span class="material-icons">add_circle</span>
                         <h6>Novo</h6>
                     </router-link>
                     <div class="os-list-container">
@@ -409,9 +413,9 @@ export default {
         font-size: 1rem;
     }
 
-    .new-os i {
-        margin-right: .5rem;
-        font-size: 1.5rem;
+    .new-os .material-icons {
+        margin-right: .6rem;
+        font-size: 28px;
     }
 
 .kanban-column {
@@ -491,7 +495,7 @@ export default {
         height: 3rem;
     }
 
-        .new-os i {
+        .new-os .material-icons {
             margin: 0;
         }
 

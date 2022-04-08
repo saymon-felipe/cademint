@@ -5,11 +5,10 @@
             <input class="form-input" type="text" name="nome" id="name" maxlength="9" placeholder="Nome" required>
             <input class="form-input" type="email" name="email" id="user" placeholder="Email" required>
             <input class="form-input password" type="password" name="senha" id="password" placeholder="Senha" v-on:keydown="showPassword()" required>
-            <div class="show-password" v-on:click="showPasswordToggleClass('.show-password i', 'fa-eye-slash', 'fa-eye')">
-                <i class="fas fa-eye-slash"></i>
+            <div class="show-password" v-on:click="showPasswordToggleClass('.show-password .material-icons')">
+                <span class="material-icons">visibility_off</span>
             </div>
             <input class="form-input password" type="password" id="confirm_password" placeholder="Confirme a senha" required>
-            
             <button type="submit">Registrar</button>
             <div class="response">{{ response }}</div>
             <div class="loading" v-if="loading"></div>
@@ -104,7 +103,7 @@ export default {
             $("#submit-button").attr("disabled", "disabled");
 
             if ($("#password").attr("type") != "password") { // Antes de dar submit, o input é forçado a ficar do tipo password mesmo que o usuário tenha clicado para mostrar a senha.
-                self.showPasswordToggleClass(".show-password i", "fa-eye-slash", "fa-eye");
+                self.showPasswordToggleClass(".show-password .material-icons");
             }
             api.get("/system")
             .then(function(response){
@@ -160,18 +159,18 @@ export default {
         getTemporaryEmail: function () { // Recupera o email temporário de session storage.
             return sessionStorage.getItem("temp_email"); 
         },
-        showPasswordToggleClass: function (element, older_class, new_class) { // Mostra ou esconde a senha.
-            if ($(element).hasClass(older_class)) {
-                $(element).removeClass(older_class);
-                $(element).addClass(new_class);
-
-                $(".password").attr("type", "text");
-            } else if ($(element).hasClass(new_class)) {
-                $(element).removeClass(new_class);
-                $(element).addClass(older_class);
-
+        showPasswordToggleClass: function (element) { // Mostra ou esconde a senha.
+            let self = this;
+            if (self.passwordVisible) {
+                $(element).html("visibility_off");
                 $(".password").attr("type", "password");
+                self.passwordVisible = false;
+                return;
             }
+
+            $(".password").attr("type", "text");
+            $(element).html("visibility");
+            self.passwordVisible = true;
         },
         showRemember: function (email1, email2) {
             if (email1 == email2) { return; }
@@ -244,6 +243,10 @@ export default {
         right: 1.5rem;
         top: 109px;
     }
+
+        .show-password .material-icons {
+            margin-top: -3px;
+        }
 
     #remember {
         margin: 0 5px;

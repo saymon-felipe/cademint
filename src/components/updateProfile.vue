@@ -4,7 +4,7 @@
             <div class="update-profile-header">
                 <h1>Alterar o perfil</h1>
                 <div class="profile-more-options">
-                    <i class="fas fa-ellipsis-v" v-on:click="showProfileMoreOptions = !showProfileMoreOptions"></i>
+                    <span class="material-icons" v-on:click="showProfileMoreOptions = !showProfileMoreOptions">more_vert</span>
                     <div class="account-options-container">
                         <div class="account-options">
                             <ul>
@@ -19,7 +19,7 @@
                     <div class="user-image-container">
                         <img :src="user.profile_photo" class="profile-avatar">
                         <div class="change-photo" v-on:click="togglePhotoDetails()" :style="showPhotoDetails ? 'background: var(--gray-high-2)' : ''">
-                            <i class="fas fa-camera"></i>
+                            <span class="material-icons">photo_camera</span>
                             <div class="photo-details" v-if="showPhotoDetails">
                                 <ul>
                                     <li v-if="user.profile_photo != default_user_image" v-on:click="showPhoto">Ver foto</li>
@@ -62,7 +62,7 @@
                         <form class="send-photo" method="post" enctype="multipart/form-data" @submit.prevent="uploadPhoto(formData)">
                             <div class="input-file-custom">
                                 <label for="photo" id="upload-button">
-                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span class="material-icons">cloud_upload</span>
                                     Upload
                                 </label>
                                 <span>JPG, PNG</span>
@@ -506,7 +506,7 @@ export default {
     }
 }
 
-@media (max-width: 646px) {
+@media (max-width: 720px) {
     .update-profile {
         width: 90%;
         padding: 1rem 2rem;
@@ -527,8 +527,8 @@ export default {
     cursor: pointer;
 }
 
-    .profile-more-options i {
-        font-size: 1.5rem;
+    .profile-more-options .material-icons {
+        font-size: 2rem;
         width: 40px;
         height: 40px;
         border-radius: 50%;
@@ -538,7 +538,7 @@ export default {
         justify-content: center;
     }
 
-        .profile-more-options i:hover {
+        .profile-more-options .material-icons:hover {
             background: var(--gray-high-2);
         }
 
@@ -582,7 +582,7 @@ export default {
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    box-shadow: 0 0 0 7px var(--green);
+    box-shadow: 0 0 0 7px var(--blue);
 }
 
 .informations-container {
@@ -595,6 +595,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 0 1rem;
 }
 
 .update-profile-footer {
@@ -709,13 +710,14 @@ export default {
 }
 
 .profile-form-container form button {
-    background: var(--green);
+    background: var(--blue);
+    color: var(--white);
     cursor: pointer;
     transition: all 0.4s;
 }
 
     .profile-form-container form button:hover {
-        background: var(--green-low);
+        background: var(--blue-low);
     }
 
 .other-groups-list, .my-groups-list {
@@ -740,7 +742,7 @@ export default {
         width: 45px;
         height: 45px;
         border-radius: 50%;
-        box-shadow: 0 0 0 4px var(--green);
+        box-shadow: 0 0 0 4px var(--blue);
         margin-right: 2rem;
     }
 
@@ -760,7 +762,7 @@ export default {
 
 @media (max-width: 470px) {
     .photo-details {
-        bottom: -90px;
+        bottom: -120px;
         right: 0;
         width: 300%;
     }
@@ -883,7 +885,7 @@ export default {
     display: block !important;
 }
 
-    .input-file-custom span {
+    .input-file-custom > span {
         display: block;
         margin-top: .7rem;
         text-align: center;
@@ -911,10 +913,16 @@ export default {
     border-radius: 5px;
     padding: 6.5px 20px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
     #upload-button:hover {
         background: #0090ce;
+    }
+
+    #upload-button > span {
+        margin-right: 10px;
     }
 
 .file-name {
@@ -925,6 +933,8 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
 }
 
 .photo-preview {

@@ -3,7 +3,7 @@
         <div class="manage-groups_modal">
             <div class="modal-header">
                 <h1>Gerenciar projetos</h1>
-                <i class="fas fa-times" id="close-manage-projects-modal" v-on:click="closeModal"></i>
+                <span class="material-icons" id="close-manage-projects-modal" v-on:click="closeModal">close</span>
             </div>
             <div class="modal-body">
                 <div class="responsive-group-modal-body">
@@ -13,16 +13,14 @@
                     </ul>
                     <div class="responsive-edit-my-groups" v-if="editMyGroups">
                         <div class="responsive-group" v-for="group in my_groups" :key="group.groups_id" :id="'responsive-group-' + group.groups_id" v-on:click="addActiveClass('#responsive-group-' + group.groups_id, true); editResponsiveGroup('#responsive-group-' + group.groups_id + ' .responsive-group-body', $event)">
-                            <div class="group my-group"><h5>{{ group.group_name }}</h5><span><i class='fas fa-trash-alt' v-if="my_groups.length > 1" v-on:click="excludeGroup(group.groups_id)"></i></span></div>
+                            <div class="group my-group"><h5>{{ group.group_name }}</h5><span class="material-icons" v-if="my_groups.length > 1" v-on:click="excludeGroup(group.groups_id)">delete</span></div>
                             <div class="responsive-group-body">
                                 <div class="responsive-members-list-container">
                                     <div class="responsive-members-list">
                                         <div class="member" v-for="group_user in group.group_members" :id="'responsive-user-' + group_user.id_usuario" :key="group_user.id_usuario" :style="group_user.id_usuario == group.group_members[group.group_members.length - 1].id_usuario ? 'border: none' : ''">
                                             <img :src="group_user.profile_photo" class="avatar-p" :alt="'Imagem de ' + group_user.nome">
                                             <h1>{{ group_user.nome }}</h1>
-                                            <div class="remove-user" v-if="group_user.id_usuario != user.id_usuario && group.group_owner == user.id_usuario">
-                                                <i class="fas fa-times" v-on:click="excludeUser(group.groups_id, group_user.id_usuario, false, true)"></i>
-                                            </div>
+                                            <span class="material-icons remove-user" v-on:click="excludeUser(group.groups_id, group_user.id_usuario, false, true)" v-if="group_user.id_usuario != user.id_usuario && group.group_owner == user.id_usuario">close</span>
                                         </div>
                                         <div v-for="(member, index) in group.pending_users" :key="index">
                                             <div class="member requested-user" v-if="member != ''">
@@ -38,7 +36,7 @@
                                         </div>
                                     </div>
                                     <div class="responsive-new-member" v-on:click="showRequestInput('#request-member-input', true)">
-                                        <i class="fas fa-plus-circle"></i>
+                                        <span class="material-icons">add_circle</span>
                                         <h6>Novo membro</h6>
                                     </div>
                                 </div>
@@ -65,7 +63,7 @@
                     <div class="my-groups">
                         <h6><strong>Meus grupos</strong></h6>
                         <ul class="my-groups-list">
-                            <li v-for="group in my_groups" :key="group.groups_id" class="group my-group" :id="'group-' + group.groups_id" v-on:click="editing_group = group; group_owner = group.group_owner; addActiveClass('#group-' + group.groups_id);" :style="my_groups.length == 1 ? 'padding: 0.2rem 1rem;' : ''">{{group.group_name}}<span><i class='fas fa-trash-alt' v-on:click="excludeGroup(group.groups_id)" v-if="my_groups.length > 1"></i></span></li>
+                            <li v-for="group in my_groups" :key="group.groups_id" class="group my-group" :id="'group-' + group.groups_id" v-on:click="editing_group = group; group_owner = group.group_owner; addActiveClass('#group-' + group.groups_id);" :style="my_groups.length == 1 ? 'padding: 0.2rem 1rem;' : ''">{{group.group_name}}<span class="material-icons" v-on:click="excludeGroup(group.groups_id)" v-if="my_groups.length > 1">delete</span></li>
                         </ul>
                     </div>
                     <div class="groups-i-participate">
@@ -83,7 +81,7 @@
                                 <img :src="group_user.profile_photo" class="avatar-p" :alt="'Imagem de ' + group_user.nome">
                                 <h1>{{ group_user.nome }}</h1>
                                 <div class="remove-user" v-if="group_user.id_usuario != user.id_usuario && group_owner == user.id_usuario">
-                                    <i class="fas fa-times" v-on:click="excludeUser(editing_group.groups_id, group_user.id_usuario)"></i>
+                                    <span class="material-icons" v-on:click="excludeUser(editing_group.groups_id, group_user.id_usuario)">close</span>
                                 </div>
                             </div>
                             <div v-for="(member, index) in editing_group.pending_users" :key="index">
@@ -101,7 +99,7 @@
                         </div>
                     </div>
                     <div class="new-member" v-on:click="showRequestInput('#request-member-input')">
-                        <i class="fas fa-plus-circle"></i>
+                        <span class="material-icons">add_circle</span>
                         <h6>Novo membro</h6>
                     </div>
                 </div>
@@ -471,8 +469,8 @@ export default {
             margin: 0;
         }
 
-        .manage-groups_modal .modal-header i {
-            font-size: 1.2rem;
+        .manage-groups_modal .modal-header #close-manage-projects-modal {
+            font-size: 1.5rem;
             color: black!important;
             cursor: pointer;
             line-height: 1rem;
@@ -504,7 +502,7 @@ export default {
 }
 
 .manage-groups_modal .modal-footer .create-button {
-    background: var(--blue-high);
+    background: var(--blue);
     color: white;
 }
 
@@ -536,11 +534,15 @@ export default {
             font-size: .9rem;
         }
 
-        .manage-groups_modal .modal-header h1, .manage-groups_modal .modal-header i {
+        .manage-groups_modal .modal-header #close-manage-projects-modal {
+            font-size: 1.3rem;
+        }
+
+        .manage-groups_modal .modal-header h1 {
             font-size: 1rem;
         }
 
-        .new-member h6, .new-member i, .my-groups ul li, .groups-i-participate ul li {
+        .new-member h6, .new-member span, .my-groups ul li, .groups-i-participate ul li {
             font-size: .8rem;
             padding: 0;
         }
@@ -672,20 +674,34 @@ export default {
 
             .my-groups ul li span, .groups-i-participate ul li span, .other-groups-list h6 {
                 position: absolute;
-                right: 15px;
                 margin: 0;
             }
 
-            .my-groups ul li span i, .groups-i-participate ul li span i, .other-groups-list h6, .responsive-group .group i {
+            .groups-i-participate ul li span, .other-groups-list h6 {
+                right: 15px;
+            }
+
+            .my-groups ul li span {
+                right: 10px;
+            }
+
+            .other-groups-list h6 {
                 font-size: .8rem;
+            }
+
+            .my-groups ul li .material-icons, .other-groups-list h6, .responsive-group .group .material-icons {
                 color: var(--red);
             }
 
-            .responsive-group .group i {
-                font-size: 1.2rem;
+            .my-groups ul li .material-icons {
+                font-size: 1.3rem;
             }
 
-            .my-groups ul li i:hover, .groups-i-participate ul li i:hover, .other-groups-list h6:hover {
+            .responsive-group .group .material-icons {
+                font-size: 1.5rem;
+            }
+
+            .my-groups ul li .material-icons:hover, .other-groups-list h6:hover {
                 color: var(--red-low);
             }
 
@@ -829,19 +845,20 @@ export default {
     margin-left: 1rem;
 }
 
-    .remove-user i {
+    .remove-user span {
         cursor: pointer;
         color: var(--red);
+        margin-top: 5px;
     }
 
-        .remove-user i:hover {
+        .remove-user span:hover {
             color: var(--red-low);
         }
 
 .member {
     display: flex;
     align-items: center;
-    padding: .4rem 0;
+    padding: .4rem;
     border-bottom: 1px solid var(--gray-high-2);
 }
 
@@ -930,7 +947,8 @@ export default {
     display: none;
 }
 
-.responsive-group span {
+.responsive-group .remove-user {
+    color: var(--red);
     position: absolute;
     right: 1rem;
     cursor: pointer;

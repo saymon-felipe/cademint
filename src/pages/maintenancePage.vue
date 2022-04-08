@@ -2,9 +2,9 @@
     <section class="maintenance">
         <div class="maintenance-container">
             <div class="maintenance-cog-animation">
-                <i class="fas fa-cog"></i>   
-                <i class="fas fa-cog"></i>   
-                <i class="fas fa-cog"></i>   
+                <span class="material-icons">settings</span>
+                <span class="material-icons">settings</span>
+                <span class="material-icons">settings</span> 
             </div>
             <div class="mainentance-text">
                 <h1>Sistema em manutenção!</h1>
@@ -60,20 +60,20 @@ export default {
     position: relative;
 }
 
-.maintenance-cog-animation i:nth-child(1) {
+.maintenance-cog-animation .material-icons:nth-child(1) {
     margin-bottom: 1rem;
 }
 
-.maintenance-cog-animation i:nth-child(3) {
+.maintenance-cog-animation .material-icons:nth-child(3) {
     margin-top: 1rem;
 }
 
-.maintenance-cog-animation i:nth-child(1), .maintenance-cog-animation i:nth-child(3) {
+.maintenance-cog-animation .material-icons:nth-child(1), .maintenance-cog-animation .material-icons:nth-child(3) {
     font-size: 3rem;
     animation: rotateCog 3s linear infinite;
 }
 
-.maintenance-cog-animation i:nth-child(2) {
+.maintenance-cog-animation .material-icons:nth-child(2) {
     color: var(--blue);
     font-size: 5rem;
     position: absolute;
@@ -136,11 +136,11 @@ export default {
         font-size: 1rem;
     }
 
-    .maintenance-cog-animation i:nth-child(1), .maintenance-cog-animation i:nth-child(3) {
+    .maintenance-cog-animation .material-icons:nth-child(1), .maintenance-cog-animation .material-icons:nth-child(3) {
         font-size: 2.5rem;
     }
 
-    .maintenance-cog-animation i:nth-child(2) {
+    .maintenance-cog-animation .material-icons:nth-child(2) {
         font-size: 4.5rem;
         width: 72px;
         height: 72px;

@@ -21,14 +21,14 @@
                 <select id="projects-name" v-model="project_value" @change="changeProject()">
                     <option v-for="(project, index) in user.user_groups" :key="index" :value="project.groups_id">{{ project.group_name }}</option>
                 </select>
-                <i class="fas fa-sync-alt" id="change-project" v-on:click="openResponsiveChangeProject"></i>
-                <i class="fas fa-plus" id="new-project" v-on:click="showNewGroup = true" @showModal="showModal = false"></i>
+                <span class="material-icons" id="change-project" v-on:click="openResponsiveChangeProject">sync</span>
+                <span class="material-icons" id="new-project" v-on:click="showNewGroup = true" @showModal="showModal = false">add</span>
             </div>
         </div>
         <div class="menu-wrapper" v-on:click="showResponsiveMenu = false; showMenu = false;"></div>
         <div class="go-to-user-profile">
             <div class="responsive-menu">
-                <i class="fas fa-bars" id="menu-hamburguer" v-on:click="showResponsiveMenu = !showResponsiveMenu"></i>
+                <span class="material-icons" id="menu-hamburguer" v-on:click="showResponsiveMenu = !showResponsiveMenu">menu</span>
                 <div class="responsive-menu-container" v-on:click="showResponsiveMenu = false">
                     <div class="responsive-profile-more-options-container">
                         <div class="responsive-user">
@@ -47,7 +47,7 @@
             <div class="go-to-user-profile-inner" v-on:click="showMenu = !showMenu">
                 <img class="avatar-p avatar-header" :src="user.profile_photo">
                 <h3>Olá, <span class="user-name">{{ user.nome }}</span></h3>
-                <i class="fas fa-chevron-down" id="profile-more-options"></i>
+                <span class="material-icons" id="profile-more-options">expand_more</span>
                 <div class="profile-more-options-container" v-on:click="showMenu = false;">
                     <ul>
                         <li v-on:click="show_modal ? show_modal = false : show_modal = true" v-if="$route.path.indexOf('/home') != -1 && $route.path.indexOf('/edit') == -1 && $route.path.indexOf('/update-profile') == -1">Gerenciar grupos</li>
@@ -410,7 +410,7 @@ export default {
     .current-project-container {
         min-width: 11.3rem;
         margin: auto 2rem;
-        background: var(--blue-high);
+        background: var(--blue);
         padding: 5px;
         border-radius: 5px;
         color: white;
@@ -419,7 +419,7 @@ export default {
     }
 
         .current-project-container select {
-            width: 106%;
+            width: 105%;
             list-style: none;
             border: none;
             appearance: none;
@@ -427,10 +427,10 @@ export default {
             -moz-appearance: none;
             outline: none;
             cursor: pointer;
-            background: var(--blue-high);
+            background: var(--blue);
             position: absolute;
             font-size: 16px;
-            left: -10px;
+            left: -9px;
             margin: auto .3rem;
             padding: 7px;
             border-radius: 5px;
@@ -452,9 +452,9 @@ export default {
                 }
 
         .current-project-container #new-project {
-            color: white!important;
-            font-size: .9rem!important;
-            background: var(--blue-high);
+            color: var(--white) !important;
+            font-size: 1.5rem !important;
+            background: var(--blue);
             cursor: pointer;
             position: absolute;
             right: 0;
@@ -480,7 +480,7 @@ export default {
  #new-project {
     color: white!important;
     font-size: .9rem!important;
-    background: var(--blue-high);
+    background: var(--blue);
     cursor: pointer;
     position: absolute;
     right: 0;
@@ -532,12 +532,17 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: .5rem 0;
 }
 
     .responsive-user h3 {
         margin: 0;
         font-weight: 500;
     }
+
+.responsive-menu #menu-hamburguer {
+    font-size: 2.2rem;
+}
 
 .avatar-header {
     margin-right: 1rem;
@@ -554,8 +559,8 @@ export default {
     cursor: pointer;
 }
 
-    .go-to-user-profile-inner i {
-        font-size: 1.2rem;
+    .go-to-user-profile-inner #profile-more-options {
+        font-size: 2rem;
         color: black!important;
         cursor: pointer;
         transition: all 0.4s;
@@ -564,7 +569,7 @@ export default {
     .go-to-user-profile-inner h3 {
         margin-top: .2rem;
         display: flex;
-        margin-right: 1rem;
+        margin-right: .5rem;
         font-weight: 500;
         font-size: 1.1rem;
     }
@@ -612,7 +617,7 @@ export default {
         justify-content: flex-end;
     }
 
-        .responsive-menu i {
+        .responsive-menu #menu-hamburguer {
             color: black!important;
             cursor: pointer;
             background: transparent;
@@ -651,18 +656,16 @@ export default {
             min-height: 2.5rem;
         }
 
-
-
         .current-project-container #new-project, .current-project-container #change-project {
-            font-size: .8rem !important;
+            font-size: 1.4rem !important;
         }
 
         .responsive-menu {
             margin-left: .6rem;
         }
 
-            .responsive-menu i {
-                font-size: 1.5rem;
+            .responsive-menu #menu-hamburguer {
+                font-size: 1.7rem;
             }
 
         .current-project-container #new-project {
