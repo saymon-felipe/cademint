@@ -368,7 +368,7 @@ export default {
         margin-left: 1rem;
     }
 
-    i {
+    .material-icons {
         font-size: 2rem;
     }
 

@@ -6,7 +6,6 @@
 
 <script>
 import './style/global.css';
-import './assets/fontawesome/css/all.css';
 
 export default {
   name: 'App'

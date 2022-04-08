@@ -26,12 +26,12 @@
                                             <div class="member requested-user" v-if="member != ''">
                                                 <img src="https://scrum-cademint-api.herokuapp.com/public/default-user-image.png" class="avatar-p" :alt="'Imagem de ' + member">
                                                 <h1>{{ member }}</h1>
-                                                <i class="fas fa-hourglass-start hourglass-icon"></i>
+                                                <span class="material-icons hourglass-icon">hourglass_top</span>
                                             </div>
                                         </div>
                                         <div class="responsive-new-member-input-container" v-if="requestUser">
                                             <input type='email' placeholder='Insira o email' class='new-member-input' :id="'responsive-enter-group-input-' + group.groups_id" v-on:keyup="showSendButton($event)" v-on:focusout="validateEmailInput($event)" />
-                                            <i class="fas fa-times" v-on:click="requestUser = false; save = false; response = ''"></i>
+                                            <span class="material-icons" v-on:click="requestUser = false; save = false; response = ''">close</span>
                                             <div class="loading" v-if="loading"></div>
                                         </div>
                                     </div>
@@ -88,12 +88,12 @@
                                 <div class="member requested-user" v-if="member != ''">
                                     <img src="https://scrum-cademint-api.herokuapp.com/public/default-user-image.png" class="avatar-p" :alt="'Imagem de ' + member">
                                     <h1>{{ member }}</h1>
-                                    <i class="fas fa-hourglass-start hourglass-icon"></i>
+                                    <span class="material-icons hourglass-icon">hourglass_top</span>
                                 </div>
                             </div>
                             <div class="new-member-input-container" v-if="requestUser">
                                 <input type='email' placeholder='Insira o email' class='new-member-input' id="request-member-input" v-on:keyup="showSendButton($event)" v-on:focusout="validateEmailInput($event)" />
-                                <i class="fas fa-times" v-on:click="requestUser = false; save = false; response = ''"></i>
+                                <span class="material-icons" v-on:click="requestUser = false; save = false; response = ''">close</span>
                                 <div class="loading" v-if="loading"></div>
                             </div>
                         </div>
@@ -217,12 +217,10 @@ export default {
             let icon = $(".hourglass-icon"), self = this;
             if (!stop) {
                 self.interval = setInterval(() => {
-                    if (icon.hasClass("fa-hourglass-start")) {
-                        icon.removeClass("fa-hourglass-start").addClass("fa-hourglass-half");
-                    } else if (icon.hasClass("fa-hourglass-half")) {
-                        icon.removeClass("fa-hourglass-half").addClass("fa-hourglass-end");
-                    } else if (icon.hasClass("fa-hourglass-end")) {
-                        icon.removeClass("fa-hourglass-end").addClass("fa-hourglass-start");
+                    if (icon.html() == "hourglass_top") {
+                        icon.html("hourglass_bottom");
+                    } else {
+                        icon.html("hourglass_top");
                     }
                 }, 1000);
             } else {
@@ -728,7 +726,7 @@ export default {
     background: var(--white);
 }
 
-.requested-user i {
+.requested-user .material-icons {
     margin-left: 1rem;
 }
 
@@ -778,7 +776,7 @@ export default {
     width: 100%;
 }
 
-    .new-member-input-container i {
+    .new-member-input-container .material-icons {
         cursor: pointer;
         margin-left: 1rem;
     }
@@ -811,7 +809,7 @@ export default {
         margin-left: 1rem;
     }
 
-    .responsive-group .responsive-new-member i {
+    .responsive-group .responsive-new-member .material-icons {
        font-size: 1.3rem;
     }
 
@@ -860,6 +858,7 @@ export default {
     align-items: center;
     padding: .4rem;
     border-bottom: 1px solid var(--gray-high-2);
+    position: relative;
 }
 
     .member h1 {

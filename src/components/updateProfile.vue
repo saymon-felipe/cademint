@@ -651,7 +651,7 @@ export default {
             margin-top: 1rem;
         }
 
-    .profile-more-options i {
+    .profile-more-options .material-icons {
         font-size: 1.3rem;
     }
 

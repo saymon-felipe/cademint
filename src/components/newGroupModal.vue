@@ -232,7 +232,7 @@ export default {
             font-size: .9rem;
         }
 
-        .new-project-modal .modal-header h1, .new-project-modal .modal-header i {
+        .new-project-modal .modal-header h1, .new-project-modal .modal-header .material-icons {
             font-size: 1rem;
         }
 
