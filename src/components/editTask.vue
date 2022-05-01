@@ -6,7 +6,7 @@
                 <div class="informations-container">
                     <div class="so-number container-input">
                         <label for="so-number">Id tarefa: </label>
-                        <input type="number" id="so-number" disabled placeholder="Automático" v-model="task[0].id_complete">
+                        <input type="number" id="so-number" disabled placeholder="Automático" v-model="task[0].id">
                     </div>
                     <div class="sponsor container-input">
                         <label for="sponsor">Responsável: </label>
@@ -89,9 +89,10 @@ export default {
     methods: {
         checkCurrentTask: function () {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
+            let current_project = self.getCurrentProjectInSessionStorage();
             api.post("/os/check_permission", {
-                id_complete: self.task[0].id_complete,
-                group_id: self.getCurrentProjectIdInSessionStorage()
+                id: self.task[0].id,
+                group_id: current_project.group_id
             }, {
                 headers: {
                     Authorization: jwt
@@ -114,8 +115,9 @@ export default {
         },
         getProjectMembers: function () {
             let self = this;
+            let current_project = self.getCurrentProjectInSessionStorage();
             api.post("/projects/return_group", {
-                group_id: self.getCurrentProjectIdInSessionStorage()
+                group_id: current_project.group_id
             })
             .then(function(response){
                 self.group_members_objects = response.data.response.group_members_objects;
@@ -123,7 +125,7 @@ export default {
                 self.sortElements("#owner", "option");
                 self.is_loading = false;
             }).catch(function(){
-                self.removeCurrentProjectIdInSessionStorage();
+                self.removeCurrentProjectInSessionStorage();
             })
         },
         getCurrentTask: function () {
@@ -156,25 +158,25 @@ export default {
                     empty = 1;
                 }
             }
-            data['id_complete'] = self.task[0].id_complete;
+            data['id'] = self.task[0].id;
             if (empty != 1) {
                 api.patch("/os", data, { // Requisição que atualiza a tarefa com os novos dados.
-                headers: {
-                    Authorization: jwt
-                }
-            })
-            .then(function(){
-                self.$router.push("/home");
-            }).catch(function(error){
-                console.log(error)
-            })
+                    headers: {
+                        Authorization: jwt
+                    }
+                })
+                .then(function(){
+                    self.$router.push("/home");
+                }).catch(function(error){
+                    console.log(error)
+                })
             } else {
                 self.response = "Não foi possível salvar a tarefa, campos vazios."
             }
         },
         excludeTask: function () {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
-            api.delete("/os/delete_os", { data: {id_os: self.task[0].id_complete}, headers: {Authorization: jwt}})
+            api.delete("/os/delete_os", { data: {id_os: self.task[0].id}, headers: {Authorization: jwt}})
             .then(function(){
                 self.$router.push("/home");
             }).catch(function(error){

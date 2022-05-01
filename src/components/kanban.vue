@@ -3,13 +3,76 @@
         <div class="loading-page" v-if="is_loading"></div>
         <joinedGroupModal :joined_group="joined_group" v-if="joined_group" @joined_group="joined_group = false" />
         <div class="kanban-container" v-if="!is_loading">
-            <div class="kanban-title-container">
+            <h3 class="project-name font-size-h3">{{ current_project.group_name }}</h3>
+            <div class="kanban-columns">
+                <div class="kanban-column" id="column-1">
+                    <div class="kanban-column-header">
+                        <p class="font-size-5">A fazer</p>
+                        <span class="material-icons new-task-icon" v-on:click="createTask(1)">add</span>
+                        
+                    </div>
+                    <div class="kanban-column-body">
+                        <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('todo', $event)" @drop="handleDrop('todo', $event)" :get-child-payload="getChildPayload">
+                            <newTaskCard :group_users="project.group_members_objects" card_status="1" :user="user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <Draggable v-for="task in todoList" :key="task.id_os" class="draggable-card">
+                                <card :task="task" />
+                                <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
+                            </Draggable>
+                        </Container>
+                    </div>
+                </div>
+                <div class="kanban-column" id="column-2">
+                    <div class="kanban-column-header">
+                        <p class="font-size-5">Fazendo</p>
+                        <span class="material-icons new-task-icon" v-on:click="createTask(2)">add</span>
+                    </div>
+                    <div class="kanban-column-body">
+                        <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('doing', $event)" @drop="handleDrop('doing', $event)" :get-child-payload="getChildPayload">
+                            <newTaskCard :group_users="project.group_members_objects" card_status="2" :user="user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <Draggable v-for="task in doingList" :key="task.id_os" class="draggable-card">
+                                <card :task="task" />
+                                <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
+                            </Draggable>
+                        </Container>
+                    </div>
+                </div>
+                <div class="kanban-column" id="column-3">
+                    <div class="kanban-column-header">
+                        <p class="font-size-5">Teste</p>
+                    </div>
+                    <div class="kanban-column-body">
+                        <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('test', $event)" @drop="handleDrop('test', $event)" :get-child-payload="getChildPayload">
+                            <newTaskCard :group_users="project.group_members_objects" card_status="3" :user="user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <Draggable v-for="task in testList" :key="task.id_os" class="draggable-card">
+                                <card :task="task" />
+                                <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
+                            </Draggable>
+                        </Container>
+                    </div>
+                </div>
+                <div class="kanban-column" id="column-4">
+                    <div class="kanban-column-header">
+                        <p class="font-size-5">Concluído</p>
+                    </div>
+                    <div class="kanban-column-body">
+                        <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('done', $event)" @drop="handleDrop('done', $event)" :get-child-payload="getChildPayload">
+                            <newTaskCard :group_users="project.group_members_objects" card_status="4" :user="user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <Draggable v-for="task in doneList" :key="task.id_os" class="draggable-card">
+                                <card :task="task" />
+                                <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
+                            </Draggable>
+                        </Container>
+                    </div>
+                </div>
+            </div>
+            <editTaskModal class="edit-task-container" v-if="show_edit_task" :task="edit_task" :group="project" @closeEditTaskModal="closeEditTask('.edit-task-container', $event)" />
+            <div class="edit-task-wrapper" v-if="show_edit_task" v-on:click="closeEditTask('.edit-task-container')"></div>
+            <!--<div class="kanban-title-container">
                 <div class="kanban-title">
                     <h5>A fazer</h5>
                     <div class="new-os-container">
                         <router-link to="/home/new/todo" class="new-os">
-                            <!--<i class="fas fa-plus-circle"></i>-->
-                            <span class="material-icons">add_circle</span>
+                            
                             <h6>Novo</h6>
                         </router-link>
                     </div>
@@ -18,7 +81,6 @@
                     <h5>Fazendo</h5>
                     <div class="new-os-container">
                         <router-link to="/home/new/doing" class="new-os">
-                            <!--<i class="fas fa-plus-circle"></i>-->
                             <span class="material-icons md-24">add_circle</span>
                             <h6>Novo</h6>
                         </router-link>
@@ -36,7 +98,6 @@
                     <div class="kanban-title-responsive">
                         <h5>A fazer</h5>
                         <router-link to="/home/new/todo" class="new-os">
-                            <!--<i class="fas fa-plus-circle"></i>-->
                             <span class="material-icons md-24">add_circle</span>
                             <h6>Novo</h6>
                         </router-link>
@@ -55,7 +116,6 @@
                         <h5>Fazendo</h5>
                     </div>
                     <router-link to="/home/new/doing" class="new-os">
-                        <!--<i class="fas fa-plus-circle"></i>-->
                         <span class="material-icons">add_circle</span>
                         <h6>Novo</h6>
                     </router-link>
@@ -91,7 +151,7 @@
                         </Container>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
     </section>
 </template>
@@ -103,6 +163,8 @@ import $ from 'jquery';
 import {Container, Draggable} from 'vue-smooth-dnd';
 import card from './card.vue';
 import joinedGroupModal from './joinedGroupModal.vue';
+import newTaskCard from "./newTaskCard.vue";
+import editTaskModal from './editTaskModal.vue';
 
 export default {
     name: "kanban",
@@ -111,6 +173,7 @@ export default {
     data() {
         return {
             in_drag: false,
+            user: {},
             task_list: {},
             is_loading: true,
             draggind_card: {
@@ -120,7 +183,11 @@ export default {
                 cardData: {}
             },
             joined_group: false,
-            current_project_id: null
+            current_project: null,
+            project: {},
+            edit_task: {},
+            show_edit_task: false,
+            temporary_task: {}
         }
     },
     computed: {
@@ -138,6 +205,31 @@ export default {
         }
     },
     methods: {
+        editTask: function (task) {
+            if ($(".edit-task-container").is(":visible")) {
+                this.closeEditTask(".edit-task-container");
+                return;
+            }
+            this.edit_task = task;
+            this.show_edit_task = true;
+            setTimeout(() => {
+                this.openEditTask($(".edit-task-container"));
+            }, 10);
+        },
+        openEditTask: function (element) {
+            element.css("opacity", 1).css("transform", "translateX(0)");
+        },
+        closeEditTask: function (class_name, reload_tasks = false) {
+            $(class_name).css("opacity", 0).css("transform", "translateX(100px)");
+            if (reload_tasks) {
+                this.getAllOs(true);
+            }
+            
+            setTimeout(() => {
+                this.show_edit_task = false;
+                this.edit_task = {};
+            }, 400);
+        },  
         init: function () {
             setTimeout(() => {
                 this.getAllOs();
@@ -146,7 +238,7 @@ export default {
             }, 300);
         },
         verifyAllowDrop: function () {
-            if (window.innerWidth > 866) {
+            if (window.innerWidth > 720) {
                 return true;
             }
             $(".draggable-card").removeClass("smooth-dnd-draggable-wrapper");
@@ -181,9 +273,9 @@ export default {
                 this.draggind_card = {
                     status,
                     col,
-                    index: payload.index,
+                    index: payload.index - 1,
                     cardData: {
-                        ...data[payload.index]
+                        ...data[payload.index - 1]
                     }
                 }
             }
@@ -213,14 +305,14 @@ export default {
                     break;
             }
 
-            self.task_list = self.task_list.filter(function(i) { return i.id_complete !== self.draggind_card.cardData.id_complete; });
+            self.task_list = self.task_list.filter(function(id) { return id !== self.draggind_card.cardData.id; });
 
             if (addedIndex != null) {
                 self.draggind_card.cardData.status_os = status;
                 self.task_list.push(self.draggind_card.cardData)
                 let jwt = "Bearer " + self.getJwtFromLocalStorage();
                 api.patch("/os/os_status", {
-                    id_complete: self.draggind_card.cardData.id_complete,
+                    id: self.draggind_card.cardData.id,
                     status_os: status
                 }, {
                     headers: {
@@ -235,10 +327,10 @@ export default {
             }
         },
         getAllOs: function (programatic = false) { // Função recupera a lista de OS do banco de dados.
-            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
+            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage(), project = self.getCurrentProjectInSessionStorage();
             if (!self.in_drag) {
                 api.post("/os/return_os_list", {
-                    id: self.getCurrentProjectIdInSessionStorage()
+                    id: project.group_id
                 },
                 {
                     headers: {
@@ -253,6 +345,7 @@ export default {
                         }, 2000);
                         setTimeout(self.getAllOs, 60000); // Chamada recursiva da requisição a cada 60 segundos.
                     }
+                    self.current_project = self.getCurrentProjectInSessionStorage();
                 }).catch(function(){
                     let pathName = window.location.href;
                     if (pathName.indexOf("/login") == -1 && pathName.indexOf("/register") == -1 && pathName.indexOf("/enter-group") == -1) {
@@ -265,9 +358,10 @@ export default {
         },
         checkIfProjectChanged: function () {
             setInterval(() => {
-                if (this.current_project_id != this.getCurrentProjectIdInSessionStorage()) {
+                let project = this.getCurrentProjectInSessionStorage();
+                if (this.current_project.group_id != project.group_id) {
                     this.getAllOs(true);
-                    this.current_project_id = this.getCurrentProjectIdInSessionStorage();
+                    this.current_project.group_id = project.group_id;
                 }
             }, 1000);
         },
@@ -275,13 +369,51 @@ export default {
             $(".os-tooltip").attr("id", "");
             $(".os-tooltip").html("");
             $(".os-tooltip").hide();
+        },
+        getCurrentProject: function (project_id) {
+            let self = this;
+            api.post("/projects/return_group", {
+                group_id: project_id
+            })
+            .then(function(response){
+                self.project = response.data.response;
+            }).catch(function(error){
+                self.response = error
+            })
+        },
+        createTask: function (column_status) {
+            let newTaskCard = $("#column-" + column_status + " .new-card"); 
+            let column = $("#column-" + column_status + " .kanban-column-body"); 
+            column.animate({
+                scrollTop: 0
+            }, 500);
+
+            newTaskCard.show();
+            setTimeout(() => {
+                newTaskCard.css("opacity", 1);
+                setTimeout(() => {
+                    $("#column-" + column_status + " #task-description").focus();
+                }, 400);
+            }, 10);                   
+        },
+        closeNewTask: function (emmit_event) {
+            let newTaskCard = $(".new-card"); 
+            newTaskCard.css("opacity", 0);
+            setTimeout(() => {
+                newTaskCard.hide();
+                if (emmit_event != undefined) {
+                    this.editTask(emmit_event);
+                }
+            }, 400);
         }
     },
     mounted() {
+        this.requireUser();
         setTimeout(() => {
             if (window.location.href.indexOf("/home") != -1) {
                 this.init();
-                this.current_project_id = this.getCurrentProjectIdInSessionStorage();
+                this.current_project = this.getCurrentProjectInSessionStorage();
+                this.getCurrentProject(this.current_project.group_id);
                 this.checkIfProjectChanged();
             }
         }, 2000)
@@ -290,13 +422,183 @@ export default {
         Draggable,
         card,
         Container,
-        joinedGroupModal
+        joinedGroupModal,
+        newTaskCard,
+        editTaskModal
     }
 }
 </script>
 
 <style scoped>
-.os-list-container {
+
+.edit-task-container {
+    transition: all 0.4s;
+    transform: translateX(100px);
+    opacity: 0;
+}
+
+.edit-task-wrapper {
+    background: var(--black);
+    opacity: 0.3;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
+}
+
+.new-card {
+    display: none;
+    opacity: 0;
+    transition: all 0.4s;
+}
+
+/* NEW TASK */
+
+.kanban {
+    height: 100vh;
+    justify-content: center;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    width: 100%;
+    padding-top: 56px;
+}
+
+/* INÍCIO ALTERAÇÃO VISUAL */
+
+.smooth-dnd-container {
+    height: 100%;
+}
+
+.kanban-container {
+    height: 100%;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.kanban-columns {
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    padding: .5rem 2rem;
+    overflow: hidden;
+}
+
+.project-name {
+    margin: 1rem 2rem .5rem;
+}
+
+.kanban-column {
+    width: 350px;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 .8rem;
+}
+
+.kanban-column:first-child {
+    margin-left: 0;
+}
+
+
+.kanban-column-header {
+    width: 100%;
+    max-width: calc(100vw - 25px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 31px;
+    margin-bottom: 10px;
+}
+
+    .kanban-column-header p {
+        text-transform: uppercase;
+        color: var(--gray-low);
+    }
+
+.kanban-column-body {
+    background: var(--gray-high);
+    min-height: 94%;
+    width: 100%;
+    border-radius: 6px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.new-task-icon {
+    background: var(--blue-low);
+    background-color: var(--blue-high-2);
+    border-radius: 4px;
+    padding: 3px;
+    color: var(--blue-low);
+    cursor: pointer;
+}
+
+.draggable-card {
+    position: relative;
+}
+
+.edit-task-wrapper-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 91%;
+    cursor: pointer;
+}
+
+@media (max-width: 720px) {
+    .project-name {
+        margin: 1rem .7rem .5rem;
+    }
+
+    .kanban-columns {
+        flex-direction: column;
+        width: 100%;
+        padding: 0;
+        overflow-y: scroll;
+    }
+
+    .kanban-column {
+        width: 100%;
+        min-height: 160px;
+        max-height: 280px;
+        margin: 1rem 0 2rem;
+        align-items: flex-start;
+    }
+
+    .task-list {
+        display: flex;
+    }
+
+    .kanban-column-header {
+        margin-left: .7rem;
+    }
+
+    .kanban-column-body {
+        height: auto;
+        width: 100%;
+        min-height: 100%;
+        overflow-y: hidden;
+        overflow-x: scroll;
+    }
+
+    .draggable-card {
+        min-width: 230px;
+    }
+
+    .draggable-card:last-child .card-container {
+        margin-right: 10px;
+    }
+}
+
+/* FIM ALTERAÇÃO VISUAL */
+
+/*.os-list-container {
     width: 100%;
     height: 100%;
 }
@@ -312,15 +614,7 @@ export default {
     }
 }
 
-.kanban {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    bottom: 0;
-    overflow: hidden;
-    height: calc(100vh - 66px);
-    width: 100vw;
-}
+
 
 @media (max-width: 865px) {
     .kanban-container {
@@ -435,7 +729,7 @@ export default {
 }
 
 .col-scrum:nth-child(1), .col-scrum:nth-child(2), .col-scrum:nth-child(3) {
-    border-right: 1px solid var(--gray-high-2)!important;
+    border-right: 1px solid var(--gray-high)!important;
 }
 
 .kanban-title-responsive {
@@ -550,5 +844,5 @@ export default {
         display: flex;
         align-items: center;
     }
-}
+}*/
 </style>

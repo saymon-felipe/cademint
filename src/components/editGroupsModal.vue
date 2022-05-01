@@ -8,8 +8,8 @@
             <div class="modal-body">
                 <div class="responsive-group-modal-body">
                     <ul>
-                        <li id="responsive-my-groups" v-on:click="editMyGroups = true; editOtherGroups = false" :style="editMyGroups ? 'background: var(--gray-high);' : ''">Meus grupos</li>
-                        <li id="responsive-other-groups" v-on:click="editMyGroups = false; editOtherGroups = true" :style="editOtherGroups ? 'background: var(--gray-high);' : ''">Outros grupos</li>
+                        <li id="responsive-my-groups" v-on:click="editMyGroups = true; editOtherGroups = false" :class="editMyGroups ? 'active' : ''">Meus grupos</li>
+                        <li id="responsive-other-groups" v-on:click="editMyGroups = false; editOtherGroups = true" :style="editOtherGroups ? 'active' : ''">Outros grupos</li>
                     </ul>
                     <div class="responsive-edit-my-groups" v-if="editMyGroups">
                         <div class="responsive-group" v-for="group in my_groups" :key="group.groups_id" :id="'responsive-group-' + group.groups_id" v-on:click="addActiveClass('#responsive-group-' + group.groups_id, true); editResponsiveGroup('#responsive-group-' + group.groups_id + ' .responsive-group-body', $event)">
@@ -61,15 +61,21 @@
                 </div>
                 <div class="groups-list">
                     <div class="my-groups">
-                        <h6><strong>Meus grupos</strong></h6>
+                        <h6 class="font-size-3"><strong>Meus grupos</strong></h6>
                         <ul class="my-groups-list">
-                            <li v-for="group in my_groups" :key="group.groups_id" class="group my-group" :id="'group-' + group.groups_id" v-on:click="editing_group = group; group_owner = group.group_owner; addActiveClass('#group-' + group.groups_id);" :style="my_groups.length == 1 ? 'padding: 0.2rem 1rem;' : ''">{{group.group_name}}<span class="material-icons" v-on:click="excludeGroup(group.groups_id)" v-if="my_groups.length > 1">delete</span></li>
+                            <li v-for="group in my_groups" :key="group.groups_id" class="group my-group" :id="'group-' + group.groups_id" v-on:click="editing_group = group; group_owner = group.group_owner; addActiveClass('#group-' + group.groups_id);" :style="my_groups.length == 1 ? 'padding: 0.2rem 1rem;' : ''">
+                                {{group.group_name}}
+                                <span class="material-icons" v-on:click="excludeGroup(group.groups_id)" v-if="my_groups.length > 1">delete</span>
+                            </li>
                         </ul>
                     </div>
                     <div class="groups-i-participate">
-                        <h6><strong>Outros grupos</strong></h6>
+                        <h6 class="font-size-3"><strong>Outros grupos</strong></h6>
                         <ul class="other-groups-list">
-                            <li v-for="group in groups_i_participate" :key="group.groups_id" class="group other-group" :id="'group-' + group.groups_id" v-on:click="editing_group = group; group_owner = group.group_owner; addActiveClass('#group-' + group.groups_id);">{{group.group_name}}<h6 v-on:click="excludeUser(group.groups_id, user.id_usuario, true)">Sair</h6></li>
+                            <li v-for="group in groups_i_participate" :key="group.groups_id" class="group other-group" :id="'group-' + group.groups_id" v-on:click="editing_group = group; group_owner = group.group_owner; addActiveClass('#group-' + group.groups_id);">
+                                {{group.group_name}}
+                                <h6 v-on:click="excludeUser(group.groups_id, user.id_usuario, true)">Sair</h6>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -100,7 +106,7 @@
                     </div>
                     <div class="new-member" v-on:click="showRequestInput('#request-member-input')">
                         <span class="material-icons">add_circle</span>
-                        <h6>Novo membro</h6>
+                        <h6 class="font-size-4">Novo membro</h6>
                     </div>
                 </div>
             </div>
@@ -345,10 +351,11 @@ export default {
             let data = {
                 groups_id: group_id
             }
+            let current_project = self.getCurrentProjectInSessionStorage()
             api.delete("/projects/delete_group", { data, headers: {Authorization: jwt}})
             .then(function () {
-                if (self.getCurrentProjectIdInSessionStorage() == group_id) { // Se o id do grupo que está sendo excluido for igual ao que está em session storage, o que está armazenado é deletado.
-                    self.removeCurrentProjectIdInSessionStorage();
+                if (current_project.group_id == group_id) { // Se o id do grupo que está sendo excluido for igual ao que está em session storage, o que está armazenado é deletado.
+                    self.removeCurrentProjectInSessionStorage();
                 }
                 self.my_groups = self.my_groups.filter(group => {return group.groups_id != group_id});
                 location.reload();
@@ -431,7 +438,7 @@ export default {
 }
 
 .active {
-    background: var(--gray-high-2);
+    background: var(--gray-high);
 }
 
 .manage-groups_modal {
@@ -450,7 +457,7 @@ export default {
     transition: all 0.4s;
     opacity: 0;
     transform: translateY(-100px);
-    z-index: 5;
+    z-index: 9999;
     display: none;
 }
 
@@ -459,7 +466,7 @@ export default {
         align-items: center;
         justify-content: space-between;
         padding: 1.3rem;
-        border-bottom: 1px solid var(--gray-high-2);
+        border-bottom: 1px solid var(--gray-high);
     }
 
         .manage-groups_modal .modal-header h1 {
@@ -489,7 +496,7 @@ export default {
     align-items: center;
     justify-content: flex-end;
     padding: 0 1rem;
-    border-top: 1px solid var(--gray-high-2);
+    border-top: 1px solid var(--gray-high);
 }
 
 .manage-groups_modal .modal-footer button {
@@ -509,8 +516,8 @@ export default {
         }
 
     .manage-groups_modal .modal-footer .cancelate-button {
-        background: var(--gray-high);
-        color: white;
+        background: var(--gray);
+        color: var(--white);
     }
 
         .manage-groups_modal .modal-footer .cancelate-button:hover {
@@ -576,16 +583,21 @@ export default {
         .responsive-group-modal-body ul li {
             margin: 0 1rem;
             cursor: pointer;
-            background: var(--gray-high-2);
+            background: var(--gray-high);
             padding: .5rem 1.5rem;
             border-radius: 10px;
             text-align: center;
         }
 
-            .responsive-group-modal-body ul li:hover {
-                background: var(--gray-high);
-                color: var(--white);
-            }
+.active {
+    color: var(--white);
+    background: var(--gray) !important;
+}
+
+.responsive-group.active {
+    background: var(--gray-high) !important;
+    color: var(--black);
+}
 
 @media (max-width: 579px) {
     .groups-list, .edit-group {
@@ -624,7 +636,7 @@ export default {
 }
 
 .my-groups {
-    border-bottom: 1px solid var(--gray-high-2);
+    border-bottom: 1px solid var(--gray-high);
 }
 
 .my-groups, .groups-i-participate {
@@ -636,7 +648,7 @@ export default {
     flex-direction: column;
     align-items: center;
     overflow: hidden;
-    border-right: 1px solid var(--gray-high-2);
+    border-right: 1px solid var(--gray-high);
 }
 
 .my-groups-list, .other-groups-list {
@@ -667,7 +679,7 @@ export default {
         }
 
             .my-groups ul li:hover, .groups-i-participate ul li:hover, .responsive-group:hover {
-                background: var(--gray-high-2);
+                background: var(--gray-high);
             }
 
             .my-groups ul li span, .groups-i-participate ul li span, .other-groups-list h6 {
@@ -732,7 +744,7 @@ export default {
 
 .responsive-members-list-container {
     max-height: 120px;
-    width: 70%;
+    width: 95%;
     margin-bottom: 3rem;
     position: relative;
 }
@@ -741,7 +753,7 @@ export default {
     position: absolute;
     bottom: 0;
     width: 90% !important;
-    background: var(--gray-high-2);
+    background: var(--gray-high);
     display: flex;
     align-items: center;
 }
@@ -782,7 +794,7 @@ export default {
     }
 
 .new-member-input {
-    border: 1px solid var(--gray-high-2);
+    border: 1px solid var(--gray-high);
     border-radius: 7px;
     padding: 7px 15px;
     width: 80%;
@@ -800,7 +812,7 @@ export default {
 }
 
     .responsive-group .responsive-new-member:hover {
-        background: var(--gray-high);
+        background: var(--gray);
         color: var(--white);
     }
 
@@ -857,7 +869,7 @@ export default {
     display: flex;
     align-items: center;
     padding: .4rem;
-    border-bottom: 1px solid var(--gray-high-2);
+    border-bottom: 1px solid var(--gray);
     position: relative;
 }
 
@@ -865,7 +877,7 @@ export default {
         font-size: 1.2rem;
         margin: 0;
         margin-left: 1rem;
-        width: 70%;
+        max-width: calc(100% - 80px);
         white-space: normal;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -925,7 +937,7 @@ export default {
     border-radius: 10px;
     cursor: pointer;
     margin: .4rem 0;
-    border: 1px solid var(--gray-high-2);
+    border: 1px solid var(--gray-high);
 }
 
 .responsive-group .group > span > h6 {
@@ -939,6 +951,7 @@ export default {
     padding: .5rem 1rem;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     position: relative;
 }
 

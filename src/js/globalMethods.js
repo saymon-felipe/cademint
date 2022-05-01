@@ -14,7 +14,7 @@ export const globalMethods = {
         },
         logoutUser: function (not_return = false) {
             let self = this;
-            self.removeCurrentProjectIdInSessionStorage();
+            self.removeCurrentProjectInSessionStorage();
             self.removeJwtFromLocalStorage();
             if (!not_return) {
                 self.$router.push("/login");
@@ -32,7 +32,6 @@ export const globalMethods = {
         },
         checkIfUserIsAuthenticated: function (from_login = false) { // Função testará se usuário está logado para permitir sua entrada na página.
             let self = this, pathName = window.location.href, jwt = "Bearer " + self.getJwtFromLocalStorage();
-            
             if (jwt == "Bearer null") {
                 if (pathName.indexOf("/login") == -1 && pathName.indexOf("/register") == -1 && pathName.indexOf("/enter-group") == -1 && pathName.indexOf("/maintenance") == -1) { // Se o usuário não estiver na página de login ou register, ele é redirecionado.
                     self.$router.push("/login");
@@ -95,14 +94,20 @@ export const globalMethods = {
                 self.response = "Ocorreu um erro ao entrar no grupo" // Se der erro, o mesmo é exibido.
             })
         },
-        removeCurrentProjectIdInSessionStorage: function () { // Remove o id do projeto de session storage.
-            sessionStorage.removeItem("current_project_id");
+        removeCurrentProjectInSessionStorage: function () { // Remove o id do projeto de session storage.
+            sessionStorage.removeItem("current_project");
         },
-        setCurrentProjectIdInSessionStorage: function (group_id) { // Adiciona o id do projeto de session storage.
-            sessionStorage.setItem("current_project_id", group_id);
+        setCurrentProjectInSessionStorage: function (group_id, group_name) { // Adiciona o id do projeto de session storage.
+            let current_project = {
+                group_id: group_id,
+                group_name: group_name
+            }
+            sessionStorage.setItem("current_project", JSON.stringify(current_project));
         },
-        getCurrentProjectIdInSessionStorage: function () { // Retorna o id do projeto de session storage.
-            return sessionStorage.getItem("current_project_id");
+        getCurrentProjectInSessionStorage: function () { // Retorna o id do projeto de session storage.
+            let JSONproject = sessionStorage.getItem("current_project");
+            let project = JSON.parse(JSONproject);
+            return project;
         },
         loadSystemVersion: async function() {
             this.app_version = await api.get("/system").then(response => response.data.response.system_version);

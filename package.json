@@ -11,6 +11,7 @@
     "axios": "^0.25.0",
     "core-js": "^3.6.5",
     "jquery": "^3.6.0",
+    "moment": "^2.29.3",
     "vue": "^2.6.11",
     "vue-router": "^3.5.3",
     "vue-smooth-dnd": "^0.8.1"

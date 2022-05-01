@@ -1,24 +1,22 @@
 <template>
     <div class="card-container">
         <div class="card-loading" v-if="loading_card"></div>
-        <div class="card-os" :id="task.id_complete" v-if="!loading_card" @mouseenter="showTooltip(task.id_complete, task.user_owner_name, task.priority, task.size)" @mouseleave="hideTooltip()">
-            <router-link :to="'/home/edit/' + task.id_complete" class="card-link" :id="'link-' + task.id_os" draggable="false">
-                <div class="card-os-header">
-                    <h6><strong>{{ task.id_complete }}</strong></h6>
-                    <h6 class="sponsor-card-name"><strong>{{ task.sponsor_name }}</strong></h6>
-                </div>
-                <div class="card-os-body">
-                    <p class="os-description">{{ task.desc_os }}</p>
-                </div>
+        <div class="card-task" :id="task.id" v-if="!loading_card" v-on:click="edit_task = true">
+            <div class="card-task-header">
+                <p class="font-size-4-bold">#{{ task.id }}</p>
                 <div class="priority-container" :class="findPriority(task.priority, 1)">
-                    <h6 class="priority-text">{{ findPriority(task.priority) }}</h6>
+                    <p class="font-size-5">{{ findPriority(task.priority) }}</p>
                 </div>
-            </router-link>
+            </div>
+            <div class="card-os-body">
+                <p class="task-description font-size-4">{{ task.desc_os }}</p>
+            </div>
+            <p class="font-size-4 sponsor">Responsável: <strong>{{ task.sponsor_name }}</strong></p>
         </div>
     </div>
 </template>
 <script>
-import $ from 'jquery';
+
 
 export default {
     name: "card",
@@ -29,43 +27,6 @@ export default {
         }
     },
     methods: {
-        showTooltip: function (id, user_owner, priority, size) { // Função mostra o tooltip da respectiva OS sobreposta e preenche as informações.
-            if (sessionStorage.getItem("in_drag") == "true") {
-                return;
-            }
-            if (window.innerWidth > 865) {
-                let border = "border: 2px solid ";
-                switch (priority) {
-                    case 1: 
-                        border += "#FFA500";
-                        break;
-                    case 2: 
-                        border += "#FF0000";
-                        break;
-                }
-                /*let osTooltipElement = `
-                                        <div class="os-tooltip" id="#tooltip-${id}" style="${border}">
-                                            <h6 class="os-tooltip-number"><strong>(OS) ${id}</strong></h6>
-                                            <h6><strong>Aberta por:</strong> ${user_owner}</h6>
-                                            <h6><strong>Tamanho:</strong> ${size}</h6>
-                                            <h6><strong>Expira:</strong> Não</h6>
-                                            <h6><strong>H. Previstas:</strong> n/a</h6>
-                                            <h6><strong>H. Restantes:</strong> n/a</h6>
-                                        </div>
-                                    `;*/
-                let osTooltipElement = `
-                                        <div class="os-tooltip" id="#tooltip-${id}" style="${border}">
-                                            <h6 class="os-tooltip-number"><strong>${id}</strong></h6>
-                                            <h6><strong>Aberta por:</strong> ${user_owner}</h6>
-                                            <h6><strong>Tamanho:</strong> ${size}</h6>
-                                        </div>
-                                    `;
-                $(".card-os").append(osTooltipElement);
-            }
-        },
-        hideTooltip: function () { // Reseta e esconde tooltip.
-            $(".os-tooltip").remove();
-        },
         findPriority: function (priority, badge = 0) { // Função para encontrar as classes dos badges da OS segundo a prioridade dela.
             switch (priority) {
                 case 1: 
@@ -88,24 +49,14 @@ export default {
 }
 </script>
 <style scoped>
-.card-link {
-    z-index: 2;
-}
-
 .card-loading {
-    background: rgb(242, 242, 242);
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    background: var(--gray-soft);
+    margin-bottom: 10px;
+    border-radius: 6px;
     height: 11rem;
-    max-width: 447px;
-    border-radius: 15px;
-    padding: 1rem;
-    margin: .3rem auto;
-    position: relative;
-    z-index: 2;
     animation-name: pulse;
     animation-duration: 2.5s;
     animation-iteration-count: infinite;
-    opacity: 0.5s;
 }
 
 @keyframes pulse {
@@ -119,6 +70,89 @@ export default {
         opacity: 0.5;
     }
 }
+
+/* INÍCIO ALTERAÇÕES CARD */
+
+.card-container {
+    position: relative;
+}
+
+.card-task {
+    background: var(--white);
+    margin-bottom: 10px;
+    border-radius: 6px;
+    padding: 13px;
+    border: 1px solid var(--gray-soft);
+    position: relative;
+}
+
+.card-task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.priority-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 17px;
+    padding: 3px 7px;
+}
+
+.priority {
+    background: var(--red);
+}
+
+    .priority p {
+        color: var(--white);
+    }
+
+.normal {
+    background: var(--yellow);
+}
+
+.task-description {
+    margin: 10px 0;
+    overflow: hidden;
+    width: 100%;
+    display: -webkit-box;
+    word-break: break-word;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical; 
+}
+
+@media (max-width: 720px) {
+    .card-container {
+        height: 100%;
+    }
+
+    .card-task {
+        min-width: 180px;
+        margin: 0;
+        height: 100%;
+    }
+
+    .sponsor {
+        position: absolute;
+        bottom: 20px;
+        left: 10px;
+    }
+
+    .task-description {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .card-task, .card-loading {
+        margin-right: 10px;
+    }
+}
+
+/* FIM ALTERAÇÕES CARD */
+
+/*
 
 .card-os {
     background: rgb(242, 242, 242);
@@ -183,10 +217,6 @@ export default {
     width: 80%;
 }
 
-    .priority-container h6 {
-        margin: .2rem 0;
-    }
-
 .normal {
     background: orange;
 }
@@ -198,7 +228,6 @@ export default {
 @media (max-width: 865px) {
     .card-os {
         width: 15rem;
-        margin: .5rem;
     }
-}
+}*/
 </style>

@@ -12,8 +12,12 @@
         </router-link>
         <div class="title-container">
             <router-link to="/home">
-                <h3 class="page-title">Cademint</h3>
-                <span class="app-version">{{ app_version }}</span>
+                <!--<h3 class="page-title">Cademint</h3>-->
+                <div class="header-images" v-on:click="goToHome()">
+                    <img src="../assets/img/cademint-icon-blue.png" />
+                    <img src="../assets/img/logo-cademint-v2-reduced.png" />
+                </div>
+                <!--<span class="app-version">{{ app_version }}</span>-->
             </router-link>
         </div>
         <div class="current-project-container" v-if="$route.path.indexOf('/home') != -1 && $route.path.indexOf('/edit') == -1 && $route.path.indexOf('/update-profile') == -1">
@@ -27,12 +31,12 @@
         </div>
         <div class="menu-wrapper" v-on:click="showResponsiveMenu = false; showMenu = false;"></div>
         <div class="go-to-user-profile">
-            <div class="responsive-menu">
-                <span class="material-icons" id="menu-hamburguer" v-on:click="showResponsiveMenu = !showResponsiveMenu">menu</span>
-                <div class="responsive-menu-container" v-on:click="showResponsiveMenu = false">
+            <div class="responsive-menu" v-on:click="showResponsiveMenu = !showResponsiveMenu">
+                <img class="avatar-p avatar-header" :src="user.profile_photo">
+                <span class="material-icons profile-more-options">expand_more</span>
+                <div class="responsive-menu-container">
                     <div class="responsive-profile-more-options-container">
                         <div class="responsive-user">
-                            <img class="avatar-p avatar-header" :src="user.profile_photo">
                             <h3><span class="user-name">{{ user.nome }}</span></h3>
                         </div>
                         <ul>
@@ -47,8 +51,8 @@
             <div class="go-to-user-profile-inner" v-on:click="showMenu = !showMenu">
                 <img class="avatar-p avatar-header" :src="user.profile_photo">
                 <h3>Olá, <span class="user-name">{{ user.nome }}</span></h3>
-                <span class="material-icons" id="profile-more-options">expand_more</span>
-                <div class="profile-more-options-container" v-on:click="showMenu = false;">
+                <span class="material-icons profile-more-options">expand_more</span>
+                <div class="profile-more-options-container">
                     <ul>
                         <li v-on:click="show_modal ? show_modal = false : show_modal = true" v-if="$route.path.indexOf('/home') != -1 && $route.path.indexOf('/edit') == -1 && $route.path.indexOf('/update-profile') == -1">Gerenciar grupos</li>
                         <li><router-link to="/home/update-profile">Alterar perfil</router-link></li>
@@ -60,7 +64,7 @@
         <editGroupsModal :show_modal="show_modal" :user="user" @close-modal="show_modal = false" />
         <div class="responsive-choose-project-modal">
             <div class="responsive-projects-list">
-                <span v-for="(group, index) in user.user_groups" :key="index" :id="'project-' + group.groups_id" class="responsive-project" v-on:click="changeProject(false, group.groups_id, true)">{{ group.group_name }}</span>
+                <span v-for="(group, index) in user.user_groups" :key="index" :id="'project-' + group.groups_id" class="responsive-project" v-on:click="changeProject(false, group.groups_id, group.group_name, true)">{{ group.group_name }}</span>
             </div>
         </div>
         <div class="overlay" v-on:click="closeResponsiveChangeProject"></div>
@@ -80,6 +84,7 @@ export default {
         return {
             user: "",
             project_value: null,
+            project_name: "",
             show_modal: false,
             is_loading: true,
             showNewGroup: false,
@@ -90,6 +95,14 @@ export default {
         }
     },
     methods: {
+        goToHome: function () {
+            let location = window.location.pathname;
+            if (location == "/home") {
+                this.$router.go();
+                return;
+            }
+            window.location.pathname = "/home";
+        },
         openResponsiveChangeProject: function () {
             let modal = $(".responsive-choose-project-modal"), overlay = $(".overlay");
 
@@ -109,9 +122,8 @@ export default {
             }, 400);
         },
         closeMenu: function () {
-            $("#profile-more-options").toggleClass("rotate");
+            $(".profile-more-options").toggleClass("rotate");
             $(".profile-more-options-container").toggleClass("opacity-1");
-            
             setTimeout(() => {
                 $(".profile-more-options-container").hide();
                 $(".menu-wrapper").hide();
@@ -120,12 +132,13 @@ export default {
         openMenu: function () {
             $(".profile-more-options-container").show();
             setTimeout(() => {
-                $("#profile-more-options").toggleClass("rotate");
+                $(".profile-more-options").toggleClass("rotate");
                 $(".profile-more-options-container").toggleClass("opacity-1");
                 $(".menu-wrapper").show();
             }, 10);
         },
         closeResponsiveMenu: function () {
+            $(".profile-more-options").toggleClass("rotate");
             $(".responsive-profile-more-options-container").css("opacity", 0);
             setTimeout(() => {
                 $(".responsive-profile-more-options-container").hide();
@@ -135,44 +148,45 @@ export default {
         openResponsiveMenu: function () {
             $(".responsive-profile-more-options-container").show();
             setTimeout(() => {
+                $(".profile-more-options").toggleClass("rotate");
                 $(".responsive-profile-more-options-container").css("opacity", 1);
                 $(".menu-wrapper").show();
             }, 10);
         },
-        changeProject: function (programatic = false, projectId = null, responsive = false) { // No onchange do select procura o grupo pelo nome no input e armazena em session storage.
+        changeProject: function (programatic = false, projectId = null, project_name = null, responsive = false) { // No onchange do select procura o grupo pelo nome no input e armazena em session storage.
             if (programatic) {
-                this.setCurrentProjectIdInSessionStorage(projectId);
+                this.setCurrentProjectInSessionStorage(projectId, project_name);
             }
 
             if ($("#projects-name").val() != null) {
-                this.setCurrentProjectIdInSessionStorage($("#projects-name").val());
+                this.setCurrentProjectInSessionStorage($("#projects-name").val(), $("#projects-name option:selected").html());
             }
             
             if (responsive) {
-                this.project_value = projectId;
-                this.setCurrentProjectIdInSessionStorage(projectId);
+                this.setCurrentProjectInSessionStorage(projectId, project_name);
                 $(".responsive-project").removeClass("active");
                 $("#project-" + projectId).addClass("active");
                 this.closeResponsiveChangeProject();
             }
         },
         findProjectOption: function () {
-            let projectId = this.getCurrentProjectIdInSessionStorage();
-            if (projectId == null || projectId == 'undefined') {
+            let project = this.getCurrentProjectInSessionStorage();
+            if (project == null || project == 'undefined') {
                 this.project_value = this.user.user_groups[0].groups_id;
-                this.setCurrentProjectIdInSessionStorage(this.project_value);
+                this.project_name = this.user.user_groups[0].group_name;
+                this.setCurrentProjectInSessionStorage(this.project_value, this.project_name);
                 setTimeout(() => {
                     this.changeProject();
                 }, 10);
             } else {
-                this.project_value = projectId;
-                this.changeProject(true, projectId);
+                this.project_value = project.group_id;
+                this.changeProject(true, project.group_id, project.group_name);
             }
         },
         findResponsiveProject: function () {
-            let projectId = this.getCurrentProjectIdInSessionStorage();
+            let project = this.getCurrentProjectInSessionStorage();
             setTimeout(() => {
-                $("#project-" + projectId).addClass("active");
+                $("#project-" + project.group_id).addClass("active");
             }, 200);
         }
     },
@@ -225,10 +239,11 @@ export default {
         top: 0;
         left: 0;
         display: none;
+        z-index: 3;
     }
 
     .active {
-        background: var(--gray-high) !important;
+        background: var(--gray) !important;
     }
 
     .overlay {
@@ -249,7 +264,7 @@ export default {
         height: 70vh;
         background: var(--white);
         border-radius: 1rem;
-        z-index: 5;
+        z-index: 9999;
         transition: all 0.4s;
         transform: translateY(-100px);
         padding: 1rem;
@@ -267,7 +282,7 @@ export default {
 
         .responsive-projects-list span {
             cursor: pointer;
-            background: var(--gray-high-2);
+            background: var(--gray-high);
             padding: .5rem 1.7rem;
             display: flex;
             justify-content: center;
@@ -278,8 +293,7 @@ export default {
             margin: .3rem 0;
         }
 
-            .responsive-projects-list span.current-project {
-                background: var(--gray-high);
+            .responsive-projects-list span.active {
                 color: var(--white);
             }
 
@@ -376,12 +390,30 @@ export default {
         display: flex;
         align-items: center;
         justify-content: end;
-        z-index: 4;
         position: fixed;
+        top: 0;
+        left: 0;
         background: var(--yellow);
         width: 100vw;
-        padding: .5rem;
+        padding: .5rem 1.5rem;
+        z-index: 99999;
     }
+
+    .header-images {
+        display: flex;
+        align-items: center;
+    }
+
+        .header-images img:nth-child(1) {
+            width: 35px;
+            height: 35px;
+            margin-right: 1rem;
+        }
+
+        .header-images img:nth-child(2) {
+            width: 160px;
+            height: 17px;
+        }
 
     .title-container {
         width: 100%;
@@ -391,8 +423,7 @@ export default {
         display: flex;
         flex-direction: column;
         text-align: center;
-        width: 40%;
-        margin: auto;
+        width: 12rem;
     }
 
     .page-title {
@@ -409,7 +440,7 @@ export default {
 
     .current-project-container {
         min-width: 11.3rem;
-        margin: auto 2rem;
+        margin: auto 1.5rem;
         background: var(--blue);
         padding: 5px;
         border-radius: 5px;
@@ -488,7 +519,10 @@ export default {
 }
 
 .go-to-user-profile {
-    margin-right: 1rem;
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--yellow-low);
+    cursor: pointer;
+    z-index: 4;
 }
 
 .responsive-menu {
@@ -504,7 +538,7 @@ export default {
     padding: 5px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    z-index: 3;
+    z-index: 4;
     transition: all 0.4s;
     opacity: 0;
     text-align: center;
@@ -552,19 +586,19 @@ export default {
     margin-left: .2rem;
 }
 
+.profile-more-options {
+    font-size: 2rem;
+    color: black!important;
+    cursor: pointer;
+    transition: all 0.4s;
+}
+
 .go-to-user-profile-inner {
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
 }
-
-    .go-to-user-profile-inner #profile-more-options {
-        font-size: 2rem;
-        color: black!important;
-        cursor: pointer;
-        transition: all 0.4s;
-    }
 
     .go-to-user-profile-inner h3 {
         margin-top: .2rem;
@@ -582,7 +616,7 @@ export default {
     padding: 5px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    z-index: 2;
+    z-index: 4;
     transition: all 0.4s;
     overflow: hidden;
     opacity: 0;
@@ -633,35 +667,15 @@ export default {
     }
 }
 
-@media (max-width: 528px) {
-    .current-project-container {
-        min-width: 8rem;
+@media (max-width: 576px) {
+    .header-images img:nth-child(2) {
+        display: none;
     }
 }
 
 @media (max-width: 490px) {
-    .current-project-container {
-        min-width: 2rem;
-        margin: 0 !important;
-    }
-
-        .current-project-container select {
-            padding: .3rem .3rem .3rem .7rem;
-            display: none;
-            opacity: 0;
-            width: 585%!important;
-            position: absolute;
-            left: -483%;
-            margin-top: 2.4rem;
-            min-height: 2.5rem;
-        }
-
         .current-project-container #new-project, .current-project-container #change-project {
             font-size: 1.4rem !important;
-        }
-
-        .responsive-menu {
-            margin-left: .6rem;
         }
 
             .responsive-menu #menu-hamburguer {
@@ -687,15 +701,35 @@ export default {
     }
 } 
 
-@media (max-width: 388px) {
+@media (max-width: 417px) {
+    .go-to-user-profile {
+        padding-left: 1.2rem;
+    }
+
     .current-project-container {
         margin: auto 1rem;
+        min-width: 5rem;
     }
+
+        .current-project-container select {
+            padding: .3rem .3rem .3rem .7rem;
+            display: none;
+            opacity: 0;
+            width: 585%!important;
+            position: absolute;
+            left: -483%;
+            margin-top: 2.4rem;
+            min-height: 2.5rem;
+        }
 }  
 
 @media (max-width: 363px) {
     .page-title {
         font-size: 1.4rem;
+    }
+
+    .header {
+        padding: 0.5rem;
     }
 }
 </style>

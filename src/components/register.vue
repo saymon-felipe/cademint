@@ -228,7 +228,7 @@ export default {
     }
 
     input {
-        border: 1px solid var(--gray-high-2);
+        border: 1px solid var(--gray-high);
         background: var(--cademint-white);
         border-radius: 10px;
         margin: 10px 0;

@@ -6,7 +6,7 @@
                 <span class="material-icons" v-on:click="hideModal">close</span>
             </div>
             <div class="modal-body">
-                <form action="create_group" id="form_create_group">
+                <form id="form_create_group">
                     <input type="text" id="group_name" placeholder="Nome do projeto" maxlength="50" title="Insira o nome do grupo" v-on:keyup="showCreateButton($event)">
                     <!-- <input type="email" placeholder="Adicionar membros (email)" title="Adicione membros informando seu email e separando por vírgula"> -->
                 </form>
@@ -55,7 +55,7 @@ export default {
                     }
                 })
                 .then(function(response){
-                    self.setCurrentProjectIdInSessionStorage(response.data.response.grupo_criado.groups_id);
+                    self.setCurrentProjectInSessionStorage(response.data.response.grupo_criado.groups_id, response.data.response.grupo_criado.group_name);
                     $(".response").addClass("success");
                     self.response = "Grupo criado com sucesso";
                     setTimeout(() => {
@@ -129,7 +129,7 @@ export default {
     transition: all 0.4s;
     transform: translateY(-100px); 
     opacity: 0;
-    z-index: 5;
+    z-index: 9999;
 }
 
     .new-project-modal .modal-header {
@@ -137,7 +137,7 @@ export default {
         align-items: center;
         justify-content: space-between;
         padding: 1rem;
-        border-bottom: 1px solid var(--gray-high-2);
+        border-bottom: 1px solid var(--gray-high);
     }
 
         .new-project-modal .modal-header h1 {
@@ -174,7 +174,7 @@ export default {
         .new-project-modal .modal-body form input {
             width: 80%;
             border-radius: 10px;
-            border: 1px solid var(--gray-high);
+            border: 1px solid var(--gray);
             padding: .7rem;
             min-height: 2.5rem;
             margin: .5rem 0;
@@ -186,7 +186,7 @@ export default {
     width: 100%;
     padding: 1rem;
     text-align: end;
-    border-top: 1px solid var(--gray-high-2);
+    border-top: 1px solid var(--gray-high);
 }
 
     .new-project-modal .modal-footer button {
@@ -208,8 +208,8 @@ export default {
         }
 
     .new-project-modal .modal-footer .cancelate-button {
-        background: var(--gray-high);
-        color: white;
+        background: var(--gray);
+        color: var(--white);
     }
 
         .new-project-modal .modal-footer .cancelate-button:hover {

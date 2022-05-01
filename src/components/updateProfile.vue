@@ -18,7 +18,7 @@
                 <div class="user-image">
                     <div class="user-image-container">
                         <img :src="user.profile_photo" class="profile-avatar">
-                        <div class="change-photo" v-on:click="togglePhotoDetails()" :style="showPhotoDetails ? 'background: var(--gray-high-2)' : ''">
+                        <div class="change-photo" v-on:click="togglePhotoDetails()" :style="showPhotoDetails ? 'background: var(--gray-high)' : ''">
                             <span class="material-icons">photo_camera</span>
                             <div class="photo-details" v-if="showPhotoDetails">
                                 <ul>
@@ -32,18 +32,18 @@
                 </div>
 
                 <div class="delete-user-confirmation-modal">
-                    <h4>Tem certeza que deseja excluir a sua conta?</h4>
+                    <h4 class="font-size-h5">Tem certeza que deseja excluir a sua conta?</h4>
                     <div class="exclude-account-buttons">
-                        <button id="exclude-account-confirmation-button" v-on:click="excludeAccount">Sim, excluir</button>
-                        <button id="skip-exclude-confirmation" v-on:click="hideExcludeAccountModal">Não, cancelar</button>
+                        <button id="exclude-account-confirmation-button" class="font-size-3" v-on:click="excludeAccount">Sim, excluir</button>
+                        <button id="skip-exclude-confirmation" class="font-size-3" v-on:click="hideExcludeAccountModal">Não, cancelar</button>
                     </div>
                     <div class="exclude-account-warning" v-if="!isDeleting">
-                        <h6><span><strong>ATENÇÃO</strong></span>, essa ação é <span><strong>irreversível</strong></span>!</h6>
-                        <p>
+                        <h6 class="font-size-4"><span><strong>ATENÇÃO</strong></span>, essa ação é <span><strong>irreversível</strong></span>!</h6>
+                        <p class="font-size-5">
                             Ao excluir sua conta, todas as suas informações pessoais são apagadas. <br>
                             Qualquer dúvida entre em contato pelo nosso email: 
-                            <a href="mailto:contato.scrumcademint@gmail.com">contato.scrumcademint@gmail.com</a>
                         </p>
+                        <a href="mailto:contato.scrumcademint@gmail.com">contato.scrumcademint@gmail.com</a>
                     </div>
                     <div class="deleting-message" v-if="isDeleting">
                         <h6>Apagando usuário...</h6>
@@ -297,7 +297,7 @@ export default {
         showExcludeAccountModal: function () {
             let container = $(".delete-user-confirmation-modal"), self = this;
 
-            container.show();
+            container.css("display", "flex");
             setTimeout(() => {
                 container.css("opacity", 1).css("transform", "translateY(0)");
                 self.showExcludeAccount = true;
@@ -381,7 +381,8 @@ export default {
     margin: auto;
     max-width: 800px;
     max-height: 500px;
-    width: 90vw;
+    min-height: 380px;
+    width: 95vw;
     height: 40vh;
     background: var(--white);
     box-shadow: 0 0 5px rgba(0,0,0,0.3);
@@ -391,21 +392,22 @@ export default {
     transform: translateY(-100px);
     opacity: 0;
     display: none;
-    z-index: 999;
+    /*display: flex;*/
+    flex-direction: column;
+    justify-content: center;
+    z-index: 9999;
     text-align: center;
 }
 
     .delete-user-confirmation-modal h4 {
-        font-size: 1.7rem;
         margin: 1rem 0;
     }
 
 .exclude-account-buttons {
-    margin: .7rem 0 2rem;
+    margin: .7rem 0;
 }
 
     .exclude-account-buttons button {
-        font-size: 1.3rem;
         padding: 10px 15px;
         border-radius: 10px;
         border: none;
@@ -415,7 +417,7 @@ export default {
     }
 
     .exclude-account-buttons button:nth-child(1):hover {
-        background: var(--gray-high-2);
+        background: var(--gray-high);
     }
 
     .exclude-account-buttons button:nth-child(2) {
@@ -432,7 +434,12 @@ export default {
         color: var(--red);
     }
 
+    .exclude-account-warning p {
+        margin: 10px 0;
+    }
+
     .exclude-account-warning a {
+        margin-top: 5px;
         color: var(--blue);
     }
 
@@ -478,7 +485,7 @@ export default {
     right: 0;
     left: 0;
     margin: auto;
-    z-index: 999;
+    z-index: 9999;
 }
 
     .modal-expanded-photo img {
@@ -539,7 +546,7 @@ export default {
     }
 
         .profile-more-options .material-icons:hover {
-            background: var(--gray-high-2);
+            background: var(--gray-high);
         }
 
 .account-options-container {
@@ -571,7 +578,7 @@ export default {
     }
 
         .account-options li:hover {
-            background: var(--gray-high-2);
+            background: var(--gray-high);
         }
 
 .update-profile-header h1 {
@@ -699,13 +706,13 @@ export default {
     width: 100%;
     margin: .5rem 0;
     height: 40px;
-    border-radius: 10px;
+    border-radius: 6px;
     border: none;
     font-size: 1.2rem;
 }
 
 .profile-form-container form input {
-    border: 1px solid var(--gray-high);
+    border: 1px solid var(--gray);
     padding: 8px;
 }
 
@@ -782,7 +789,7 @@ export default {
         }
 
             .photo-details ul li:hover {
-                background: var(--gray-high-2);
+                background: var(--gray-high);
             }
 
 .change-photo {
@@ -801,7 +808,7 @@ export default {
 }
 
     .change-photo:hover {
-        background: var(--gray-high-2);
+        background: var(--gray-high);
     }
 
 .upload {
@@ -820,7 +827,7 @@ export default {
     bottom: 0;
     right: 0;
     left: 0;
-    z-index: 6;
+    z-index: 9999;
     transition: all 0.4s;
     transform: translateY(-100px);
     opacity: 0;

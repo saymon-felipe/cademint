@@ -27,7 +27,6 @@ export default {
             let tokenParam = url.get("tk"); // Armazena cada parametro da URL em variáveis.
             let emailParam = decodeURIComponent(url.get("email")); 
             let groupIdParam = url.get("gid");
-            
             api.post("/usuarios/return_user_by_email", {
                 email: emailParam
             })

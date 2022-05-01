@@ -6,8 +6,6 @@ Vue.use(VueRouter);
 import login from '../pages/loginPage.vue';
 import indexPage from '../pages/indexPage.vue';
 import kanban from "../components/kanban.vue";
-import editTask from '../components/editTask.vue';
-import newTask from '../components/newTask.vue';
 import notAllowed from '../pages/notAllowedPage.vue';
 import notFound from '../pages/notFoundPage.vue';
 import enterGroupInvitation from '../components/enterGroupInvitation.vue';
@@ -73,30 +71,6 @@ const routes = [
                 component: updateProfile,
                 meta: {
                     title: "Meu perfil - Cademint"
-                }
-            },
-            {
-                path: 'edit/:id',
-                component: editTask,
-                meta: {
-                    title: "Editar tarefa - Cademint"
-                }
-            },
-            {
-                path: 'new/:status',
-                component: newTask,
-                meta: {
-                    title: "Nova tarefa - Cademint",
-                    metaTags: [
-                        {
-                            name: "description",
-                            content: "Crie uma tarefa - Cademint"
-                        },
-                        {
-                            name: "og:description",
-                            content: "Crie uma tarefa - Cademint"
-                        }
-                    ]
                 }
             }
         ]

@@ -5,6 +5,12 @@
     src: url(../assets/fonts/MaterialIcons-Regular.ttf);
 }
 
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    src: url(../assets/fonts/Roboto-Regular.ttf);
+}
+
 .material-icons {
     font-family: 'Material Icons';
     font-weight: normal;
@@ -33,21 +39,104 @@
 :root {
     --yellow-high: #FFD970 !important;
     --yellow: #FFCA37 !important;
+    --yellow-low: #E4B531 !important;
+    --blue-high-2: #e3e8ff !important;
+    --blue-high: #859BFE !important;
     --blue: #5D7BFD !important;
     --blue-low: #355AFD !important;
-    --gray-high-3: rgb(230, 230, 230);
-    --gray-high-2: rgb(218, 218, 218);
-    --gray-high: rgb(157, 157, 157);
-    --gray-low: rgb(126, 126, 126);
+    --gray-high: #EEEEEE !important;
+    --gray-soft: #e4e4e4 !important;
+    --gray-soft-2: #E6E6E6 !important;
+    --gray: #ADADAD !important;
+    --gray-low: #808080 !important;
+    --red-high: #ffe1db !important;
     --red: #D64A2E !important;
     --red-low: #b14934 !important;
     --green: #86cd82!important;
     --green-high: #96e292!important;
     --green-low: #76b672!important;
-    --white: #fff!important;
-    --cademint-white: #F1F5FA!important;
-    --black: #000!important;
+    --white: #ffffff !important;
+    --black: #222222 !important;
 }
+
+/* INÍCIO NOVAS CLASSES DE TEXTO */
+
+* {
+    font-family: Roboto;
+}
+
+.font-size-1 {
+    font-size: 24px;
+}
+
+.font-size-2 {
+    font-size: 20px;
+}
+
+.font-size-2-bold {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.font-size-3 {
+    font-size: 18px;
+}
+
+.font-size-3-bold {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.font-size-4 {
+    font-size: 16px;
+}
+
+.font-size-4-bold {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.font-size-5 {
+    font-size: 14px;
+}
+
+.font-size-6 {
+    font-size: 12px;
+}
+
+.font-size-7 {
+    font-size: 10px;
+}
+
+/* TÍTULOS */
+
+.font-size-h1, .font-size-h2, .font-size-h3, .font-size-h4, .font-size-h5 {
+    font-weight: bold;
+}
+
+.font-size-h1 {
+    font-size: 48px;
+}
+
+.font-size-h2 {
+    font-size: 36px;
+}
+
+.font-size-h3 {
+    font-size: 28px;
+}
+
+.font-size-h4 {
+    font-size: 24px;
+}
+
+.font-size-h5 {
+    font-size: 20px;
+}
+
+/* FIM NOVAS CLASSES DE TEXTO */
+
+
 
 * {
     margin: 0;
@@ -56,7 +145,8 @@
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -66,17 +156,6 @@
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--blue-low);
-}
-
-h5 {
-    margin: .4rem 0;
-}
-
-h6 {
-    font-size: 1rem;
-    line-height: 1.2;
-    margin-bottom: .5rem;
-    font-weight: 500;
 }
 
 a {
@@ -91,17 +170,6 @@ a:hover {
 
 html, body {
     height: 100vh;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-body {
-    overflow: hidden;
-}
-
-@media (max-width: 865px) {
-    ::-webkit-scrollbar {
-        height: 5px;
-    }
 }
 
 .loading-page {
@@ -128,6 +196,14 @@ body {
 .avatar-p {
     width: 35px;
     height: 35px;
+}
+
+.avatar-pp {
+    width: 30px;
+    height: 30px;
+}
+
+.avatar-p, .avatar-pp {
     border-radius: 50%;
     object-fit: cover;
     box-shadow: 0 0 0 3px var(--blue);
@@ -206,6 +282,6 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 4;
+    z-index: 999;
     display: none;
 }
