@@ -160,9 +160,6 @@ export default {
         } else {
             this.loadTaskComments();
         }
-        setTimeout(() => {
-            console.log(this.selected_sponsor)
-        })
         $("#task_description").val(this.task.desc_os);
         
     },
