@@ -309,6 +309,7 @@ export default {
 
             if (addedIndex != null) {
                 self.draggind_card.cardData.status_os = status;
+                $("#" + self.draggind_card.cardData.id).remove();
                 self.task_list.push(self.draggind_card.cardData)
                 let jwt = "Bearer " + self.getJwtFromLocalStorage();
                 api.patch("/os/os_status", {

@@ -109,7 +109,7 @@ export default {
     },
     mounted() {
         if (window.innerWidth < 720) {
-            $(".card-task #task-description").attr("rows", 2);
+            $(".card-task #task-description").attr("rows", 4);
         }
     }
 }
@@ -206,12 +206,16 @@ export default {
     }
 
 @media (max-width: 720px) {
-    .new-card-wrapper {
-        display: none !important;
+    .new-task-object .card-task {
+        padding: 11px;
+    }
+
+    .sponsor-icon {
+        display: none;
     }
 
     .new-task-object .card-task {
-        padding: 11px;
+        height: 100%;
     }
 }
 </style>

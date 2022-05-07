@@ -84,6 +84,31 @@
                     </div>
                 </div>
                 <div class="input-group">
+                    <label>Status</label>
+                    <div class="cademint-customized-select">
+                        <div class="customized-select-selected" v-on:click="toggleStatusSelect()">
+                            <div class="customized-option" :status="selected_status">
+                                <span>{{returnStatusName(selected_status)}}</span>
+                            </div>
+                            <span class="material-icons customized-select-icon">expand_more</span>
+                        </div>
+                        <div class="customized-select-option-group status-select">
+                            <div class="customized-option" status="1" :class="selected_status == 1 ? 'selected' : ''" v-if="selected_status != 1" v-on:click="selected_status = 1; toggleStatusSelect(); computeChanges('status', 1)">
+                                <span>A Fazer</span>
+                            </div>
+                            <div class="customized-option" size="2" :class="selected_status == 2 ? 'selected' : ''" v-if="selected_status != 2" v-on:click="selected_status = 2; toggleStatusSelect(); computeChanges('status', 2)">
+                                <span>Fazendo</span>
+                            </div>
+                            <div class="customized-option" size="3" :class="selected_status == 3 ? 'selected' : ''" v-if="selected_status != 3" v-on:click="selected_status = 3; toggleStatusSelect(); computeChanges('status', 3)">
+                                <span>Teste</span>
+                            </div>
+                            <div class="customized-option" size="4" :class="selected_status == 4 ? 'selected' : ''" v-if="selected_status != 4" v-on:click="selected_status = 4; toggleStatusSelect(); computeChanges('status', 4)">
+                                <span>Concluído</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
                     <label>Abertura</label>
                     <input type="hidden" name="task_open_date" :value="task_create_date">
                     <div class="opened-container">
@@ -148,6 +173,7 @@ export default {
             selected_sponsor: this.group.group_members_objects.filter(member => {return member.id_usuario == this.task.sponsor}),
             selected_priority: this.task.priority,
             selected_size: this.task.size,
+            selected_status:  this.task.status_os,
             task_create_date: this.task.task_create_date,
             haveChanges: false,
             changed_task: {},
@@ -280,6 +306,9 @@ export default {
                 case 'description':
                     this.changed_task.desc_os = value.target.value;
                     break;
+                case 'status':
+                    this.changed_task.status_os = value;
+                    break;
             }
             if (JSON.stringify(this.changed_task) != JSON.stringify(this.task)) {
                 this.haveChanges = true;
@@ -295,7 +324,7 @@ export default {
             this.closePrioritySelect();
             this.closeSponsorSelect();
             this.closeSizeSelect();
-
+            this.closeStatusSelect();
         },
         toggleSponsorSelect: function () {
             let container = $(".sponsor-select.customized-select-option-group");
@@ -375,6 +404,32 @@ export default {
                 wrapper.hide();
             }, 400);
         },
+        toggleStatusSelect: function () {
+            let container = $(".status-select.customized-select-option-group");
+            if (container.is(":visible")) {
+                this.closeStatusSelect();
+                return;
+            }
+            this.openStatusSelect();
+        },
+        openStatusSelect: function () {
+            let container = $(".customized-select-option-group.status-select");
+            let wrapper = $(".customized-select-option-group-wrapper");
+            container.show();
+            wrapper.show();
+            setTimeout(() => {
+                container.css("opacity", 1);
+            }, 10);
+        },
+        closeStatusSelect: function () {
+            let container = $(".customized-select-option-group.status-select");
+            let wrapper = $(".customized-select-option-group-wrapper");
+            container.css("opacity", 0);
+            setTimeout(() => {
+                container.hide();
+                wrapper.hide();
+            }, 400);
+        },
         returnPriorityName: function (priority) {
             switch (priority) {
                 case 1:
@@ -391,6 +446,18 @@ export default {
                     return "M - Medio";
                 case 'G': 
                 return "G - Grande";
+            }
+        },
+        returnStatusName: function (status) {
+            switch (status) {
+                case 1:
+                    return "A Fazer";
+                case 2: 
+                    return "Fazendo";
+                case 3: 
+                    return "Teste";
+                case 4:
+                    return "Concluído";
             }
         },
         countRows: function (event, keyup = false) {
