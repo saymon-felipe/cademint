@@ -96,13 +96,13 @@
                             <div class="customized-option" status="1" :class="selected_status == 1 ? 'selected' : ''" v-if="selected_status != 1" v-on:click="selected_status = 1; toggleStatusSelect(); computeChanges('status', 1)">
                                 <span>A Fazer</span>
                             </div>
-                            <div class="customized-option" size="2" :class="selected_status == 2 ? 'selected' : ''" v-if="selected_status != 2" v-on:click="selected_status = 2; toggleStatusSelect(); computeChanges('status', 2)">
+                            <div class="customized-option" status="2" :class="selected_status == 2 ? 'selected' : ''" v-if="selected_status != 2" v-on:click="selected_status = 2; toggleStatusSelect(); computeChanges('status', 2)">
                                 <span>Fazendo</span>
                             </div>
-                            <div class="customized-option" size="3" :class="selected_status == 3 ? 'selected' : ''" v-if="selected_status != 3" v-on:click="selected_status = 3; toggleStatusSelect(); computeChanges('status', 3)">
+                            <div class="customized-option" status="3" :class="selected_status == 3 ? 'selected' : ''" v-if="selected_status != 3" v-on:click="selected_status = 3; toggleStatusSelect(); computeChanges('status', 3)">
                                 <span>Teste</span>
                             </div>
-                            <div class="customized-option" size="4" :class="selected_status == 4 ? 'selected' : ''" v-if="selected_status != 4" v-on:click="selected_status = 4; toggleStatusSelect(); computeChanges('status', 4)">
+                            <div class="customized-option" status="4" :class="selected_status == 4 ? 'selected' : ''" v-if="selected_status != 4" v-on:click="selected_status = 4; toggleStatusSelect(); computeChanges('status', 4)">
                                 <span>Concluído</span>
                             </div>
                         </div>
@@ -201,7 +201,6 @@ export default {
         },
         commentLike: function (task_comment_id) {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
-            console.log(task_comment_id)
             let data = {
                 task_comment_id: task_comment_id
             }
@@ -449,14 +448,15 @@ export default {
             }
         },
         returnStatusName: function (status) {
-            switch (status) {
-                case 1:
+            let statusString = status.toString();
+            switch (statusString) {
+                case "1":
                     return "A Fazer";
-                case 2: 
+                case "2": 
                     return "Fazendo";
-                case 3: 
+                case "3": 
                     return "Teste";
-                case 4:
+                case "4":
                     return "Concluído";
             }
         },
