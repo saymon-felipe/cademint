@@ -1,18 +1,18 @@
 <template>
     <div class="edit-groups">
         <div class="group-header">
-            <p class="font-size-3-bold">Editar grupo ({{ group.nome }})</p>
-            <div class="delete-group" v-on:click="excludeGroupModal(group.group_id)" v-if="user.user_groups.length > 1 && group.group_owner == user.id_usuario">
+            <p class="font-size-3-bold">{{ havePermission ? 'Editar grupo (' + group.nome + ')' : 'Ver grupo (' + group.nome + ')' }}</p>
+            <div class="delete-group" v-on:click="excludeGroupModal(group.group_id)" v-if="user.user_groups.length > 1 && group.group_owner == user.id_usuario && havePermission">
                 <span class="material-icons">delete</span>
                 <p class="font-size-4">Excluir grupo</p>
             </div>
-            <excludeGroupModal :group="group" :exclude="exclude_group" v-if="exclude_group && user.user_groups.length > 1" @closeModal="exclude_group = false"></excludeGroupModal>
+            <excludeGroupModal :group="group" :exclude="exclude_group" v-if="exclude_group && user.user_groups.length > 1 && havePermission" @closeModal="exclude_group = false"></excludeGroupModal>
         </div>
         
         <div class="group-informations">
             <div class="image-container">
                 <img :src="group.image" class="group-image">
-                <div class="image-buttons">
+                <div class="image-buttons" v-if="havePermission">
                     <button type="button" class="change-group-image" v-on:click="editGroupImage()">Editar foto do grupo</button>
                     <button type="button" class="exclude-group-image" v-if="group.image != group_default_image" v-on:click="removePhoto(false, false, true, group.group_id)">Excluir foto</button>
                 </div>
@@ -27,7 +27,7 @@
                     <textarea name="group_description" id="group_description" cols="30" rows="10" v-model="group_description" v-on:keyup="countCharacters()" v-on:focusout="changeGroupDescription(group.group_id, $event)"></textarea>
                     <p class="font-size-5 description_counter">0 / 500</p>
                 </div>
-                <div class="invite-users">
+                <div class="invite-users" v-if="havePermission">
                     <p class="font-size-3-bold">Convidar pessoas</p>
                     <div class="invite-users-container">
                         <form autocomplete="off">
@@ -51,7 +51,7 @@
                                 <span class="font-size-3">{{ user.nome }}</span>
                             </div>
                             <span class="admin" v-if="user.id_usuario == group.group_owner">Admin</span>
-                            <span class="material-icons exclude-user" v-if="user.id_usuario != group.group_owner" v-on:click="excludeUser(group.group_id, user.id_usuario)">clear</span>
+                            <span class="material-icons exclude-user" v-if="user.id_usuario != group.group_owner && havePermission" v-on:click="excludeUser(group.group_id, user.id_usuario)">clear</span>
                         </div>
                     </div>
                     <div v-for="(member, index) in group.pending_users" :key="index" class="user" :id="'invited-member-' + index">
@@ -61,7 +61,7 @@
                                 <span class="font-size-3">{{ member }}</span>
                             </div>
                             <span class="material-icons hourglass-icon">hourglass_top</span>
-                            <span class="material-icons delete-invitation" v-on:click="excludeInvitation(group.group_id, member, index)">clear</span>
+                            <span class="material-icons delete-invitation" v-on:click="excludeInvitation(group.group_id, member, index)" v-if="havePermission">clear</span>
                         </div>
                     </div>
                 </div>
@@ -98,7 +98,8 @@ export default {
             searchParam: "",
             selected_user: {},
             exclude_group: false,
-            empty_search: false
+            empty_search: false,
+            havePermission: false
         }
     },
     watch: {
@@ -170,6 +171,10 @@ export default {
             let self = this;
             self.exclude_group = true;
         },
+        blockFields: function () {
+            $("#group-name").attr("disabled", "disabled");
+            $("#group_description").attr("disabled", "disabled");
+        },
         checkPermission: function () {
             let self = this;
             let jwt = "Bearer " + self.getJwtFromLocalStorage();
@@ -184,12 +189,13 @@ export default {
             })
             .then(function () {
                 self.requireGroup(idParam);
+                self.havePermission = true;
             })
-            .catch(function (){
-                self.$router.push("/not-allowed");
-                setTimeout(() => {
-                    self.$router.push("/home/update-profile");
-                }, 5 * 1000);
+            .catch(function () {
+                console.log("Não possui permissão para editar o grupo");
+                self.blockFields();
+            })
+            .then(function () {
                 self.requireGroup(idParam);
             })
         },
