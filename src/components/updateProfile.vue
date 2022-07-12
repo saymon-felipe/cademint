@@ -1,7 +1,7 @@
 <template>
     <section class="update-profile-container">
         <div class="update-profile">
-            <div class="user-banner" :style="'background-image: url(' + user.user_cover_image + ')'">
+            <div class="user-banner" :style="'background-image: url(' + user.user_cover_image + '); background-position-y: center;'">
                 <div class="change-banner" v-on:click="toggleBannerDetails()">
                     <span class="material-icons">edit</span>
                     <span>Capa</span>
@@ -90,7 +90,7 @@
                 <hr>
                 <div class="user-groups">
                     <p class="font-size-3-bold">Meus grupos</p>
-                    <div class="group" v-for="(group, index) in my_groups" :key="index">
+                    <div class="group" v-for="(group, index) in user.user_groups" :key="index">
                         <router-link :to="{ name: 'edit-groups', params: { id: group.groups_id } }">
                         <div class="group">
                             <img :src="group.image">

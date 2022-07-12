@@ -4,7 +4,7 @@
             <h4>Cuidado! O sistema entrou em manutenção e as suas alterações não serão salvas!</h4>
         </div>
         <div class="new-version-availabe">
-            <h6>Nova versão do sistema disponível! Salve o que está fazendo e <span v-on:click="$router.go()">recarregue aqui!</span></h6>
+            <h6 class="font-size-5">Nova versão do sistema disponível! Salve o que está fazendo e <span v-on:click="$router.go()">recarregue aqui!</span></h6>
         </div>
         <newGroupModal v-if="showNewGroup" :showNewGroup="showNewGroup" :user="user" @showNewGroup="showNewGroup = false" /> 
         <router-link to="/home" v-if="$route.path.indexOf('/home') == -1">
