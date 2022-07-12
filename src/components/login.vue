@@ -18,7 +18,7 @@
         </form>
         <div class="login-actions">
             <h6 class="register">Não tem uma conta? <router-link to="/register" id="register"><strong>Cadastre-se</strong></router-link></h6>
-            <h6><a href="#">Esqueci minha senha</a></h6>
+            <h6><router-link to="/reset-password">Esqueci minha senha</router-link></h6>
         </div>
     </div>
 </template>

@@ -12,12 +12,10 @@
         </router-link>
         <div class="title-container">
             <router-link to="/home">
-                <!--<h3 class="page-title">Cademint</h3>-->
                 <div class="header-images" v-on:click="goToHome()">
                     <img src="../assets/img/cademint-icon-blue.png" />
                     <img src="../assets/img/logo-cademint-v2-reduced.png" />
                 </div>
-                <!--<span class="app-version">{{ app_version }}</span>-->
             </router-link>
         </div>
         <div class="current-project-container" v-if="$route.path.indexOf('/home') != -1 && $route.path.indexOf('/edit') == -1 && $route.path.indexOf('/update-profile') == -1">
@@ -40,8 +38,9 @@
                             <h3><span class="user-name">{{ user.nome }}</span></h3>
                         </div>
                         <ul>
-                            <li v-on:click="show_modal ? show_modal = false : show_modal = true" id="manage-groups" v-if="$route.path.indexOf('/home') != -1 && $route.path.indexOf('/edit') == -1 && $route.path.indexOf('/update-profile') == -1">Gerenciar grupos</li>
-                            <li><router-link to="/home/update-profile">Alterar perfil</router-link></li>
+                            <li v-if="$route.path != '/home'"><router-link to="/home">Início</router-link></li>
+                            <li><router-link to="/help">Ajuda</router-link></li>
+                            <li v-if="$route.path != '/home/update-profile'"><router-link to="/home/update-profile">Alterar perfil</router-link></li>
                             <li v-on:click="logoutUser()">Sair</li>
                         </ul>
                     </div>
@@ -54,8 +53,9 @@
                 <span class="material-icons profile-more-options">expand_more</span>
                 <div class="profile-more-options-container">
                     <ul>
-                        <li v-on:click="show_modal ? show_modal = false : show_modal = true" v-if="$route.path.indexOf('/home') != -1 && $route.path.indexOf('/edit') == -1 && $route.path.indexOf('/update-profile') == -1">Gerenciar grupos</li>
-                        <li><router-link to="/home/update-profile">Alterar perfil</router-link></li>
+                        <li v-if="$route.path != '/home'"><router-link to="/home">Início</router-link></li>
+                        <li><router-link to="/help">Ajuda</router-link></li>
+                        <li v-if="$route.path != '/home/update-profile'"><router-link to="/home/update-profile">Alterar perfil</router-link></li>
                         <li v-on:click="logoutUser()">Sair</li>
                     </ul>
                 </div>
@@ -556,7 +556,19 @@ export default {
         cursor: pointer;
         margin: 3px 0;
         padding: 4px 10px;
+        border-bottom: 1px solid var(--yellow-low);
+        padding-bottom: 6px;
+        width: 80%;
+        margin: auto;
     }
+
+        .responsive-profile-more-options-container ul li:first-child {
+            border-top: none;
+        }
+
+        .responsive-profile-more-options-container ul li:last-child {
+            border-bottom: none;
+        }
 
         .responsive-profile-more-options-container ul li:hover {
             background: #dfb030;
@@ -566,7 +578,10 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: .5rem 0;
+    border-bottom: 1px solid var(--yellow-low);
+    padding-bottom: 6px;
+    width: 80%;
+    margin: auto;
 }
 
     .responsive-user h3 {

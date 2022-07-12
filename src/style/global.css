@@ -55,9 +55,15 @@
     --red-low: #b14934 !important;
     --green: #86cd82!important;
     --green-high: #96e292!important;
+    --green-high-2: #c9f8c6!important;
     --green-low: #76b672!important;
     --white: #ffffff !important;
     --black: #222222 !important;
+}
+
+hr {
+    border: 1px solid var(--gray-high);
+    margin: 1rem 0;
 }
 
 /* INÍCIO NOVAS CLASSES DE TEXTO */
@@ -89,7 +95,7 @@
 }
 
 .font-size-4 {
-    font-size: 16px;
+    font-size: 16px !important;
 }
 
 .font-size-4-bold {
@@ -170,7 +176,7 @@ a:hover {
 }
 
 html, body {
-    height: 100vh;
+    min-height: 100%;
 }
 
 .loading-page {

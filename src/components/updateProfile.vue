@@ -1,115 +1,150 @@
 <template>
     <section class="update-profile-container">
         <div class="update-profile">
-            <div class="update-profile-header">
-                <h1>Alterar o perfil</h1>
-                <div class="profile-more-options">
-                    <span class="material-icons" v-on:click="showProfileMoreOptions = !showProfileMoreOptions">more_vert</span>
-                    <div class="account-options-container">
-                        <div class="account-options">
-                            <ul>
-                                <li v-on:click="showExcludeAccountModal">Excluir conta</li>
-                            </ul>
-                        </div>
-                    </div>
+            <div class="user-banner" :style="'background-image: url(' + user.user_cover_image + ')'">
+                <div class="change-banner" v-on:click="toggleBannerDetails()">
+                    <span class="material-icons">edit</span>
+                    <span>Capa</span>
+                </div>
+                <div class="banner-details" v-if="showBannerDetails">
+                    <ul>
+                        <li v-if="user.user_cover_image != default_user_cover_image" v-on:click="showBanner">Ver foto</li>
+                        <li v-on:click="removeBanner()" v-if="user.user_cover_image != default_user_cover_image">Excluir foto</li>
+                        <li v-on:click="showSendPhoto(true)">Enviar foto</li>
+                    </ul>
                 </div>
             </div>
             <div class="informations-container">
                 <div class="user-image">
                     <div class="user-image-container">
                         <img :src="user.profile_photo" class="profile-avatar">
+                        <div class="user-level-badge">Nível {{user.user_level}}</div>
+                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="170px" height="170px">
+                            <defs>
+                                <linearGradient id="GradientColor">
+                                    <stop offset="0%" stop-color="#5d7bfd" />
+                                    <stop offset="100%" stop-color="#355afd" />
+                                </linearGradient>
+                            </defs>
+                            <circle id="circle-progress" cx="85" cy="85" r="79" stroke-linecap="round" />
+                        </svg>
                         <div class="change-photo" v-on:click="togglePhotoDetails()" :style="showPhotoDetails ? 'background: var(--gray-high)' : ''">
                             <span class="material-icons">photo_camera</span>
                             <div class="photo-details" v-if="showPhotoDetails">
                                 <ul>
                                     <li v-if="user.profile_photo != default_user_image" v-on:click="showPhoto">Ver foto</li>
                                     <li v-on:click="removePhoto()" v-if="user.profile_photo != default_user_image">Excluir foto</li>
-                                    <li v-on:click="showSendPhoto">Enviar foto</li>
+                                    <li v-on:click="showSendPhoto()">Enviar foto</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="delete-user-confirmation-modal">
-                    <h4 class="font-size-h5">Tem certeza que deseja excluir a sua conta?</h4>
-                    <div class="exclude-account-buttons">
-                        <button id="exclude-account-confirmation-button" class="font-size-3" v-on:click="excludeAccount">Sim, excluir</button>
-                        <button id="skip-exclude-confirmation" class="font-size-3" v-on:click="hideExcludeAccountModal">Não, cancelar</button>
-                    </div>
-                    <div class="exclude-account-warning" v-if="!isDeleting">
-                        <h6 class="font-size-4"><span><strong>ATENÇÃO</strong></span>, essa ação é <span><strong>irreversível</strong></span>!</h6>
-                        <p class="font-size-5">
-                            Ao excluir sua conta, todas as suas informações pessoais são apagadas. <br>
-                            Qualquer dúvida entre em contato pelo nosso email: 
-                        </p>
-                        <a href="mailto:contato.scrumcademint@gmail.com">contato.scrumcademint@gmail.com</a>
-                    </div>
-                    <div class="deleting-message" v-if="isDeleting">
-                        <h6>Apagando usuário...</h6>
-                        <div class="loading"></div>
-                    </div>
-                </div>
-
-                <div class="modal-expanded-photo">
-                    <img :src="user.profile_photo" :alt="'Foto de ' + user.nome">
-                </div>
-
-
-                <div class="overlay" v-on:click="hidePhoto(); hideSendPhoto(); hideExcludeAccountModal();" v-if="showExpandedPhoto || showSendPhotoContainer || showExcludeAccount"></div>
-                <div class="upload">
-                    <div class="send">
-                        <form class="send-photo" method="post" enctype="multipart/form-data" @submit.prevent="uploadPhoto(formData)">
-                            <div class="input-file-custom">
-                                <label for="photo" id="upload-button">
-                                    <span class="material-icons">cloud_upload</span>
-                                    Upload
-                                </label>
-                                <span>JPG, PNG</span>
-                            </div>
-                            <h6 class="file-name" v-if="previewPhoto != ''">{{ fileName }}</h6>
-                            <input type="file" name="photo" id="photo" @change.prevent="preSendPhoto($event)" title="Envie uma foto nos formatos PNG ou JPG">
-                            <button type="submit" id="send-photo-button" class="save-button" v-if="previewPhoto != ''">Enviar foto</button>
-                        </form>
-                    </div>
-                    <div class="response">{{ response }}</div>
-                    <div class="photo-preview" v-if="previewPhoto != ''">
-                        <img class="image-preview" :src="previewPhoto" alt="Pré-visualização da foto">
-                    </div>
-                    <button v-if="previewPhoto != '' && showRemovePhotoButton" v-on:click="cancelPhoto('#photo')" class="remove-photo">Remover foto</button>
-                    <div class="loading" v-if="loading"></div>
-                </div>
-
                 <div class="profile-form-container">
-                    <form @submit.prevent="updateProfile" id="profile-form">
-                        <label for="name-input">Nome</label>
-                        <input type="text" name="nome" id="name-input" v-model="user.nome" v-on:keyup="showSubmit = true">
-                        <button type="submit" v-if="showSubmit">Alterar perfil</button>
-                    </form>
-                    <div class="response">{{ response }}</div>
+                    <div class="user-informations">
+                        <h3 class="font-size-2-bold">{{ user.nome }}</h3>
+                        <div class="user-medals">
+                            <div class="user-medal-container" v-for="(medal, index) in user.user_medals" :key="index">
+                                <img :src="require('../assets/img/medal-' + medal.id + '.svg')" class="user-medal" :title="medal.medal_description">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-occupations">
+                        <div class="occupation" v-for="(occupation, index) in user_occupations" :key="index">
+                            <p class="font-size-5">{{ occupation }}</p>
+                            <div class="exclude-occupation" v-on:click="excludeOccupation(occupation)">
+                                <span class="material-icons">clear</span>
+                            </div>
+                        </div>
+                        <input type="text" class="occupation-input" placeholder="Cargo" v-if="addOccupation" v-on:focusout="sendOccupation()" maxlength="15">
+                        <span class="material-icons add-occupation" v-on:click="showOccupationInput()" :style="user_occupations.length == 0 ? 'opacity: 1 !important' : ''">add_circle</span>
+                    </div>
                 </div>
-            </div>
-            <div class="update-profile-footer">
-                <div class="my-groups-list">
-                    <h1>Meus grupos</h1>
-                    <div class="user-groups-list">
-                        <div class="group" v-for="(group, index) in my_groups" :key="index">
-                            <img :src="group_image">
-                            <h4>{{ group.group_name }}</h4>
+                <hr>
+                <div class="user-achievements">
+                    <p class="font-size-3-bold user-achievements-title">Conquistas</p>
+                    <div class="user-achievements-container">
+                        <div class="achievement" v-for="(achievement, index) in user.user_achievements" :key="index" :title="achievement.achievements_description">
+                            <div class="achievement-icon">
+                                <span class="material-icons">
+                                    {{ findAchievementIcon(achievement.achievements_name) }}
+                                </span>
+                            </div>
+                            <p class="font-size-5"><strong>{{ achievement.achievements_name }}</strong></p>
                         </div>
                     </div>
                 </div>
-                <div class="other-groups-list">
-                    <h1>Grupos que participo</h1>
-                    <div class="user-groups-list">
-                        <div class="group" v-for="(group, index) in groups_i_participate" :key="index">
-                            <img :src="group_image">
+                <hr>
+                <div class="user-biography">
+                    <div class="user-biography-header">
+                        <p class="font-size-3-bold">Biografia</p>
+                        <span class="material-icons" v-on:click="editBio()">edit</span>
+                    </div>
+                    <p class="bio" v-if="!editing_bio">{{ user_bio }}</p>
+                    <p class="bio" v-if="user_bio == '' && !editing_bio"><i>Conte sobre você...</i></p>
+                    <div class="edit-bio" v-if="editing_bio">
+                        <textarea name="user_bio" id="user-bio" rows="7" v-model="user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)"></textarea>
+                        <p class="bio-counter">0 / 500</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="user-groups">
+                    <p class="font-size-3-bold">Meus grupos</p>
+                    <div class="group" v-for="(group, index) in my_groups" :key="index">
+                        <router-link :to="{ name: 'edit-groups', params: { id: group.groups_id } }">
+                        <div class="group">
+                            <img :src="group.image">
                             <h4>{{ group.group_name }}</h4>
+                        </div>
+                    </router-link>
+                    </div>
+                </div>
+                <hr>
+                <div class="user-change-password">
+                    <p class="font-size-3-bold">Segurança</p>
+                    <button type="button" v-if="!reset_password_sent" v-on:click="requestResetPassword()">Esqueci minha senha</button>
+                    <div class="reset-password-in-progress" v-if="reset_password_sent">
+                        <span class="material-icons">check_circle</span>
+                        <p class="font-size-4-bold">{{ password_response }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="exclude-account">
+                    <p class="font-size-3-bold">Encerrar conta</p>
+                    <div class="exclude-account-container">
+                        <p>Excluir sua conta da Cademint</p>
+                        <button type="button" v-on:click="showExcludeAccountModal()">Excluir</button>
+                    </div>
+                    <div class="delete-user-confirmation-modal">
+                        <h4 class="font-size-h5">Tem certeza que deseja excluir a sua conta?</h4>
+                        <div class="exclude-account-buttons">
+                            <button id="exclude-account-confirmation-button" class="font-size-3" v-on:click="excludeAccount">Sim, excluir</button>
+                            <button id="skip-exclude-confirmation" class="font-size-3" v-on:click="hideExcludeAccountModal">Não, cancelar</button>
+                        </div>
+                        <div class="exclude-account-warning" v-if="!isDeleting">
+                            <h6 class="font-size-4"><span><strong>ATENÇÃO</strong></span>, essa ação é <span><strong>irreversível</strong></span>!</h6>
+                            <p class="font-size-5">
+                                Ao excluir sua conta, todas as suas informações pessoais são apagadas. <br>
+                                Qualquer dúvida entre em contato pelo nosso email: 
+                            </p>
+                            <a href="mailto:contato.scrumcademint@gmail.com" class="font-size-6">contato.scrumcademint@gmail.com</a>
+                        </div>
+                        <div class="deleting-message" v-if="isDeleting">
+                            <h6>Apagando usuário...</h6>
+                            <div class="loading"></div>
                         </div>
                     </div>
                 </div>
-                
             </div>
+            
+            <div class="modal-expanded-photo">
+                <img />
+            </div>
+
+            <div class="overlay" v-on:click="hidePhoto(); hideSendPhoto(); hideExcludeAccountModal();" v-if="showExpandedPhoto || showSendPhotoContainer || showExcludeAccount"></div>
+            <div class="wrapper" v-on:click="hideBannerDetails(); hidePhotoDetails();" v-if="showPhotoDetails || showBannerDetails"></div>
+            
+            <uploadModal group=""></uploadModal>
         </div>
     </section>
 </template>
@@ -117,6 +152,7 @@
 import { globalMethods } from '../js/globalMethods';
 import api from '../configs/api.js';
 import $ from 'jquery';
+import uploadModal from './uploadImageModal.vue';
 
 export default {
     name: "updateProfile",
@@ -124,29 +160,34 @@ export default {
     data() {
         return {
             user: {},
-            group_image: api.defaults.baseURL + "/public/cademint-group.png",
-            default_user_image: api.defaults.baseURL + "/public/default-user-image.png",
+            user_occupations: [],
             showSubmit: false,
             response: "",
             showPhotoDetails: false,
+            showBannerDetails: false,
             showExpandedPhoto: false,
             showSendPhotoContainer: false,
-            previewPhoto: "",
-            fileName: "",
-            formData: null,
             loading: false,
-            showRemovePhotoButton: true,
             my_groups: {},
-            groups_i_participate: {},
             showProfileMoreOptions: false,
             showExcludeAccount: false,
-            isDeleting: false
+            isDeleting: false,
+            addOccupation: false,
+            editing_bio: false,
+            user_bio: "",
+            password_response: "",
+            reset_password_sent: false
         }
     },
     watch: {
         user: function () {
             this.my_groups = this.getMyGroups();
-            this.groups_i_participate = this.getGroupsIParticipate();
+            this.user_occupations = this.getUserOccupations(this.user.user_occupation);
+            this.setLevelProgress();
+            this.user_bio = this.user.user_bio;
+            setTimeout(() => {
+                this.requireUser();
+            }, 10 * 60 * 1000); //Chamada recursiva do requireUser após 10 minutos
         },
         showProfileMoreOptions: function () {
             let self = this;
@@ -164,6 +205,207 @@ export default {
         }
     },
     methods: {
+        requestResetPassword: function () {
+            let self = this;
+
+            let data = {
+                email: self.user.email
+            }
+
+            api.post("/usuarios/forgot_password", data)
+            .then(function (response) {
+                self.password_response = response.data.message;
+                self.reset_password_sent = true;
+            })
+        },
+        countCharacters: function () {
+            let counter = $(".bio-counter");
+            let input = $("#user-bio");
+            counter.html(input.val().length + " / 500");
+        },
+        saveBio: function (event) {
+            let self = this;
+            let jwt = "Bearer " + self.getJwtFromLocalStorage();
+            let value = event.target.value;
+
+            if (value.length > 500 || value.length < 3 || value == "") {
+                self.closeBio();
+                return;
+            }
+            
+            let data = {
+                user_bio: event.target.value
+            }
+
+            api.patch("/usuarios/change_bio", data, {
+                headers: {
+                    Authorization: jwt
+                }
+            })
+            .then(function () {
+                self.closeBio();
+                self.user_bio = value;
+                self.requireUser();
+            })
+        },
+        editBio: function () {
+            this.editing_bio = true;
+            setTimeout(() => {
+                $("#user-bio").focus();
+                this.countCharacters();
+            }, 10);
+        },
+        closeBio: function () {
+            this.editing_bio = false;
+            this.user_bio = this.user.user_bio;
+        },
+        excludeOccupation: function (occupation) {
+            let self = this;
+            let new_ocupations;
+            let jwt = "Bearer " + self.getJwtFromLocalStorage();
+
+            self.user_occupations.splice(self.user_occupations.indexOf(occupation), 1);
+            new_ocupations = self.user_occupations.join(",");
+            if (self.user_occupations.length == 1) {
+                new_ocupations = self.user_occupations.join();
+            }
+            if (self.user_occupations.length == 0) {
+                new_ocupations = "";
+            }
+            let data = {
+                user_occupation: new_ocupations
+            }
+            api.patch('/usuarios/exclude_occupation', data, {
+                headers: {
+                    Authorization: jwt
+                }
+            })
+            .then(function () {
+                self.getUserOccupations(self.user_occupations);
+            })
+        },
+        sendOccupation: function () {
+            let value = $(".occupation-input").val();
+            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
+            let data = {
+                user_occupation: value
+            }
+            if (value == "" || value.length < 3) {
+                this.addOccupation = false;
+                return;
+            }
+            api.patch("/usuarios/add_occupation", data, { 
+                headers: {
+                    Authorization: jwt
+                }
+            })
+            .then(function () { 
+                self.returnUserOccupations();
+                self.addOccupation = false;
+            })
+            .catch(function (error) {
+                console.log(error.response.data.error)
+                self.addOccupation = false;
+            })
+        },
+        returnUserOccupations: function () {
+            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
+
+            api.get("/usuarios/return_users_occupations", { 
+                headers: {
+                    Authorization: jwt
+                }
+            })
+            .then(function (response) {
+                self.user_occupations = self.getUserOccupations(response.data.user_occupations);
+            })
+        },
+        showOccupationInput: function () {
+            this.addOccupation = true;
+            setTimeout(() => {
+                $(".occupation-input").focus();
+            }, 10);
+        },
+        hidePhotoDetails: function () {
+            this.showPhotoDetails = false;
+        },
+        hideBannerDetails: function () {
+            this.showBannerDetails = false;
+        },
+        findAchievementIcon: function (achievement_name) {
+            let iconClass;
+            switch (achievement_name) {
+                case 'Novo usuário':
+                    iconClass = "person";
+                    break;
+                case 'Verificado':
+                    iconClass = "verified_user";
+                    break;
+                case 'Perfil completo':
+                    iconClass = "how_to_reg";
+                    break;
+                case 'Início de carreira':
+                    iconClass = "rocket_launch";
+                    break;
+                case 'Atarefado':
+                    iconClass = "checklist";
+                    break;
+                case 'Muito atarefado':
+                    iconClass = "pending_actions";
+                    break;
+                case 'Chefinho':
+                    iconClass = "man";
+                    break;
+                case 'Manda chuva':
+                    iconClass = "record_voice_over";
+                    break;
+                case 'Usuário frequente':
+                    iconClass = "event_available";
+                    break;
+                case 'Antisocial':
+                    iconClass = "person_off";
+                    break;
+                case 'Sociável':
+                    iconClass = "people";
+                    break;
+                case 'Viciado':
+                    iconClass = "vaccines";
+                    break;
+                case 'Sem vida social':
+                    iconClass = "social_distance";
+                    break;
+                case 'Hacker':
+                    iconClass = "code";
+                    break;
+                case 'Soberano':
+                    iconClass = "attach_money";
+                    break;
+                case 'Dono da Cademint':
+                    iconClass = "copyright";
+                    break;
+                case 'Magnata':
+                    iconClass = "insights";
+                    break;
+            }
+            return iconClass;
+        },
+        getUserOccupations: function (user_occupation) {
+            let occupation = user_occupation;
+            if (user_occupation.indexOf(",") != -1) {
+                occupation = user_occupation.split(",");
+            } else {
+                occupation = [user_occupation];
+            }
+            if (occupation == "") {
+                occupation = [];
+            }
+            return occupation;
+        },
+        setLevelProgress: function () {
+            let progress = this.user.level_progress;
+            let circleElement = $("#circle-progress");
+            circleElement.css("stroke-dashoffset", 495 - (495 * parseInt(progress) / 100));
+        },
         getMyGroups: function () {
             let self = this, groups = self.user.user_groups, my_groups = [];
             for (let i = 0; i < groups.length; i++) {
@@ -173,75 +415,10 @@ export default {
             }
             return my_groups;
         },
-        getGroupsIParticipate: function () {
-            let self = this, groups = self.user.user_groups, groups_i_participate = [];
-            for (let i = 0; i < groups.length; i++) {
-                if (groups[i].group_owner != self.user.id_usuario) {
-                    groups_i_participate.push(groups[i]);
-                }
-            }
-            return groups_i_participate;
-        },
-        cancelPhoto: function (id) {
-            $(id).val("");
-            this.previewPhoto = "";
-        },
-        preSendPhoto: function (event) {
-            let filePath = $("#photo").val(); // Busca o nome o nome do arquivo e o exibe.
-            let fileSplited = filePath.split('\\');
-            let fileName = fileSplited[fileSplited.length - 1];
-            let file = event.target.files.item(0);
-            let self = this;
-
-            self.formData = new FormData;
-            self.previewPhoto = "";
-            self.response = "";
-            self.fileName = fileName;
-
-            if (file.type === "image/jpeg" || file.type === "image/jpg" || file.type === "image/png") { // Se o arquivo tiver um desses formatos (PNG, JPG E JPEG), a imagem é exibida no modal e é permitida a requisição para o servidor, se não aparece a mensagem (arquivo não suportado).
-                let adress = new FileReader();
-
-                self.formData.set("user_imagem", file);
-                adress.readAsDataURL(file);
-                adress.onloadend = () => {
-                    self.previewPhoto = adress.result;
-                };
-            } else {
-                self.previewPhoto = "";
-                self.response = "Tipo de arquivo não suportado";
-            }
-        },
-        uploadPhoto: function (formData) {
+        removeBanner: function (from_upload = false) {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
 
-            self.response = "";
-            self.loading = true;
-            self.showRemovePhotoButton = false;
-            self.removePhoto(true);
-
-            api.patch("/usuarios/upload_photo", formData, { 
-                headers: {
-                    Authorization: jwt
-                }
-            })
-            .then(function () { 
-                self.hideSendPhoto();
-                self.previewPhoto = "";
-                location.reload();
-            })
-            .catch(function (error) {
-                self.loading = false;
-                $(".response").addClass("error");
-                self.response = error.response.data.error;
-            })
-            .then(function () {
-                self.loading = false;
-            })
-        },
-        removePhoto: function (from_upload = false) {
-            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
-
-            api.patch("/usuarios/exclude_photo", "", {
+            api.patch("/usuarios/exclude_banner", "", {
                 headers: {
                         Authorization: jwt
                     }
@@ -253,9 +430,12 @@ export default {
                 }
             })
         },
-        showSendPhoto: function () {
+        showSendPhoto: function (banner = false) {
             let modal = $(".upload");
             modal.show();
+            if (banner) {
+                modal.attr("data_target", "banner");
+            }
             this.showSendPhotoContainer = true;
             setTimeout(() => {
                 modal.css("opacity", 1).css("transform", "translateY(0)");
@@ -271,7 +451,19 @@ export default {
         },
         showPhoto: function () {
             let modal = $(".modal-expanded-photo");
+            let img = $(".modal-expanded-photo img");
             modal.show();
+            img.attr("src", this.user.profile_photo).attr("title", "Foto de " + this.user.nome);
+            this.showExpandedPhoto = true;
+            setTimeout(() => {
+                modal.css("opacity", 1).css("transform", "translateY(0)");
+            }, 10);
+        },
+        showBanner: function () {
+            let modal = $(".modal-expanded-photo");
+            let img = $(".modal-expanded-photo img");
+            modal.show();
+            img.attr("src", this.user.user_cover_image).attr("title", "Banner de " + this.user.nome);
             this.showExpandedPhoto = true;
             setTimeout(() => {
                 modal.css("opacity", 1).css("transform", "translateY(0)");
@@ -283,6 +475,7 @@ export default {
             setTimeout(() => {
                 modal.hide();
                 this.showExpandedPhoto = false;
+                this.showBannerDetails = false;
             }, 400);
         },
         hideExcludeAccountModal: function () {
@@ -322,8 +515,10 @@ export default {
             })
         },
         togglePhotoDetails: function () {
-            let self = this;
-            self.showPhotoDetails = !self.showPhotoDetails;
+            this.showPhotoDetails = !this.showPhotoDetails;
+        },
+        toggleBannerDetails: function () {
+            this.showBannerDetails = !this.showBannerDetails;
         },
         updateProfile: function () {
             let self = this, empty = 0, data = $("#profile-form").serializeArray().reduce(function (obj, item) { // Pega todos os dados do formulário e coloca em um objeto.
@@ -366,12 +561,24 @@ export default {
             })
         }
     },
+    components: {
+        uploadModal
+    },
     mounted() {
         this.requireUser();
     }
 }
 </script>
 <style scoped>
+.wrapper {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+
 .delete-user-confirmation-modal {
     position: fixed;
     top: 0;
@@ -379,11 +586,8 @@ export default {
     left: 0;
     right: 0;
     margin: auto;
-    max-width: 800px;
-    max-height: 500px;
-    min-height: 380px;
-    width: 95vw;
-    height: 40vh;
+    width: fit-content;
+    height: fit-content;
     background: var(--white);
     box-shadow: 0 0 5px rgba(0,0,0,0.3);
     border-radius: 10px;
@@ -398,10 +602,6 @@ export default {
     z-index: 9999;
     text-align: center;
 }
-
-    .delete-user-confirmation-modal h4 {
-        margin: 1rem 0;
-    }
 
 .exclude-account-buttons {
     margin: .7rem 0;
@@ -457,9 +657,6 @@ export default {
 
 .update-profile-container {
    width: 100%;
-   height: calc(100vh - 66px); 
-   position: absolute;
-   bottom: 0;
    display: flex;
    justify-content: center;
 }
@@ -497,27 +694,17 @@ export default {
 .update-profile {
     background: white;
     border-radius: 10px;
-    width: 60vw;
-    height: 80vh;
-    max-height: 800px;
+    width: 70vw;
+    min-width: 200px;
     max-width: 1000px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    padding: 25px;
-    margin: 2rem 0;
+    box-shadow: 0 0 0 2px var(--gray-soft);
     position: relative;
-}
-
-@media (max-width: 1040px) {
-    .update-profile {
-        width: 70vw;
-    }
+    margin: 70px 0 20px 0;
 }
 
 @media (max-width: 720px) {
     .update-profile {
         width: 90%;
-        padding: 1rem 2rem;
-        margin-top: 15vh;
     }
     .modal-expanded-photo {
         width: 95vw;
@@ -581,68 +768,36 @@ export default {
             background: var(--gray-high);
         }
 
-.update-profile-header h1 {
-    font-size: 1.8rem;
-}
-
 .profile-avatar {
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
-    box-shadow: 0 0 0 7px var(--blue);
+    box-shadow: 0 0 0 7px var(--gray-soft);
 }
 
 .informations-container {
     margin-top: 3rem;
-    display: grid;
-    grid-template-columns: 50% 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: -90px;
+    padding: 0 2rem;
 }
 
-.informations-container div:nth-child(1) {
+    .informations-container hr {
+        width: 100%;
+    }
+
+.informations-container > div:nth-child(1) {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 1rem;
-}
-
-.update-profile-footer {
-    display: grid;
-    grid-template-columns: 50% 50%;
-    height: 250px;
-    overflow: hidden;
-    margin-top: 2rem;
-}
-
-.update-profile-footer .other-groups-list, .update-profile-footer .my-groups-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-@media (max-width: 792px) {
-    .update-profile-footer {
-        display: block;
-        height: auto;
-    }
-    .my-groups-list {
-        margin-bottom: 2rem;
-    }
-    .update-profile {
-        height: auto;
-    }
-    .user-groups-list {
-        max-height: 150px;
-    }
+    margin-bottom: 2rem;
 }
 
 @media (max-width: 580px) {
-    .profile-avatar {
-        width: 150px;
-        height: 150px;
-    }
 
     .informations-container {
-        margin-top: 2rem;
         display: flex;
         flex-direction: column;
     }
@@ -651,7 +806,6 @@ export default {
         flex-direction: column !important;
         align-items: center;
         width: 80%;
-        margin: auto;
     }
 
         .profile-form-container form {
@@ -662,39 +816,18 @@ export default {
         font-size: 1.3rem;
     }
 
-    .update-profile-header h1, .update-profile-footer h1 {
-        font-size: 1.4rem;
-    }
-
     .profile-form-container form input, .profile-form-container form button {
         height: 35px !important;
         font-size: 1rem !important;
-    }
-
-    .update-profile-footer {
-        margin-top: 1rem !important;
     }
 
     .group {
         margin: .7rem 0;
     }
 
-    .update-profile {
-        height: 720px;
-    }
-
     .update-profile-container {
         overflow-y: scroll;
     }
-}
-
-.response {
-    font-size: 1rem;
-}
-
-.profile-form-container label {
-    font-size: 1.2rem;
-    font-weight: 600;
 }
 
 .profile-form-container form {
@@ -727,20 +860,13 @@ export default {
         background: var(--blue-low);
     }
 
-.other-groups-list, .my-groups-list {
+.other-groups-list {
     height: 100%;
     overflow-y: scroll;
 }
 
-.user-groups-list {
-    margin-top: 1rem;
-    padding-left: 1rem;
-    overflow-y: scroll;
-    width: 100%;
-}
-
 .group {
-    margin: 1rem 0;
+    margin: .5rem 0;
     display: flex;
     align-items: center;
 }
@@ -751,21 +877,51 @@ export default {
         border-radius: 50%;
         box-shadow: 0 0 0 4px var(--blue);
         margin-right: 2rem;
+        object-fit: cover;
     }
 
 .user-image-container {
     position: relative;
+    background: var(--gray-high);
+    border-radius: 50%;
 }
 
 .photo-details {
+    bottom: 0;
+    right: -120px;
+}
+
+.photo-details, .banner-details {
     background: var(--white);
     border-radius: 10px;
     padding: .4rem;
     box-shadow: 0 0 15px rgba(0,0,0,0.3);
     position: absolute;
-    bottom: 0;
-    right: -120px;
+    z-index: 3;
 }
+
+.banner-details {
+    right: 20px;
+    top: 70px;
+}
+
+.photo-details ul, .banner-details ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+        .photo-details ul li, .banner-details ul li {
+            padding: .5rem;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+        }
+
+            .photo-details ul li:hover, .banner-details ul li:hover {
+                background: var(--gray-high);
+            }
 
 @media (max-width: 470px) {
     .photo-details {
@@ -774,23 +930,6 @@ export default {
         width: 300%;
     }
 }
-
-    .photo-details ul {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-        .photo-details ul li {
-            padding: .5rem;
-            width: 100%;
-            text-align: center;
-        }
-
-            .photo-details ul li:hover {
-                background: var(--gray-high);
-            }
 
 .change-photo {
     background: var(--white);
@@ -803,180 +942,321 @@ export default {
     cursor: pointer;
     position: absolute;
     box-shadow: 0 0 15px rgba(0,0,0,0.3);
-    bottom: 0;
-    right: 0;
+    bottom: 10px;
+    right: -10px;
 }
 
     .change-photo:hover {
         background: var(--gray-high);
     }
 
-.upload {
-    background: white;
-    border-radius: 20px;
-    margin: auto;
-    width: 100vw;
-    height: 80vh;
-    max-width: 50rem;
-    max-height: 50rem;
-    min-width: 200px;
-    min-height: 500px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    z-index: 9999;
-    transition: all 0.4s;
-    transform: translateY(-100px);
-    opacity: 0;
-    display: none;
-    padding: 1.5rem;
+
+
+/* NOVO VISUAL DO PERFIL */
+.user-banner {
+    height: 200px;
+    width: 100%;
+    border-radius: 10px 10px 0 0;
+    background: var(--gray-high);
+    overflow: hidden;
+    position: relative;
+    background-size: cover;
 }
 
-@media (max-width: 1128px) {
-    .upload {
-        width: 90vw;
-        height: 70vw;
-    }
-}
-
-@media (max-width: 472px) {
-    #send-photo-button {
-        margin-top: 0.5rem;
-    }
-}
-
-@media (max-width: 458px) {
-    .upload {
-        width: 90vw;
-        min-height: 450px;
-    }
-}
-
-.send {
-    display: flex;
-    justify-content: center;
-}
-
-.send-photo {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: center;
-}
-
-.remove-photo {
-    background: var(--red);
-    color: var(--white);
-    padding: 6px 15px;
-    border-radius: 10px;
-    border: none;
+.user-level-badge {
     position: absolute;
-    bottom: 2rem;
     left: 0;
     right: 0;
+    z-index: 2;
+    bottom: -15px;
     margin: auto;
-    width: 7rem;
-    cursor: pointer;
-    transition: all 0.4s;
+    width: fit-content;
+    background-image: linear-gradient(to right, var(--blue), var(--blue-low));
+    color: var(--white);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
 }
 
-    .remove-photo:hover {
-        background: var(--red-low);
-    }
-
-.input-file-custom {
-    margin: 0 1rem;
-    display: block !important;
+circle {
+    fill: none;
+    stroke: url(#GradientColor);
+    stroke-width: 6px;
+    stroke-dasharray: 495;
+    stroke-dashoffset: 495;
+    transition: stroke-dashoffset 0.08s;
+    transition-timing-function: ease-in-out;
 }
 
-    .input-file-custom > span {
-        display: block;
-        margin-top: .7rem;
-        text-align: center;
-    }
-
-@media (max-width: 550px) {
-    #send-photo-button {
-        height: 25px;
-        font-size: .8rem;
-        padding: 0 10px;
-    }
-
-    .input-file-custom, .file-name {
-        font-size: .8rem;
-    }
+svg {
+    position: absolute;
+    left: -10px;
+    top: -10px;
+    transform: rotate(-90deg);
 }
 
-.save-button, #upload-button {
-    height: 30px;
-}
-
-#upload-button {
-    background: #00A2E8;
-    color: white;
-    border-radius: 5px;
-    padding: 6.5px 20px;
-    cursor: pointer;
+.change-banner {
     display: flex;
     align-items: center;
+    width: fit-content;
+    padding: 10px 20px;
+    border-radius: 10px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    color: var(--blue);
+    transition: all 0.2s;
+    background: var(--white);
 }
 
-    #upload-button:hover {
-        background: #0090ce;
+    .change-banner:hover {
+        background: var(--gray-soft);
     }
 
-    #upload-button > span {
+    .change-banner span:first-child {
         margin-right: 10px;
     }
 
-.file-name {
-    margin: 0 1rem .5rem;
-    height: 34px;
+    .change-banner span:not(:first-child) {
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+.user-occupations {
+    display: flex;
     align-items: center;
-    max-width: 15ch;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+}
+
+    .user-occupations .occupation {
+        background: var(--gray-soft);
+        padding: 5px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        margin: 3px 10px 3px 0;
+    }
+
+.exclude-occupation {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: fit-content;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(1px);
+    padding: 0 5px;
+    /*display: flex;*/
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+}
+
+    .exclude-occupation span {
+        font-size: 20px;
+    }
+
+.occupation:hover .exclude-occupation {
+    display: flex;
+}
+
+.user-achievements {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.user-biography {
+    margin: 10px 0;
+    width: 100%;
+}
+
+    .user-biography .bio {
+        color: var(--gray-low);
+    }
+
+.user-biography-header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+    .user-biography-header span {
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 50%;
+        transition: all 0.4s;
+    }
+
+        .user-biography-header span:hover {
+            cursor: pointer;
+            background: var(--gray-soft);
+        }
+
+.user-change-password {
+    margin: 1rem 0;
+}
+
+    .user-change-password button {
+        margin-top: 1rem;
+        background: var(--blue);
+        color: var(--white);
+    }
+
+        .user-change-password button:hover {
+            background: var(--blue-low);
+        }
+
+.reset-password-in-progress {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+    .reset-password-in-progress span {
+        font-size: 50px;
+        color: var(--green);
+        margin-right: 1rem;
+    }
+
+.exclude-account-container button, .user-change-password button {
+    padding: 7px 15px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s;
+}
+
+.exclude-account-container {
     display: flex;
     align-items: center;
 }
 
-.photo-preview {
+    .exclude-account-container button {
+        display: flex;
+        align-items: center;
+        background: var(--red);
+        color: var(--white);
+    }
+
+        .exclude-account-container button:hover {
+            background: var(--red-low);
+        }
+
+    .exclude-account-container p {
+        margin-right: 1rem;
+    }
+
+.exclude-account {
+    margin-bottom: 2rem;
+}
+
+#user-bio {
+    resize: none;
+    width: 100%;
+    color: var(--black);
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 16px;
+    border: 1px solid var(--gray-low);
+}
+
+.user-groups {
+    margin: 10px 0;
+}
+
+.achievement {
+    width: 120px;
+    height: 150px;
+    background: var(--gray-soft);
+    border-radius: 6px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    margin-right: 10px;
+}
+
+.user-achievements-title {
+    margin-bottom: 10px;
+}
+
+.user-achievements-container {
+    display: flex;
+    align-items: center;
+}
+
+.user-informations {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+}
+
+.user-medals {
+    margin-left: 2rem;
+    width: 120px;
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-medal-container {
+    height: 100%;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-medal {
+    width: 30px;
+    cursor: pointer;
+    transition: all 0.4s;
+}
+
+    .user-medal:hover {
+        width: 35px;
+        cursor: pointer;
+    }
+
+.achievement-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--gray-high);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 1rem;
-    height: calc(100% - 130px);
-    overflow: hidden;
 }
 
-.image-preview {
-    width: 100%;
-    border: 1px solid var(--gray-high);
-    border-radius: 10px;
-}
-
-.save-button {
-    padding: 5px 15px;
-    margin-top: -6px;
-    text-align: center;
-    background: #56b335;
-    color: white;
-    text-transform: uppercase;
-    font-weight: 500;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-    .save-button:hover {
-        background: #4d9e2f;
+    .achievement-icon span {
+        font-size: 45px;
     }
 
-.update-profile input[type='file'] {
-    display: none;
+.add-occupation {
+    margin: 0 10px;
+    font-size: 30px;
+    cursor: pointer;
+    transition:all 0.4s;
+    opacity: 0;
+    color: var(--gray-low);
+}
+
+    .add-occupation:hover {
+        opacity: 1;
+    }
+
+.occupation-input {
+    height: 27px;
+    border-radius: 6px;
+    border: 1px solid var(--gray-low);
+    padding: 10px;
 }
 </style>

@@ -33,12 +33,12 @@ export const globalMethods = {
         checkIfUserIsAuthenticated: function (from_login = false) { // Função testará se usuário está logado para permitir sua entrada na página.
             let self = this, pathName = window.location.href, jwt = "Bearer " + self.getJwtFromLocalStorage();
             if (jwt == "Bearer null") {
-                if (pathName.indexOf("/login") == -1 && pathName.indexOf("/register") == -1 && pathName.indexOf("/enter-group") == -1 && pathName.indexOf("/maintenance") == -1) { // Se o usuário não estiver na página de login ou register, ele é redirecionado.
+                if (pathName.indexOf("/login") == -1 && pathName.indexOf("/register") == -1 && pathName.indexOf("/reset-password") == -1 && pathName.indexOf("/enter-group") == -1 && pathName.indexOf("/maintenance") == -1) { // Se o usuário não estiver na página de login ou register, ele é redirecionado.
                     self.$router.push("/login");
                     return;
                 }
 
-                if (pathName.indexOf("/login") != -1 || pathName.indexOf("/register") != -1) {
+                if (pathName.indexOf("/login") != -1 || pathName.indexOf("/register") != -1 || pathName.indexOf("/reset-password") != -1) {
                     return;
                 }
             }
@@ -118,12 +118,52 @@ export const globalMethods = {
         requireUser: async function() { // Função retorna o usuário pelo id.
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
             self.user = await api.get("/usuarios/return_user", { headers: { Authorization: jwt } }).then(res => res.data.response);
+        },
+        requireGroup: async function(group_id) { // Função retorna o usuário pelo id.
+            let self = this;
+            let data = {
+                group_id: group_id
+            }
+            self.group = await api.post("/projects/return_group", data).then(res => res.data.response);
+        },
+        removePhoto: function (from_upload = false, banner = false, group = false, group_id = null) {
+            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
+            let target = "exclude_photo";
+            let path = "/usuarios/";
+            let data = "";
+
+            if (banner) {
+                target = "exclude_banner";
+            }
+
+            if (group) {
+                target = "exclude_group_image";
+                path = "/projects/";
+                data = {
+                    group_id: group_id
+                }
+            }
+            
+            api.patch(path + target, data, {
+                headers: {
+                        Authorization: jwt
+                    }
+            })
+            .then(function(response){
+                if (!from_upload) {
+                    location.reload();
+                    self.response = response.data.response.action;
+                }
+            })
         }
     },
     data() {
         return {
             in_drag: false,
-            system_url: "" // Url da aplicação WEB
+            system_url: "", // Url da aplicação WEB
+            default_user_image: api.defaults.baseURL + "/public/default-user-image.png",
+            default_user_cover_image: api.defaults.baseURL + "/public/default-banner-image.png",
+            group_default_image: api.defaults.baseURL + "/public/cademint-group.png",
         }
     }
 }

@@ -29,4 +29,4 @@ const api = axios.create({
     baseURL: url_api
 });
 
-export default api
+export default api;

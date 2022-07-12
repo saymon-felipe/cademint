@@ -8,10 +8,15 @@ import indexPage from '../pages/indexPage.vue';
 import kanban from "../components/kanban.vue";
 import notAllowed from '../pages/notAllowedPage.vue';
 import notFound from '../pages/notFoundPage.vue';
+import resetPasswordPage from "../pages/resetPasswordPage.vue";
 import enterGroupInvitation from '../components/enterGroupInvitation.vue';
 import registerPage from "../pages/registerPage.vue";
 import updateProfile from '../components/updateProfile.vue';
 import maintenancePage from '../pages/maintenancePage.vue';
+import editGroups from "../components/editGroups.vue";
+import helpPage from "../pages/helpPage.vue";
+import privacyPolicyPage from '../pages/privacyPolicyPage.vue';
+import termsOfUsePage from '../pages/termsOfUsePage.vue';
 
 const routes = [
     {
@@ -72,6 +77,14 @@ const routes = [
                 meta: {
                     title: "Meu perfil - Cademint"
                 }
+            },
+            {
+                name: 'edit-groups',
+                path: "edit-groups/:id",
+                component: editGroups,
+                meta: {
+                    title: "Editar grupo - Cademint"
+                }
             }
         ]
     },
@@ -87,6 +100,34 @@ const routes = [
         component: maintenancePage,
         meta: {
             title: "Em manutenção - Cademint"
+        }
+    },
+    {
+        path: "/reset-password:reset_token?",
+        component: resetPasswordPage,
+        meta: {
+            title: "Redefinição de senha - Cademint"
+        }
+    },
+    {
+        path: "/help",
+        component: helpPage,
+        meta: {
+            title: "Ajuda - Cademint"
+        }
+    },
+    {
+        path: "/privacy-policy",
+        component: privacyPolicyPage,
+        meta: {
+            title: "Política de privacidade - Cademint"
+        }
+    },
+    {
+        path: "/terms-of-use",
+        component: termsOfUsePage,
+        meta: {
+            title: "Termos de uso - Cademint"
         }
     },
     {

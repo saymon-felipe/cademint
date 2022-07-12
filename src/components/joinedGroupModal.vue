@@ -58,7 +58,7 @@ export default {
     justify-content: center;
     flex-direction: column;
     text-align: center;
-    z-index: 5;
+    z-index: 9999;
     background: var(--white);
     border-radius: 10px;
     transition: transform 0.4s;

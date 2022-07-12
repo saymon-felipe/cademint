@@ -67,91 +67,6 @@
             </div>
             <editTaskModal class="edit-task-container" v-if="show_edit_task" :task="edit_task" :group="project" @closeEditTaskModal="closeEditTask('.edit-task-container', $event)" />
             <div class="edit-task-wrapper" v-if="show_edit_task" v-on:click="closeEditTask('.edit-task-container')"></div>
-            <!--<div class="kanban-title-container">
-                <div class="kanban-title">
-                    <h5>A fazer</h5>
-                    <div class="new-os-container">
-                        <router-link to="/home/new/todo" class="new-os">
-                            
-                            <h6>Novo</h6>
-                        </router-link>
-                    </div>
-                </div>
-                <div class="kanban-title">
-                    <h5>Fazendo</h5>
-                    <div class="new-os-container">
-                        <router-link to="/home/new/doing" class="new-os">
-                            <span class="material-icons md-24">add_circle</span>
-                            <h6>Novo</h6>
-                        </router-link>
-                    </div>
-                </div>
-                <div class="kanban-title">
-                    <h5>Teste</h5>
-                </div>
-                <div class="kanban-title">
-                    <h5>Concluído</h5>
-                </div>
-            </div>
-            <div class="responsive-kanban-column kanban-column">
-                <div class="responsive-kanban col-scrum" id="col-to-do">
-                    <div class="kanban-title-responsive">
-                        <h5>A fazer</h5>
-                        <router-link to="/home/new/todo" class="new-os">
-                            <span class="material-icons md-24">add_circle</span>
-                            <h6>Novo</h6>
-                        </router-link>
-                    </div>
-                    <div class="os-list-container">
-                        <Container group-name="kanban" class="os-list with-new" @drag-start="handleDragStart('todo', $event)" @drop="handleDrop('todo', $event)" :get-child-payload="getChildPayload" :should-accept-drop="verifyAllowDrop">
-                            <Draggable v-for="task in todoList" :key="task.id_os" class="draggable-card">
-                                <card :task="task" />
-                            </Draggable>
-                        </Container>
-                    </div>
-                    
-                </div>
-                <div class="responsive-kanban col-scrum" id="col-doing">
-                    <div class="kanban-title-responsive">
-                        <h5>Fazendo</h5>
-                    </div>
-                    <router-link to="/home/new/doing" class="new-os">
-                        <span class="material-icons">add_circle</span>
-                        <h6>Novo</h6>
-                    </router-link>
-                    <div class="os-list-container">
-                        <Container group-name="kanban" class="os-list with-new" @drag-start="handleDragStart('doing', $event)" @drop="handleDrop('doing', $event)" :get-child-payload="getChildPayload" :should-accept-drop="verifyAllowDrop">
-                            <Draggable v-for="task in doingList" :key="task.id_os" class="draggable-card">
-                                <card :task="task" />
-                            </Draggable>
-                        </Container>
-                    </div>
-                </div>
-                <div class="responsive-kanban col-scrum" id="col-test">
-                    <div class="kanban-title-responsive">
-                        <h5>Teste</h5>
-                    </div>
-                    <div class="os-list-container">
-                        <Container group-name="kanban" class="os-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('test', $event)" @drop="handleDrop('test', $event)" :get-child-payload="getChildPayload" :should-accept-drop="verifyAllowDrop">
-                            <Draggable v-for="task in testList" :key="task.id_os" class="draggable-card">
-                                <card :task="task" />
-                            </Draggable>
-                        </Container>
-                    </div>
-                </div>
-                <div class="responsive-kanban col-scrum" id="col-done">
-                    <div class="kanban-title-responsive">
-                        <h5>Concluído</h5>
-                    </div>
-                    <div class="os-list-container">
-                        <Container group-name="kanban" class="os-list" @drag-start="handleDragStart('done', $event)" @drop="handleDrop('done', $event)" :get-child-payload="getChildPayload" :should-accept-drop="verifyAllowDrop">
-                            <Draggable v-for="task in doneList" :key="task.id_os" class="draggable-card">
-                                <card :task="task" />
-                            </Draggable>
-                        </Container>
-                    </div>
-                </div>
-            </div>-->
         </div>
     </section>
 </template>
@@ -360,6 +275,11 @@ export default {
         checkIfProjectChanged: function () {
             setInterval(() => {
                 let project = this.getCurrentProjectInSessionStorage();
+                let jwt = this.getJwtFromLocalStorage();
+                if (jwt == "" || jwt == undefined || jwt == null) {
+                    clearInterval();
+                    return;
+                }
                 if (this.current_project.group_id != project.group_id) {
                     this.getAllOs(true);
                     this.current_project.group_id = project.group_id;
