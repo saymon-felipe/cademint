@@ -61,7 +61,6 @@
                 </div>
             </div>
         </div>
-        <editGroupsModal :show_modal="show_modal" :user="user" @close-modal="show_modal = false" />
         <div class="responsive-choose-project-modal">
             <div class="responsive-projects-list">
                 <span v-for="(group, index) in user.user_groups" :key="index" :id="'project-' + group.groups_id" class="responsive-project" v-on:click="changeProject(false, group.groups_id, group.group_name, true)">{{ group.group_name }}</span>
@@ -74,7 +73,6 @@
 <script>
 import $ from 'jquery';
 import { globalMethods } from '../js/globalMethods';
-import editGroupsModal from './editGroupsModal.vue';
 import newGroupModal from './newGroupModal.vue';
 
 export default {
@@ -169,6 +167,21 @@ export default {
                 this.closeResponsiveChangeProject();
             }
         },
+        checkIfProjectChanged: function () {
+            setInterval(() => {
+                let project = this.getCurrentProjectInSessionStorage();
+                let jwt = this.getJwtFromLocalStorage();
+                if (jwt == "" || jwt == undefined || jwt == null) {
+                    clearInterval();
+                    return;
+                }
+                if (this.project_value != project.group_id) {
+                    this.project_name = project.group_name;
+                    this.project_value = project.group_id;
+                    this.requireUser();
+                }
+            }, 1000);
+        },
         findProjectOption: function () {
             let project = this.getCurrentProjectInSessionStorage();
             if (project == null || project == 'undefined') {
@@ -221,11 +234,11 @@ export default {
         setTimeout(() => {
             if (window.location.href.indexOf("/home") != -1) {
                 this.requireUser();
+                this.checkIfProjectChanged();
             }
         }, 200);
     },
     components: {
-        editGroupsModal,
         newGroupModal
     }
 }

@@ -6,7 +6,12 @@
                 <span class="material-icons">delete</span>
                 <p class="font-size-4">Excluir grupo</p>
             </div>
+            <div class="leave-group" v-on:click="leaveGroupModal(group.group_id)" v-if="user.user_groups.length > 1 && group.group_owner != user.id_usuario">
+                <span class="material-icons">delete</span>
+                <p class="font-size-4">Sair do grupo</p>
+            </div>
             <excludeGroupModal :group="group" :exclude="exclude_group" v-if="exclude_group && user.user_groups.length > 1 && havePermission" @closeModal="exclude_group = false"></excludeGroupModal>
+            <leaveGroupModal :group="group" :exclude="leave_group" v-if="leave_group && user.user_groups.length > 1" @closeModal="leave_group = false"></leaveGroupModal>
         </div>
         
         <div class="group-informations">
@@ -79,6 +84,7 @@ import api from '../configs/api.js';
 import uploadModal from './uploadImageModal.vue';
 import autoComplete from './autoComplete.vue';
 import excludeGroupModal from './excludeGroupModal.vue';
+import leaveGroupModal from './leaveGroupModal.vue';
 
 export default {
     name: "editGroups",
@@ -98,6 +104,7 @@ export default {
             searchParam: "",
             selected_user: {},
             exclude_group: false,
+            leave_group: false,
             empty_search: false,
             havePermission: false
         }
@@ -166,6 +173,10 @@ export default {
             } else {
                 clearInterval(self.interval);
             }
+        },
+        leaveGroupModal: function () {
+            let self = this;
+            self.leave_group = true;
         },
         excludeGroupModal: function () {
             let self = this;
@@ -391,7 +402,8 @@ export default {
     components: {
         uploadModal,
         autoComplete,
-        excludeGroupModal
+        excludeGroupModal,
+        leaveGroupModal
     }
 }
 </script>
@@ -638,13 +650,13 @@ export default {
         background: var(--gray-soft);
     }
 
-.group-header, .delete-group {
+.group-header, .delete-group, .leave-group {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.delete-group {
+.delete-group, .leave-group {
     border-radius: 7px;
     padding: 10px;
     background: var(--red-high);
@@ -653,12 +665,12 @@ export default {
     color: var(--red-low);
 }
 
-    .delete-group:hover {
+    .delete-group:hover, .leave-group:hover {
         background: var(--red);
         color: var(--white);
     }
 
-    .delete-group span {
+    .delete-group span, .leave-group span {
         margin-right: 10px;
     }
 

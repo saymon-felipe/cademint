@@ -78,9 +78,8 @@ export default {
             this.searchParam = event.target.value;
         },
         uploadPhoto: function (formData) {
-            let self = this
+            let self = this;
             let jwt = "Bearer " + self.getJwtFromLocalStorage();
-
             self.response = "";
 
             api.patch("/projects/group_image/" + self.created_group.group_id, formData, { 
@@ -180,7 +179,15 @@ export default {
                     self.setCurrentProjectInSessionStorage(self.created_group.group_id, self.created_group.group_name);
                     $(".response").addClass("success");
                     self.response = "Grupo criado com sucesso";
-                    $("#submit-image-form").click();
+                    if ($("#photo").val() != "") {
+                        $("#submit-image-form").click();
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+                .then(function () {
+                    self.hideModal();
                 })
             }
         },
