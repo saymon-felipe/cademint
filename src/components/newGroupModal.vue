@@ -334,6 +334,7 @@ input[type='file'] {
 
 .new-project-modal .modal-body {
     height: calc(100% - 123px);
+    min-height: 450px;
     position: relative;
     padding: 15px;
     overflow-y: scroll;
