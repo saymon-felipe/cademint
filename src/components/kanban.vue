@@ -108,25 +108,26 @@ export default {
     },
     computed: {
         todoList() {
-            this.checkAllowDrag = true;
             return this.task_list.filter(task => task.status_os == 1);
         },
         doingList() {
-            this.checkAllowDrag = true;
             return this.task_list.filter(task => task.status_os == 2);
         },
         testList() {
-            this.checkAllowDrag = true;
             return this.task_list.filter(task => task.status_os == 3);
         },
         doneList() {
-            this.checkAllowDrag = true;
             return this.task_list.filter(task => task.status_os == 4);
         }
     },
     watch: {
         checkAllowDrag: function () {
             this.verifyAllowDrop();
+        },
+        is_loading: function () {
+            setTimeout(() => {
+                this.checkAllowDrag = true;
+            }, 100);
         }
     },
     methods: {
