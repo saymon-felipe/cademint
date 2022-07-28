@@ -66,7 +66,7 @@
                 </div>
             </div>
             <editTaskModal class="edit-task-container" v-if="show_edit_task" :task="edit_task" :group="project" @closeEditTaskModal="closeEditTask('.edit-task-container', $event)" />
-            <div class="edit-task-wrapper" v-if="show_edit_task" v-on:click="closeEditTask('.edit-task-container')"></div>
+            <div class="edit-task-wrapper" v-if="show_edit_task" v-on:click="closeEditTask('.edit-task-container', true)"></div>
         </div>
     </section>
 </template>
@@ -102,21 +102,31 @@ export default {
             project: {},
             edit_task: {},
             show_edit_task: false,
-            temporary_task: {}
+            temporary_task: {},
+            checkAllowDrag: false
         }
     },
     computed: {
         todoList() {
+            this.checkAllowDrag = true;
             return this.task_list.filter(task => task.status_os == 1);
         },
         doingList() {
+            this.checkAllowDrag = true;
             return this.task_list.filter(task => task.status_os == 2);
         },
         testList() {
+            this.checkAllowDrag = true;
             return this.task_list.filter(task => task.status_os == 3);
         },
         doneList() {
+            this.checkAllowDrag = true;
             return this.task_list.filter(task => task.status_os == 4);
+        }
+    },
+    watch: {
+        checkAllowDrag: function () {
+            this.verifyAllowDrop();
         }
     },
     methods: {
@@ -148,7 +158,7 @@ export default {
         init: function () {
             setTimeout(() => {
                 this.getAllOs();
-                this.verifyAllowDrop();
+                
                 this.joined_group = window.location.href.indexOf("?") != -1 ? window.location.href.split("?")[1].replace("joined_group=", "") : false;
             }, 300);
         },
@@ -330,9 +340,9 @@ export default {
     },
     mounted() {
         this.requireUser();
+        this.init();
         setTimeout(() => {
             if (window.location.href.indexOf("/home") != -1) {
-                this.init();
                 this.current_project = this.getCurrentProjectInSessionStorage();
                 this.getCurrentProject(this.current_project.group_id);
                 this.checkIfProjectChanged();
@@ -510,10 +520,6 @@ export default {
 
     .draggable-card {
         min-width: 230px;
-    }
-
-    .draggable-card:last-child .card-container {
-        margin-right: 10px;
     }
 }
 

@@ -6,6 +6,7 @@
             <span class="material-icons sponsor-icon" v-if="sponsor_photo == ''" v-on:click="toggleMembersContainer">person</span>
             <img class="user-image-preview avatar-p" v-if="sponsor_photo != ''" :src="sponsor_photo" v-on:click="toggleMembersContainer" />
         </div>
+        <div class="new-task-members-wrapper" v-on:click="toggleMembersContainer"></div>
         <div class="new-task-members">
             <div class="project-member" v-for="(member, index) in group_users" :key="index" v-on:click="selectSponsor(member)">
                 <img :src="member.profile_photo" class="avatar-p">
@@ -39,13 +40,16 @@ export default {
         },
         toggleMembersContainer: function () {
             let newTaskMembers = $(".new-task-members");
+            let newTaskMembersWrapper = $(".new-task-members-wrapper");
             if (newTaskMembers.is(":visible")) {
                 newTaskMembers.css("opacity", 0);
+                newTaskMembersWrapper.hide();
                 setTimeout(() => {
                     newTaskMembers.hide();
                 }, 400);
             } else {
                 newTaskMembers.show();
+                newTaskMembersWrapper.show();
                 setTimeout(() => {
                     newTaskMembers.css("opacity", 1);
                 }, 10);
@@ -115,13 +119,18 @@ export default {
 }
 </script>
 <style scoped>
-.new-card-wrapper {
+.new-card-wrapper, .new-task-members-wrapper {
     width: 100vw;
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 3;
+}
+
+.new-task-members-wrapper {
+    z-index: 4;
+    display: none;
 }
 
 .new-task-object .card-task {
@@ -210,12 +219,14 @@ export default {
         padding: 11px;
     }
 
-    .sponsor-icon {
-        display: none;
+    .sponsor-icon, .new-task-members-wrapper, .new-task-members {
+        display: none !important;
     }
 
     .new-task-object .card-task {
         height: 100%;
+        width: 230px;
+        margin-right: 10px;
     }
 }
 </style>
