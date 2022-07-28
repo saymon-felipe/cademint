@@ -137,6 +137,10 @@ const routes = [
         meta: {
             title: "Não encontrado - Cademint"
         }
+    },
+    {
+        path: '',
+        redirect: '/login'
     }
 ];
 
