@@ -327,7 +327,8 @@ form {
     background: var(--white);
     z-index: 2;
     width: 95%;
-    height: 350px;
+    height: fit-content;
+    min-height: 350px;
     max-width: 350px;
     position: fixed;
     top: 0;
@@ -340,6 +341,16 @@ form {
     padding: 20px;
     overflow: hidden;
 }
+
+.check-email, .create-new-password, .invalid-token, .password-changed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+    .check-email a {
+        margin-top: 2rem;
+    }
 
 .logo {
     background: var(--blue-high-2);
@@ -424,6 +435,16 @@ form {
 @media (max-width: 645px) {
     .footer-links {
         justify-content: flex-end;
+    }
+
+    .reset-header a p {
+        display: none;
+    }
+}
+
+@media (max-width: 336px) {
+    .reset-header a {
+        display: none;
     }
 }
  

@@ -116,6 +116,7 @@ export default {
         getProjectMembers: function () {
             let self = this;
             let current_project = self.getCurrentProjectInSessionStorage();
+
             api.post("/projects/return_group", {
                 group_id: current_project.group_id
             })

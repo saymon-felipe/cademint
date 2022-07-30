@@ -450,4 +450,9 @@ input[type='file'] {
         }
 }
 
+@media (max-width: 437px) {
+    .new-project-modal .modal-body {
+        min-height: initial;
+    }
+}
 </style>

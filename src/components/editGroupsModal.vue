@@ -351,7 +351,7 @@ export default {
             let data = {
                 groups_id: group_id
             }
-            let current_project = self.getCurrentProjectInSessionStorage()
+            let current_project = self.getCurrentProjectInSessionStorage("edit-groups");
             api.delete("/projects/delete_group", { data, headers: {Authorization: jwt}})
             .then(function () {
                 if (current_project.group_id == group_id) { // Se o id do grupo que está sendo excluido for igual ao que está em session storage, o que está armazenado é deletado.

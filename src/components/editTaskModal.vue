@@ -181,6 +181,7 @@ export default {
         }
     },
     mounted() {
+        console.log(this.task)
         if (this.task.id == undefined) {
             this.disableCommentInput();
         } else {
@@ -557,13 +558,13 @@ export default {
     background: var(--white);
     border-left: 1px solid var(--gray);
     z-index: 4;
-    padding: 20px;
 }
 
 .edit-task-inner {
     overflow-y: scroll;
     overflow-x: hidden;
     height: calc(100% - 60px);
+    padding: 20px;
 }
 
 .first-input-group {

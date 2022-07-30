@@ -144,7 +144,7 @@
             <div class="overlay" v-on:click="hidePhoto(); hideSendPhoto(); hideExcludeAccountModal();" v-if="showExpandedPhoto || showSendPhotoContainer || showExcludeAccount"></div>
             <div class="wrapper" v-on:click="hideBannerDetails(); hidePhotoDetails();" v-if="showPhotoDetails || showBannerDetails"></div>
             
-            <uploadModal group=""></uploadModal>
+            <uploadModal group="" v-if="showSendPhotoContainer"></uploadModal>
         </div>
     </section>
 </template>
@@ -431,14 +431,18 @@ export default {
             })
         },
         showSendPhoto: function (banner = false) {
-            let modal = $(".upload");
-            modal.show();
-            if (banner) {
-                modal.attr("data_target", "banner");
-            }
             this.showSendPhotoContainer = true;
+
             setTimeout(() => {
-                modal.css("opacity", 1).css("transform", "translateY(0)");
+                let modal = $(".upload");
+                modal.show();
+                if (banner) {
+                    modal.attr("data_target", "banner");
+                }
+                
+                setTimeout(() => {
+                    modal.css("opacity", 1).css("transform", "translateY(0)");
+                }, 10);
             }, 10);
         },
         hideSendPhoto: function () {
@@ -1258,5 +1262,27 @@ svg {
     border-radius: 6px;
     border: 1px solid var(--gray-low);
     padding: 10px;
+}
+
+@media (max-width: 480px) {
+    .user-occupations {
+        padding-bottom: 3rem;
+        position: relative;
+    }
+    .user-occupations .occupation {
+        padding-right: 38px;
+    }
+
+    .exclude-occupation {
+        display: flex !important;
+    }
+
+    .add-occupation {
+        opacity: 1 !important;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        margin: 0;
+    }
 }
 </style>

@@ -61,6 +61,10 @@
     --black: #222222 !important;
 }
 
+input {
+    border: 1px solid var(--gray) !important;
+}
+
 hr {
     border: 1px solid var(--gray-high);
     margin: 1rem 0;

@@ -253,11 +253,21 @@ export default {
                 index,
             }
         },
-        getAllOs: function (programatic = false) { // Função recupera a lista de OS do banco de dados.
-            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage(), project = self.getCurrentProjectInSessionStorage();
+        getAllOs: function (programatic = false) { // Função recupera a lista de tarefas do banco de dados.
+            let self = this
+            let jwt = "Bearer " + self.getJwtFromLocalStorage()
+            self.current_project = self.getCurrentProjectInSessionStorage();
+
+            if (self.current_project == null) {
+                setTimeout(() => {
+                    self.getAllOs(true);
+                }, 1000);
+                return;
+            }
+
             if (!self.in_drag) {
                 api.post("/os/return_os_list", {
-                    id: project.group_id
+                    id: self.current_project.group_id
                 },
                 {
                     headers: {
@@ -266,13 +276,10 @@ export default {
                 })
                 .then(function(response){
                     self.task_list = response.data.response.os_list;
+                    self.is_loading = false;
                     if (!programatic) { // Só vai ter chamada recursiva se a chamada não for feita por outra função
-                        setTimeout(() => {
-                            self.is_loading = false;
-                        }, 2000);
                         setTimeout(self.getAllOs, 60000); // Chamada recursiva da requisição a cada 60 segundos.
                     }
-                    self.current_project = self.getCurrentProjectInSessionStorage();
                 }).catch(function(){
                     let pathName = window.location.href;
                     if (pathName.indexOf("/login") == -1 && pathName.indexOf("/register") == -1 && pathName.indexOf("/enter-group") == -1) {
@@ -284,23 +291,24 @@ export default {
             }
         },
         checkIfProjectChanged: function () {
-            setInterval(() => {
-                let project = this.getCurrentProjectInSessionStorage();
-                let jwt = this.getJwtFromLocalStorage();
-                if (jwt == "" || jwt == undefined || jwt == null) {
-                    clearInterval();
-                    return;
-                }
-                if (this.current_project.group_id != project.group_id) {
-                    this.getAllOs(true);
-                    this.current_project.group_id = project.group_id;
-                }
+            let project = this.getCurrentProjectInSessionStorage();
+            
+            if (project == null) {
+                return;
+            }
+
+            let jwt = this.getJwtFromLocalStorage();
+            if (jwt == "" || jwt == undefined || jwt == null) {
+                clearInterval();
+                return;
+            }
+            if (this.current_project.group_id != project.group_id) {
+                this.getAllOs(true);
+                this.current_project.group_id = project.group_id;
+            }
+            setTimeout(() => {
+                this.checkIfProjectChanged();
             }, 1000);
-        },
-        hideTooltip: function () { // Reseta e esconde tooltip.
-            $(".os-tooltip").attr("id", "");
-            $(".os-tooltip").html("");
-            $(".os-tooltip").hide();
         },
         getCurrentProject: function (project_id) {
             let self = this;
@@ -334,6 +342,7 @@ export default {
             setTimeout(() => {
                 newTaskCard.hide();
                 if (emmit_event != undefined) {
+                    emmit_event.user_owner_name = this.user.nome;
                     this.editTask(emmit_event);
                 }
             }, 400);
@@ -342,13 +351,16 @@ export default {
     mounted() {
         this.requireUser();
         this.init();
-        setTimeout(() => {
-            if (window.location.href.indexOf("/home") != -1) {
-                this.current_project = this.getCurrentProjectInSessionStorage();
-                this.getCurrentProject(this.current_project.group_id);
-                this.checkIfProjectChanged();
+        if (window.location.href.indexOf("/home") != -1) {
+            this.current_project = this.getCurrentProjectInSessionStorage();
+
+            if (this.current_project == null) {
+                return;
             }
-        }, 2000)
+
+            this.getCurrentProject(this.current_project.group_id);
+            this.checkIfProjectChanged();
+        }
     },
     components: {
         Draggable,

@@ -242,6 +242,12 @@ p {
     }
 }
 
+@media (max-width: 452px) {
+    .footer-links {
+        text-align: center !important;
+    }
+}
+
 @media (max-width: 350px) {
     .help-header img {
         max-width: 130px;

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h4 class="header-text">Login:</h4>
+        <h4 class="header-text font-size-h3">Login:</h4>
         <form id="login-form" method="POST" @submit.prevent="login()">
             <input class="form-input" type="text" name="email" id="user" placeholder="Email" required>
             <input class="form-input" type="password" name="senha" id="password" placeholder="Senha" required>
@@ -178,13 +178,16 @@ export default {
 </script>
 
 <style scoped>
+    .register {
+        margin-right: 20px;
+    }
+
     .loading {
         display: block;
     }
 
     .header-text {
         align-self: center;
-        font-size: 1.7rem;
         font-weight: inherit;
         text-align: center;
         margin-bottom: 2rem;

@@ -1,7 +1,22 @@
 <template>
     <div class="login">
+        <div class="app-animation">
+            <div class="side-container">
+                <div class="app-header">
+                    <img src="../assets/img/logo-cademint-v2-reduced.png">
+                    <p class="font-size-h5">Sua nova maneira de organizar tarefas</p>
+                </div>
+                <lottie-player id="animation" src="https://assets6.lottiefiles.com/packages/lf20_tykpzoym.json"  background="transparent"  speed="1" loop autoplay></lottie-player>
+            </div>
+        </div>
         <div class="login-container">
-            <slot />
+            <div class="side-container">
+                <div class="app-header responsive-title">
+                    <img src="../assets/img/logo-cademint-v2-reduced.png">
+                    <p class="font-size-h5">Sua nova maneira de organizar tarefas</p>
+                </div>
+                <slot />
+            </div>
         </div>
     </div>
 </template>
@@ -13,58 +28,93 @@ export default {
 </script>
 
 <style scoped>
-    .login {
-        width: 100%;
-        height: 100vh;
-        background: url("../assets/img/logo-cademint-v2-reduced.png"), var(--yellow);
-        background-repeat: no-repeat;
-        background-position: center 5%;
-        background-size: 400px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+.login {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    justify-content: center;
+}
+
+.app-animation {
+    background: var(--yellow);
+    flex-direction: column;
+    position: relative;
+}
+
+.login-container .side-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.side-container {
+    width: 100%;
+    height: 100%;
+    max-width: 2000px;
+    display: flex;
+    justify-content: center;
+}
+
+.responsive-title {
+    display: none !important;
+    top: 1rem !important;
+    padding: 0 10px 0 10px;
+}
+
+    .responsive-title img {
+        max-width: 250px !important;
+        margin-bottom: .5rem !important;
+    }
+
+    .responsive-title p {
+        font-size: 1rem;
+    }
+
+.app-animation, .login-container {
+    width: 50vw;
+    height: 100vh;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-animation #animation {
+    max-width: 700px;
+}
+
+.app-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: absolute;
+    top: 3rem;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: fit-content;
+    z-index: 3;
+}
+
+    .app-header img {
+        width: 90%;
+        max-width: 600px;
+        margin-bottom: 1rem;
+    }
+
+@media (max-width: 750px) {
+    .app-animation {
+        display: none;
     }
 
     .login-container {
-        display: flex;
-        background: var(--white);
-        border-radius: 20px;
-        flex-direction: column;
-        justify-content: center;
-        width: 30rem;
-        box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        padding: 70px 25px;
-        margin: 0 15px;
-        font-weight: 500;
+        width: 100vw;
     }
 
-    @media (max-width: 920px) {
-        .login-container {
-            background-size: 300px;
-        }
+    .responsive-title {
+        display: block !important;
     }
-
-    @media (max-width: 650px) {
-        .login-container {
-            background-size: 250px;
-        }
-    }
-
-    @media (max-width: 460px) {
-        .login-container {
-            background-size: 200px;
-        }
-    }
-
-    @media(max-width: 420px) {
-        .login {
-            padding: 35px 10px;
-        }
-    }
-
-    @media (max-width: 510px) {
-        .login {
-            background-size: 80%;
-        }
-    }
+}
 </style>

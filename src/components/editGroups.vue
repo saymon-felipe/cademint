@@ -74,7 +74,7 @@
             </div>
         </div>
         <div class="overlay" v-on:click="hideEditGroupImage()" v-if="showSendPhotoContainer"></div>
-        <uploadModal :group="group"></uploadModal>
+        <uploadModal :group="group" v-if="showSendPhotoContainer"></uploadModal>
     </div>
 </template>
 <script>
@@ -308,12 +308,15 @@ export default {
             }, 400);
         },
         editGroupImage: function () {
-            let modal = $(".upload");
-            modal.show();
-            modal.attr("data_target", "group");
             this.showSendPhotoContainer = true;
+
             setTimeout(() => {
-                modal.css("opacity", 1).css("transform", "translateY(0)");
+                let modal = $(".upload");
+                modal.show();
+                modal.attr("data_target", "group");
+                setTimeout(() => {
+                    modal.css("opacity", 1).css("transform", "translateY(0)");
+                }, 10);
             }, 10);
         },
         countCharacters: function () {
@@ -656,6 +659,10 @@ export default {
     justify-content: space-between;
 }
 
+.group-header p:first-child {
+    margin-right: 10px;
+}
+
 .delete-group, .leave-group {
     border-radius: 7px;
     padding: 10px;
@@ -674,4 +681,13 @@ export default {
         margin-right: 10px;
     }
 
+@media (max-width: 480px) {
+    .invite-users .selected-user {
+        padding-right: 30px;
+    }
+    
+    .invite-users .selected-user span {
+        opacity: 0.8 !important;
+    }
+}
 </style>

@@ -24,7 +24,7 @@
 </template>
 <script>
 import { globalMethods } from '../js/globalMethods';
-import api from '../configs/api.js';
+//import api from '../configs/api.js';
 import $ from 'jquery';
 
 export default {
@@ -42,8 +42,10 @@ export default {
         }
     },
     methods: {
-        uploadPhoto: function (formData) {
-            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
+        uploadPhoto: function () {
+            let self = this;
+
+            /*let jwt = "Bearer " + self.getJwtFromLocalStorage();
             let dataTarget = $(".upload").attr("data_target");
             let path = '/usuarios/';
             let target = "upload_photo";
@@ -56,13 +58,13 @@ export default {
                     target = "group_image/" + this.group.group_id;
                     path = "/projects/";
                     break;
-            }
+            }*/
 
             self.response = "";
             self.loading = true;
             self.showRemovePhotoButton = false;
 
-            if (dataTarget == "banner") {
+            /*if (dataTarget == "banner") {
                 self.removePhoto(true, true);
             }
 
@@ -72,9 +74,9 @@ export default {
 
             if (dataTarget != "group" && dataTarget != "banner") {
                 self.removePhoto(true);
-            }
+            }*/
 
-            api.patch(path + target, formData, { 
+            /*api.patch(path + target, formData, { 
                 headers: {
                     Authorization: jwt
                 }
@@ -91,7 +93,7 @@ export default {
             })
             .then(function () {
                 self.loading = false;
-            })
+            })*/
         },
         hideSendPhoto: function () {
             let modal = $(".upload");
@@ -204,7 +206,7 @@ export default {
     }
 
 .file-name {
-    margin: 0 1rem .5rem;
+    margin: 0 1rem;
     height: 34px;
     align-items: center;
     max-width: 15ch;
@@ -238,10 +240,9 @@ export default {
 
 .photo-preview {
     display: flex;
-    align-items: center;
     justify-content: center;
     margin-top: 1rem;
-    height: calc(100% - 130px);
+    height: calc(100% - 185px);
     overflow: hidden;
 }
 
@@ -249,6 +250,7 @@ export default {
     width: 100%;
     border: 1px solid var(--gray-high);
     border-radius: 10px;
+    object-fit: cover;
 }
 
 .remove-photo {

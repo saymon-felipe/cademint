@@ -168,13 +168,15 @@ export default {
             }
         },
         checkIfProjectChanged: function () {
-            setInterval(() => {
+            let interval = setInterval(() => {
                 let project = this.getCurrentProjectInSessionStorage();
                 let jwt = this.getJwtFromLocalStorage();
-                if (jwt == "" || jwt == undefined || jwt == null) {
-                    clearInterval();
+
+                if (jwt == "" || jwt == undefined || jwt == null || project == null) {
+                    clearInterval(interval);
                     return;
                 }
+
                 if (this.project_value != project.group_id) {
                     this.project_name = project.group_name;
                     this.project_value = project.group_id;
@@ -184,6 +186,7 @@ export default {
         },
         findProjectOption: function () {
             let project = this.getCurrentProjectInSessionStorage();
+            
             if (project == null || project == 'undefined') {
                 this.project_value = this.user.user_groups[0].groups_id;
                 this.project_name = this.user.user_groups[0].group_name;
@@ -197,8 +200,11 @@ export default {
             }
         },
         findResponsiveProject: function () {
-            let project = this.getCurrentProjectInSessionStorage();
             setTimeout(() => {
+                let project = this.getCurrentProjectInSessionStorage();
+                if (project == null) {
+                    return;
+                }
                 $("#project-" + project.group_id).addClass("active");
             }, 200);
         }
