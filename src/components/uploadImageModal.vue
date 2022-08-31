@@ -24,7 +24,7 @@
 </template>
 <script>
 import { globalMethods } from '../js/globalMethods';
-//import api from '../configs/api.js';
+import api from '../configs/api.js';
 import $ from 'jquery';
 
 export default {
@@ -42,10 +42,10 @@ export default {
         }
     },
     methods: {
-        uploadPhoto: function () {
+        uploadPhoto: function (formData) {
             let self = this;
 
-            /*let jwt = "Bearer " + self.getJwtFromLocalStorage();
+            let jwt = "Bearer " + self.getJwtFromLocalStorage();
             let dataTarget = $(".upload").attr("data_target");
             let path = '/usuarios/';
             let target = "upload_photo";
@@ -58,13 +58,13 @@ export default {
                     target = "group_image/" + this.group.group_id;
                     path = "/projects/";
                     break;
-            }*/
+            }
 
             self.response = "";
             self.loading = true;
             self.showRemovePhotoButton = false;
 
-            /*if (dataTarget == "banner") {
+            if (dataTarget == "banner") {
                 self.removePhoto(true, true);
             }
 
@@ -74,9 +74,9 @@ export default {
 
             if (dataTarget != "group" && dataTarget != "banner") {
                 self.removePhoto(true);
-            }*/
+            }
 
-            /*api.patch(path + target, formData, { 
+            api.patch(path + target, formData, { 
                 headers: {
                     Authorization: jwt
                 }
@@ -93,7 +93,7 @@ export default {
             })
             .then(function () {
                 self.loading = false;
-            })*/
+            })
         },
         hideSendPhoto: function () {
             let modal = $(".upload");

@@ -133,7 +133,7 @@ export default {
     methods: {
         editTask: function (task) {
             if ($(".edit-task-container").is(":visible")) {
-                this.closeEditTask(".edit-task-container");
+                this.closeEditTask(".edit-task-container", true);
                 return;
             }
             this.edit_task = task;

@@ -181,7 +181,6 @@ export default {
         }
     },
     mounted() {
-        console.log(this.task)
         if (this.task.id == undefined) {
             this.disableCommentInput();
         } else {
