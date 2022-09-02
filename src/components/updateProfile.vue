@@ -775,6 +775,7 @@ export default {
 .profile-avatar {
     width: 150px;
     height: 150px;
+    object-fit: cover;
     border-radius: 50%;
     box-shadow: 0 0 0 7px var(--gray-soft);
 }
