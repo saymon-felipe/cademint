@@ -80,7 +80,7 @@ export default {
                     user_owner: this.user.id_usuario,
                     user_owner_name: this.user.nome,
                     status_os: this.card_status,
-                    group_id: this.getCurrentProjectInSessionStorage("new-card").group_id
+                    group_id: this.getCurrentProjectInLocalStorage("new-card").group_id
                 }
                 this.createInitialTask(temporary_task);
                 this.resetCardBeforeClose();

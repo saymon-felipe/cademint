@@ -158,8 +158,8 @@ export default {
         },  
         init: function () {
             setTimeout(() => {
+                this.getCurrentProject(this.current_project.group_id);
                 this.getAllOs();
-                
                 this.joined_group = window.location.href.indexOf("?") != -1 ? window.location.href.split("?")[1].replace("joined_group=", "") : false;
             }, 300);
         },
@@ -255,8 +255,7 @@ export default {
         },
         getAllOs: function (programatic = false) { // Função recupera a lista de tarefas do banco de dados.
             let self = this
-            let jwt = "Bearer " + self.getJwtFromLocalStorage()
-            self.current_project = self.getCurrentProjectInSessionStorage();
+            let jwt = "Bearer " + self.getJwtFromLocalStorage();
 
             if (self.current_project == null) {
                 setTimeout(() => {
@@ -291,32 +290,33 @@ export default {
             }
         },
         checkIfProjectChanged: function () {
-            let project = this.getCurrentProjectInSessionStorage();
+            let jwt = this.getJwtFromLocalStorage();
+            let project = this.getCurrentProjectInLocalStorage();
             
-            if (project == null) {
+            if (jwt == "" || jwt == undefined || jwt == null) {
                 return;
+            }
+            
+            if (project.group_id != this.project.group_id) {
+                this.current_project.group_id = project.group_id;
+                this.getCurrentProject(project.group_id, true);
+                this.getAllOs(true);
             }
 
-            let jwt = this.getJwtFromLocalStorage();
-            if (jwt == "" || jwt == undefined || jwt == null) {
-                clearInterval();
-                return;
-            }
-            if (this.current_project.group_id != project.group_id) {
-                this.getAllOs(true);
-                this.current_project.group_id = project.group_id;
-            }
             setTimeout(() => {
                 this.checkIfProjectChanged();
             }, 1000);
         },
-        getCurrentProject: function (project_id) {
+        getCurrentProject: function (project_id, programatic = false) {
             let self = this;
             api.post("/projects/return_group", {
                 group_id: project_id
             })
             .then(function(response){
                 self.project = response.data.response;
+                if (!programatic) {
+                    self.checkIfProjectChanged();
+                }
             }).catch(function(error){
                 self.response = error
             })
@@ -349,18 +349,18 @@ export default {
         }
     },
     mounted() {
-        this.requireUser();
-        this.init();
-        if (window.location.href.indexOf("/home") != -1) {
-            this.current_project = this.getCurrentProjectInSessionStorage();
+        
+        setTimeout(() => {
+            if (window.location.href.indexOf("/home") != -1) {
+                this.current_project = this.getCurrentProjectInLocalStorage();
+                this.requireUser();
+                this.init();
 
-            if (this.current_project == null) {
-                return;
+                if (this.current_project == null) {
+                    return;
+                }
             }
-
-            this.getCurrentProject(this.current_project.group_id);
-            this.checkIfProjectChanged();
-        }
+        }, 10);
     },
     components: {
         Draggable,

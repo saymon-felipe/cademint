@@ -160,7 +160,6 @@ export default {
         validateToken: function () {
             let self = this;
             let jwt = "Bearer " + self.getJwtFromLocalStorage();
-            console.log(self.token)
             let data = {
                 token: self.token
             }

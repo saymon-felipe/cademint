@@ -170,7 +170,11 @@ export default {
     mixins: [globalMethods],
     data() {
         return {
-            selected_sponsor: this.group.group_members_objects.filter(member => {return member.id_usuario == this.task.sponsor}),
+            selected_sponsor: [
+                {
+                    id_usuario: 0
+                }
+            ],
             selected_priority: this.task.priority,
             selected_size: this.task.size,
             selected_status:  this.task.status_os,
@@ -187,9 +191,13 @@ export default {
             this.loadTaskComments();
         }
         $("#task_description").val(this.task.desc_os);
-        
+        this.setSelectedSponsor(this.task.sponsor);
     },
     methods: {
+        setSelectedSponsor: function (sponsor_id) {
+            let member = this.group.group_members_objects.filter(member => {return member.id_usuario == sponsor_id});
+            this.selected_sponsor = member;
+        },
         deleteTask: function () {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
             api.delete("/os/delete_os", { data: {id: self.task.id}, headers: {Authorization: jwt}})

@@ -176,7 +176,7 @@ export default {
                         group_id: response.data.grupo_criado.groups_id,
                         group_name: response.data.grupo_criado.group_name
                     }
-                    self.setCurrentProjectInSessionStorage(self.created_group.group_id, self.created_group.group_name);
+                    self.setCurrentProjectInLocalStorage(self.created_group.group_id, self.created_group.group_name);
                     $(".response").addClass("success");
                     self.response = "Grupo criado com sucesso";
                     if ($("#photo").val() != "") {

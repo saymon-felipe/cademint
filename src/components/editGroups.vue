@@ -203,7 +203,6 @@ export default {
                 self.havePermission = true;
             })
             .catch(function () {
-                console.log("Não possui permissão para editar o grupo");
                 self.blockFields();
             })
             .then(function () {

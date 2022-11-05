@@ -41,7 +41,7 @@ export default {
         excludeGroup: function () { // Função apaga o grupo solicitado.
             let self = this;
             let jwt = "Bearer " + self.getJwtFromLocalStorage();
-            let current_project = self.getCurrentProjectInSessionStorage();
+            let current_project = self.getCurrentProjectInLocalStorage();
             let data = {
                 groups_id: self.group.group_id
             }
@@ -49,7 +49,7 @@ export default {
             api.delete("/projects/delete_group", { data, headers: {Authorization: jwt}})
             .then(function () {
                 if (current_project.group_id == self.group.group_id) { // Se o id do grupo que está sendo excluido for igual ao que está em session storage, o que está armazenado é deletado.
-                    self.removeCurrentProjectInSessionStorage();
+                    self.removeCurrentProjectInLocalStorage();
                 }
                 self.hideModal(true);
             })

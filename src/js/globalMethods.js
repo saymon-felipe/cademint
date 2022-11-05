@@ -14,7 +14,7 @@ export const globalMethods = {
         },
         logoutUser: function (not_return = false) {
             let self = this;
-            self.removeCurrentProjectInSessionStorage();
+            self.removeCurrentProjectInLocalStorage();
             self.removeJwtFromLocalStorage();
             if (!not_return) {
                 self.$router.push("/login");
@@ -94,18 +94,18 @@ export const globalMethods = {
                 self.response = "Ocorreu um erro ao entrar no grupo" // Se der erro, o mesmo é exibido.
             })
         },
-        removeCurrentProjectInSessionStorage: function () { // Remove o id do projeto de session storage.
-            sessionStorage.removeItem("current_project");
+        removeCurrentProjectInLocalStorage: function () { // Remove o id do projeto de session storage.
+            localStorage.removeItem("current_project");
         },
-        setCurrentProjectInSessionStorage: function (group_id, group_name) { // Adiciona o id do projeto de session storage.
+        setCurrentProjectInLocalStorage: function (group_id, group_name) { // Adiciona o id do projeto de session storage.
             let current_project = {
                 group_id: group_id,
                 group_name: group_name
             }
-            sessionStorage.setItem("current_project", JSON.stringify(current_project));
+            localStorage.setItem("current_project", JSON.stringify(current_project));
         },
-        getCurrentProjectInSessionStorage: function () { // Retorna o id do projeto de session storage.
-            let JSONproject = sessionStorage.getItem("current_project");
+        getCurrentProjectInLocalStorage: function () { // Retorna o id do projeto de session storage.
+            let JSONproject = localStorage.getItem("current_project");
             let project = JSON.parse(JSONproject);
             return project;
         },

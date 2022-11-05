@@ -153,55 +153,57 @@ export default {
         },
         changeProject: function (programatic = false, projectId = null, project_name = null, responsive = false) { // No onchange do select procura o grupo pelo nome no input e armazena em session storage.
             if (programatic) {
-                this.setCurrentProjectInSessionStorage(projectId, project_name);
+                this.setProjectNameAndId(projectId, project_name);
+                this.setCurrentProjectInLocalStorage(projectId, project_name);
+                return;
             }
 
             if ($("#projects-name").val() != null) {
-                this.setCurrentProjectInSessionStorage($("#projects-name").val(), $("#projects-name option:selected").html());
+                this.setCurrentProjectInLocalStorage($("#projects-name").val(), $("#projects-name option:selected").html());
+                this.setProjectNameAndId($("#projects-name").val(), $("#projects-name option:selected").html());
+                return;
             }
             
             if (responsive) {
-                this.setCurrentProjectInSessionStorage(projectId, project_name);
+                this.setCurrentProjectInLocalStorage(projectId, project_name);
                 $(".responsive-project").removeClass("active");
                 $("#project-" + projectId).addClass("active");
                 this.closeResponsiveChangeProject();
+                return;
             }
         },
+        setProjectNameAndId: function (project_id, project_name) {
+            this.project_name = project_name;
+            this.project_value = project_id;
+        },
         checkIfProjectChanged: function () {
-            let interval = setInterval(() => {
-                let project = this.getCurrentProjectInSessionStorage();
-                let jwt = this.getJwtFromLocalStorage();
-
-                if (jwt == "" || jwt == undefined || jwt == null || project == null) {
-                    clearInterval(interval);
-                    return;
-                }
-
-                if (this.project_value != project.group_id) {
-                    this.project_name = project.group_name;
-                    this.project_value = project.group_id;
-                    this.requireUser();
-                }
+            let jwt = this.getJwtFromLocalStorage();
+            let project = this.getCurrentProjectInLocalStorage();
+            if (jwt == "" || jwt == undefined || jwt == null || project == null) {
+                return;
+            }
+            if (this.project_value != project.group_id) {
+                this.setProjectNameAndId(this.project_value, this.project_name);
+            }
+            setTimeout(() => {
+                this.checkIfProjectChanged();
             }, 1000);
         },
         findProjectOption: function () {
-            let project = this.getCurrentProjectInSessionStorage();
-            
+            let project = this.getCurrentProjectInLocalStorage();
             if (project == null || project == 'undefined') {
-                this.project_value = this.user.user_groups[0].groups_id;
-                this.project_name = this.user.user_groups[0].group_name;
-                this.setCurrentProjectInSessionStorage(this.project_value, this.project_name);
+                this.setProjectNameAndId(this.user.user_groups[0].groups_id, this.user.user_groups[0].group_name);
+                this.setCurrentProjectInLocalStorage(this.project_value, this.project_name);
                 setTimeout(() => {
-                    this.changeProject();
+                    this.changeProject(true, this.project_value, this.project_name);
                 }, 10);
             } else {
-                this.project_value = project.group_id;
                 this.changeProject(true, project.group_id, project.group_name);
             }
         },
         findResponsiveProject: function () {
             setTimeout(() => {
-                let project = this.getCurrentProjectInSessionStorage();
+                let project = this.getCurrentProjectInLocalStorage();
                 if (project == null) {
                     return;
                 }
@@ -237,12 +239,10 @@ export default {
         }
     },
     mounted() {
-        setTimeout(() => {
-            if (window.location.href.indexOf("/home") != -1) {
-                this.requireUser();
-                this.checkIfProjectChanged();
-            }
-        }, 200);
+        if (window.location.href.indexOf("/home") != -1) {
+            this.requireUser();
+            this.checkIfProjectChanged();
+        }
     },
     components: {
         newGroupModal
