@@ -128,6 +128,9 @@ export default {
             setTimeout(() => {
                 this.checkAllowDrag = true;
             }, 100);
+        },
+        user: function () {
+            this.init();
         }
     },
     methods: {
@@ -158,6 +161,7 @@ export default {
         },  
         init: function () {
             setTimeout(() => {
+                this.current_project = this.getCurrentProjectInLocalStorage();
                 this.getCurrentProject(this.current_project.group_id);
                 this.getAllOs();
                 this.joined_group = window.location.href.indexOf("?") != -1 ? window.location.href.split("?")[1].replace("joined_group=", "") : false;
@@ -296,7 +300,7 @@ export default {
             if (jwt == "" || jwt == undefined || jwt == null) {
                 return;
             }
-            
+
             if (project.group_id != this.project.group_id) {
                 this.current_project.group_id = project.group_id;
                 this.getCurrentProject(project.group_id, true);
@@ -352,9 +356,7 @@ export default {
         
         setTimeout(() => {
             if (window.location.href.indexOf("/home") != -1) {
-                this.current_project = this.getCurrentProjectInLocalStorage();
                 this.requireUser();
-                this.init();
 
                 if (this.current_project == null) {
                     return;
