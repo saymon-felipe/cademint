@@ -43,7 +43,7 @@
                 </div>
                 <p class="font-size-2-bold">Crie uma nova senha</p>
                 <p class="font-size-5">Sua nova senha deverá ser diferente da anterior</p>
-                <form action="reset_password" @submit.prevent="changePassword('#new-password')" autocomplete="off">
+                <form action="reset_password" @submit.prevent="changePassword('#new-password', '#repeat-password')" autocomplete="off">
                     <div class="form-input">
                         <label for="new-password" class="font-size-4-bold">Nova senha</label>
                         <input type="password" name="new_password" id="new-password" placeholder="Insira a nova senha" required>
@@ -109,9 +109,18 @@ export default {
         }
     },
     methods: {
-        changePassword: function (input_id) {
+        changePassword: function (input_id, confirm_input_id) {
             let input = $(input_id);
+            let confirmInput = $(confirm_input_id);
             let self = this;
+
+            
+
+            if (confirmInput.val() != input.val()) {
+                self.response = "As senhas não coincidem";
+                confirmInput.val("");
+                return;
+            }
 
             let data = {
                 senha: input.val(),
