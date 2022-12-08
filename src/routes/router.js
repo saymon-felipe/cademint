@@ -27,7 +27,7 @@ const routes = [
         }
     },
     {
-        path: '/login:msg?:joined_group?',
+        path: '/login:msg?:joined_group?:gid?:gname?',
         component: login,
         meta: {
             title: "Faça login - Cademint"

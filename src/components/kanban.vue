@@ -164,7 +164,8 @@ export default {
                 this.current_project = this.getCurrentProjectInLocalStorage();
                 this.getCurrentProject(this.current_project.group_id);
                 this.getAllOs();
-                this.joined_group = window.location.href.indexOf("?") != -1 ? window.location.href.split("?")[1].replace("joined_group=", "") : false;
+                let url = new URLSearchParams(window.location.search);
+                this.joined_group = url.get("joined_group") != null ? url.get("joined_group") : false;
             }, 300);
         },
         verifyAllowDrop: function () {

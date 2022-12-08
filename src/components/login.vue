@@ -34,6 +34,8 @@ export default {
     data() {
         return {
             joined_group: false,
+            group_id: null,
+            group_name: "",
             msg: "",
             response: "",
             loading: false,
@@ -45,7 +47,8 @@ export default {
             let self = this, url = new URLSearchParams(window.location.search);
             self.msg = url.get("msg");
             self.joined_group = url.get("joined_group");
-
+            self.group_id = url.get("gid");
+            self.group_name = url.get("gname");
             if (self.msg != null) { // Se tiver o parametro msg na url mostrará uma mensagem.
                 self.response = "Você foi desconectado";
             }
@@ -105,7 +108,7 @@ export default {
                         $('.response').addClass("success");
                         self.loading = false;
                         if (self.joined_group != null) { // Se vier o parametro joined_group do registro, o login redireciona para a index e passa esse parâmetro para a exibição do modal.
-                            self.$router.push("/home?joined_group=true");
+                            self.$router.push("/home?joined_group=true&gid=" + self.group_id + "&gname=" + self.group_name);
                         } else {
                             self.$router.push("/home");
                         }

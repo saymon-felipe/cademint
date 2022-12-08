@@ -27,6 +27,7 @@ export default {
             let tokenParam = url.get("tk"); // Armazena cada parametro da URL em variáveis.
             let emailParam = decodeURIComponent(url.get("email")); 
             let groupIdParam = url.get("gid");
+            let groupNameParam = url.get("gname");
             api.post("/usuarios/return_user_by_email", {
                 email: emailParam
             })
@@ -40,7 +41,7 @@ export default {
                     self.setTemporaryEmail(emailParam);
 
                     setTimeout(() => {
-                        self.$router.push("/login?joined_group=true");
+                        self.$router.push("/login?joined_group=true&gid=" + groupIdParam + "&gname=" + groupNameParam);
                     }, 1000);
                 } else {
                     self.response = "Você já faz parte desse grupo!";

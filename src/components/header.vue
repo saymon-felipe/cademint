@@ -89,7 +89,9 @@ export default {
             app_version: this.loadSystemVersion(),
             older_app_version: this.app_version,
             showMenu: false,
-            showResponsiveMenu: false
+            showResponsiveMenu: false,
+            gid: null,
+            gname: ""
         }
     },
     methods: {
@@ -192,7 +194,15 @@ export default {
         findProjectOption: function () {
             let project = this.getCurrentProjectInLocalStorage();
             if (project == null || project == 'undefined') {
-                this.setProjectNameAndId(this.user.user_groups[0].groups_id, this.user.user_groups[0].group_name);
+                let selectGroup = {
+                    group_id: this.user.user_groups[0].groups_id,
+                    group_name: this.user.user_groups[0].group_name
+                }
+                if (this.gid != null) {
+                    selectGroup.group_id = this.gid;
+                    selectGroup.group_name = this.gname;
+                }
+                this.setProjectNameAndId(selectGroup.group_id, selectGroup.group_name);
                 this.setCurrentProjectInLocalStorage(this.project_value, this.project_name);
                 setTimeout(() => {
                     this.changeProject(true, this.project_value, this.project_name);
@@ -240,6 +250,9 @@ export default {
     },
     mounted() {
         if (window.location.href.indexOf("/home") != -1) {
+            let url = new URLSearchParams(window.location.search);
+            this.gid = url.get("gid");
+            this.gname = url.get("gname");
             this.requireUser();
             this.checkIfProjectChanged();
         }
