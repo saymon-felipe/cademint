@@ -185,12 +185,14 @@ export default {
         }
     },
     mounted() {
+        this.changed_task = JSON.parse(JSON.stringify(this.task));
         if (this.task.id == undefined) {
             this.disableCommentInput();
         } else {
             this.loadTaskComments();
         }
         $("#task_description").val(this.task.desc_os);
+        
         this.setSelectedSponsor(this.task.sponsor);
     },
     methods: {
@@ -297,8 +299,6 @@ export default {
             })
         },
         computeChanges: function (input_type, value, nome = "") {
-            let changed_task_json = JSON.stringify(this.task);
-            this.changed_task = JSON.parse(changed_task_json);
             switch (input_type) {
                 case 'priority':
                     this.changed_task.priority = value;
