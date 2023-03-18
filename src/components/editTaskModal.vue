@@ -128,7 +128,7 @@
                 </div>
                 <div class="footer-content">
                     <div class="comments-list" v-if="task.id != undefined">
-                        <div class="comment" v-for="(comment, index) in task_comments.comentarios" :key="index">
+                        <div class="comment" v-for="(comment, index) in task_comments" :key="index">
                             <div class="comment-header">
                                 <div class="author-photo">
                                     <img :src="comment.criador_imagem" class="avatar-pp">
@@ -271,7 +271,7 @@ export default {
                 }
             })
             .then(function(response){
-                self.task_comments = response.data;
+                self.task_comments = response.data.returnObj.comentarios;
                 if (programatic) {
                     $(".edit-task-inner").animate({
                         scrollTop: 9999999

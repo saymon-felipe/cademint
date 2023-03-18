@@ -98,7 +98,7 @@ export default {
                 }
             })
             .then(function(response){
-                self.$emit("closeTask", response.data.os_criada);
+                self.$emit("closeTask", response.data.returnObj.created_task);
             }).catch(function(error){
                 console.log(error)
             })

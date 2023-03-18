@@ -279,7 +279,7 @@ export default {
                     }
                 })
                 .then(function(response){
-                    self.task_list = response.data.response.os_list;
+                    self.task_list = response.data.returnObj.os_list;
                     self.is_loading = false;
                     if (!programatic) { // Só vai ter chamada recursiva se a chamada não for feita por outra função
                         setTimeout(self.getAllOs, 60000); // Chamada recursiva da requisição a cada 60 segundos.
