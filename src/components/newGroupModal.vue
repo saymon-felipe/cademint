@@ -79,14 +79,9 @@ export default {
         },
         uploadPhoto: function (formData) {
             let self = this;
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
             self.response = "";
 
-            api.patch("/projects/group_image/" + self.created_group.group_id, formData, { 
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.patch("/projects/group_image/" + self.created_group.group_id, formData)
             .then(function () { 
                 setTimeout(() => {
                     self.hideModal();
@@ -143,7 +138,6 @@ export default {
             let user_input = $("#" + event.srcElement[1].id);
             let name_input = $("#" + event.srcElement[0].id);
             let invited_user = self.selected_user;
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
 
             $(".loading").show();
 
@@ -166,15 +160,11 @@ export default {
                 self.response = "Nome de grupo inválido";
             } else {
                 name_input.removeClass("invalid-value");
-                api.post("/projects", data, {
-                    headers: {
-                        Authorization: jwt
-                    }
-                })
+                api.post("/projects", data)
                 .then(function(response){
                     self.created_group = {
-                        group_id: response.data.grupo_criado.groups_id,
-                        group_name: response.data.grupo_criado.group_name
+                        group_id: response.data.returnObj.groups_id,
+                        group_name: response.data.returnObj.group_name
                     }
                     self.setCurrentProjectInLocalStorage(self.created_group.group_id, self.created_group.group_name);
                     $(".response").addClass("success");

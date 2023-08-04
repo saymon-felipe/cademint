@@ -168,18 +168,13 @@ export default {
         },
         validateToken: function () {
             let self = this;
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
             let data = {
                 token: self.token
             }
 
             self.resetVariables();
 
-            api.post("/usuarios/validate_reset_password_token", data, {
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.post("/usuarios/validate_reset_password_token", data)
             .then(function () {
                 self.createNewPassword = true;
             })

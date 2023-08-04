@@ -45,7 +45,6 @@ export default {
         uploadPhoto: function (formData) {
             let self = this;
 
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
             let dataTarget = $(".upload").attr("data_target");
             let path = '/usuarios/';
             let target = "upload_photo";
@@ -76,11 +75,7 @@ export default {
                 self.removePhoto(true);
             }
 
-            api.patch(path + target, formData, { 
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.patch(path + target, formData)
             .then(function () { 
                 self.hideSendPhoto();
                 self.previewPhoto = "";

@@ -242,14 +242,9 @@ export default {
                 self.draggind_card.cardData.status_os = status;
                 $("#" + self.draggind_card.cardData.id).remove();
                 self.task_list.push(self.draggind_card.cardData)
-                let jwt = "Bearer " + self.getJwtFromLocalStorage();
                 api.patch("/os/os_status", {
                     id: self.draggind_card.cardData.id,
                     status_os: status
-                }, {
-                    headers: {
-                        Authorization: jwt
-                    }
                 })
             }
         },
@@ -259,8 +254,7 @@ export default {
             }
         },
         getAllOs: function (programatic = false) { // Função recupera a lista de tarefas do banco de dados.
-            let self = this
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
+            let self = this;
 
             if (self.current_project == null) {
                 setTimeout(() => {
@@ -272,11 +266,6 @@ export default {
             if (!self.in_drag) {
                 api.post("/os/return_os_list", {
                     id: self.current_project.group_id
-                },
-                {
-                    headers: {
-                        Authorization: jwt
-                    }
                 })
                 .then(function(response){
                     self.task_list = response.data.returnObj.os_list;

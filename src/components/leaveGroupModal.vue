@@ -40,18 +40,13 @@ export default {
         },
         leaveGroup: function () { // Função apaga o grupo solicitado.
             let self = this;
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
             let current_project = self.getCurrentProjectInLocalStorage();
             let data = {
                 group_id: self.group.group_id,
                 user_id: null
             }
 
-            api.post("/projects/exclude_user", data, {
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.post("/projects/exclude_user", data)
             .then(function(){
                 if (current_project.group_id == self.group.group_id) { // Se o id do grupo que está sendo excluido for igual ao que está em session storage, o que está armazenado é deletado.
                     self.removeCurrentProjectInLocalStorage();

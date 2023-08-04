@@ -68,7 +68,8 @@ export default {
                 group_name: "Projeto de " + user_name,
                 group_members: user_id,
                 group_owner: user_id,
-                id_usuario: user_id
+                id_usuario: user_id,
+                pending_users: ""
             }, self = this; 
 
             api.post("/projects", data)

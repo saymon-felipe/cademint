@@ -225,7 +225,6 @@ export default {
         },
         saveBio: function (event) {
             let self = this;
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
             let value = event.target.value;
 
             if (value.length > 500 || value.length < 3 || value == "") {
@@ -237,11 +236,7 @@ export default {
                 user_bio: event.target.value
             }
 
-            api.patch("/usuarios/change_bio", data, {
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.patch("/usuarios/change_bio", data)
             .then(function () {
                 self.closeBio();
                 self.user_bio = value;
@@ -262,7 +257,6 @@ export default {
         excludeOccupation: function (occupation) {
             let self = this;
             let new_ocupations;
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
 
             self.user_occupations.splice(self.user_occupations.indexOf(occupation), 1);
             new_ocupations = self.user_occupations.join(",");
@@ -275,11 +269,7 @@ export default {
             let data = {
                 user_occupation: new_ocupations
             }
-            api.patch('/usuarios/exclude_occupation', data, {
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.patch('/usuarios/exclude_occupation', data)
             .then(function () {
                 self.getUserOccupations(self.user_occupations);
             })
@@ -548,12 +538,7 @@ export default {
                 $(".response").addClass("error");
                 self.response = "Campos inválidos";
             }
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
-            api.post("/usuarios/update_name", data, {
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.post("/usuarios/update_name", data)
             .then(function (response) { 
                 $(".response").addClass("success");
                 self.response = response.data.response.message;

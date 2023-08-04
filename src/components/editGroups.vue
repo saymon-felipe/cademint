@@ -49,7 +49,7 @@
                 </div>
                 <div class="group-users">
                     <p class="font-size-3-bold">Membros</p>
-                    <div class="user" v-for="(user, index) in group_users" :key="index">
+                    <div class="user" v-for="user in group_users" :key="user.id_usuario">
                         <div class="user-container" v-if="user.id_usuario != 1 && user.id_usuario != 2">
                             <div class="principal">
                                 <img :src="user.profile_photo" class="avatar-p">
@@ -144,17 +144,11 @@ export default {
             this.searchParam = event.target.value;
         },
         excludeInvitation: function (group_id, email, index) {
-            let self = this;
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
             let data = {
                 group_id: group_id,
                 email: email.trim()
             }
-            api.post("/projects/remove_invitation", data, {
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.post("/projects/remove_invitation", data)
             .then(function () {
                 $("#invited-member-" + index).remove();
             })
@@ -188,16 +182,11 @@ export default {
         },
         checkPermission: function () {
             let self = this;
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
             let idParam = this.$route.params.id;
             let data = {
                 group_id: idParam
             }
-            api.post("/projects/check_permission", data, {
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.post("/projects/check_permission", data)
             .then(function () {
                 self.requireGroup(idParam);
                 self.havePermission = true;
@@ -238,7 +227,6 @@ export default {
         },
         inviteUser: function (input_id, user_email = "", group_name) { // Função envia email de solicitação para o endereço informado, e ao final da requisição esconde o input.
             let self = this;
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
             let input = $(input_id);
             let idParam = self.$route.params.id;
 
@@ -271,11 +259,7 @@ export default {
             }
 
             $(".send-user").attr("disabled", "disabled");
-            api.post("/projects/request_user_to_group", data, {
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.post("/projects/request_user_to_group", data)
             .then(function(response){
                 $(".response").addClass("success");
                 self.inviteResponse = response.data.response.mensagem.message_email;
@@ -325,15 +309,10 @@ export default {
         },
         excludeUser: function (project_id, id_usuario) { // Exclui o usuário do grupo.
                 let self = this;
-                let jwt = "Bearer " + self.getJwtFromLocalStorage();
                 
                 api.post("/projects/exclude_user", {
                     group_id: project_id,
                     user_id: id_usuario
-                }, {
-                    headers: {
-                        Authorization: jwt
-                    }
                 })
                 .then(function(){
                     self.group_users = self.group_users.filter(user => {return user.id_usuario != id_usuario});
@@ -343,10 +322,9 @@ export default {
         changeGroupName: function (group_id, event) {
             let value = event.target.value;
             let self = this;
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
             
             if (value == "" || value.length < 3) {
-                self.group_name = self.group.group_name;
+                self.group_name = self.group.nome;
                 setTimeout(() => {
                     self.countCharacters();
                 }, 10);
@@ -355,14 +333,11 @@ export default {
 
             let data = {
                 group_id: group_id,
-                group_name: value
+                group_name: value,
+                group_description: self.group.group_description
             }
 
-            api.patch('/projects/group_name', data, {
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.patch('/projects/edit_group', data)
             .then(function () {
                 self.group_name = value;
             })
@@ -373,7 +348,6 @@ export default {
         changeGroupDescription: function (group_id, event) {
             let value = event.target.value;
             let self = this;
-            let jwt = "Bearer " + self.getJwtFromLocalStorage();
             
             if (value == "" || value.length < 3) {
                 self.group_description = self.group.group_description;
@@ -385,14 +359,11 @@ export default {
 
             let data = {
                 group_id: group_id,
+                group_name: self.group.nome,
                 group_description: value
             }
 
-            api.patch('/projects/group_description', data, {
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.patch('/projects/edit_group', data)
             .then(function () {
                 self.group_description = value;
             })
