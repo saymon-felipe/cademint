@@ -124,7 +124,7 @@ export const globalMethods = {
             let data = {
                 group_id: group_id
             }
-            self.group = await api.post("/projects/return_group", data).then(res => res.data.response);
+            self.group = await api.post("/projects/return_group", data).then(res => res.data.returnObj);
         },
         removePhoto: function (from_upload = false, banner = false, group = false, group_id = null) {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();

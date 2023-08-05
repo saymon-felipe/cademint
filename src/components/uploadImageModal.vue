@@ -67,10 +67,6 @@ export default {
                 self.removePhoto(true, true);
             }
 
-            if (dataTarget == "group") {
-                self.removePhoto(true, false, true, this.group.group_id);
-            }
-
             if (dataTarget != "group" && dataTarget != "banner") {
                 self.removePhoto(true);
             }

@@ -309,7 +309,7 @@ export default {
                 group_id: project_id
             })
             .then(function(response){
-                self.project = response.data.response;
+                self.project = response.data.returnObj;
                 if (!programatic) {
                     self.checkIfProjectChanged();
                 }
