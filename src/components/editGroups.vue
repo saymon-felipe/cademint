@@ -262,7 +262,7 @@ export default {
             api.post("/projects/request_user_to_group", data)
             .then(function(response){
                 $(".response").addClass("success");
-                self.inviteResponse = response.data.response.mensagem.message_email;
+                self.inviteResponse = response.data.message;
                 self.initiateHourglassAnimation(true);
                 self.requireGroup(idParam);
                 self.clearInvite();
@@ -309,7 +309,6 @@ export default {
         },
         excludeUser: function (project_id, id_usuario) { // Exclui o usuário do grupo.
                 let self = this;
-                
                 api.post("/projects/exclude_user", {
                     group_id: project_id,
                     user_id: id_usuario
