@@ -35,20 +35,24 @@ export default {
                 let user_groups = response.data.response.usuario.user_groups;
                 self.logoutUser(true);
                 if (user_groups.indexOf(groupIdParam) == -1) { // Se não existir o grupo solicitado na lista de grupos do usuário, o mesmo é adicionado no grupo, caso contrario aparece uma mensagem informativa e depois de 5 segundos é redirecionado para o login.
-                    self.addUserToGroup(groupIdParam, tokenParam, response.data.response.usuario.id_usuario, emailParam);
-                    self.response = "Você entrou no grupo com sucesso!";
-                    $(".response").addClass("success");
-                    self.setTemporaryEmail(emailParam);
-
-                    setTimeout(() => {
-                        self.$router.push("/login?joined_group=true&gid=" + groupIdParam + "&gname=" + groupNameParam);
-                    }, 1000);
+                    self.addUserToGroup(groupIdParam, tokenParam, response.data.response.usuario.id_usuario, emailParam).then(() => {
+                        self.response = "Você entrou no grupo com sucesso!";
+                        $(".response").addClass("success");
+                        self.setTemporaryEmail(emailParam);
+                        setTimeout(() => {
+                            self.$router.push("/login?joined_group=true&gid=" + groupIdParam + "&gname=" + groupNameParam);
+                            return;
+                        }, 1000);
+                    }).catch(() => {
+                        self.response = "Erro ao entrar no grupo";
+                        $(".response").addClass("error");
+                    })
                 } else {
                     self.response = "Você já faz parte desse grupo!";
-                    setTimeout(() => {
-                        self.$router.push("/login");
-                    }, 5000);
                 }
+                setTimeout(() => {
+                    self.$router.push("/login");
+                }, 5000);
             }).catch(function () {
                 self.$router.push(`/register?joined_group=true&email=${emailParam}&gid=${groupIdParam}&tk=${tokenParam}`);
             })

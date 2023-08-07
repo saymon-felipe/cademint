@@ -85,13 +85,18 @@ export const globalMethods = {
             })
         },
         addUserToGroup: function (group_id, token, user_id, user_email) { // Função adiciona usuário ao grupo.
-            api.post("/projects/enter_group_with_token", {
-                token: token,
-                email_requested: user_email,
-                user_id: user_id,
-                group_id: group_id
-            }).catch(function(){
-                self.response = "Ocorreu um erro ao entrar no grupo" // Se der erro, o mesmo é exibido.
+            return new Promise((resolve, reject) => {
+                api.post("/projects/enter_group_with_token", {
+                    token: token,
+                    email_requested: user_email,
+                    user_id: user_id,
+                    group_id: group_id
+                }).then(() => {
+                    resolve();
+                })
+                .catch(function(){
+                    reject();
+                })
             })
         },
         removeCurrentProjectInLocalStorage: function () { // Remove o id do projeto de session storage.
