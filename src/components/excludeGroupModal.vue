@@ -45,12 +45,14 @@ export default {
                 groups_id: self.group.group_id
             }
             
-            api.delete("/projects/delete_group", data)
+            api.post("/projects/delete_group", data)
             .then(function () {
                 if (current_project.group_id == self.group.group_id) { // Se o id do grupo que está sendo excluido for igual ao que está em session storage, o que está armazenado é deletado.
                     self.removeCurrentProjectInLocalStorage();
                 }
                 self.hideModal(true);
+            }).catch((error) => {
+                console.log(error)
             })
         },
     },

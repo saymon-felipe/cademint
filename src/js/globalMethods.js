@@ -122,7 +122,7 @@ export const globalMethods = {
         },
         requireUser: async function() { // Função retorna o usuário pelo id.
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
-            self.user = await api.get("/usuarios/return_user", { headers: { Authorization: jwt } }).then(res => res.data.response);
+            self.user = await api.get("/usuarios/return_user", { headers: { Authorization: jwt } }).then(res => res.data.returnObj);
         },
         requireGroup: async function(group_id) { // Função retorna o usuário pelo id.
             let self = this;

@@ -143,7 +143,7 @@ export default {
                 if ($(".response").hasClass("success")) {
                     $(".response").removeClass("success");
                 }
-                self.response = error.response.data.error;
+                self.response = error.response.data;
             })
         },
         validateEmailInput: function (event) {
