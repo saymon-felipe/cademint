@@ -149,9 +149,9 @@ export default {
             
             let data = {
                 group_name: name_input.val(),
-                group_members: self.user.id_usuario,
-                group_owner: self.user.id_usuario,
-                id_usuario: self.user.id_usuario,
+                group_members: self.$root.user.id_usuario,
+                group_owner: self.$root.user.id_usuario,
+                id_usuario: self.$root.user.id_usuario,
                 pending_users: invited_user.email
             }
             

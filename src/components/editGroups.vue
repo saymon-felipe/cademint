@@ -2,16 +2,16 @@
     <div class="edit-groups">
         <div class="group-header">
             <p class="font-size-3-bold">{{ havePermission ? 'Editar grupo (' + group.nome + ')' : 'Ver grupo (' + group.nome + ')' }}</p>
-            <div class="delete-group" v-on:click="excludeGroupModal(group.group_id)" v-if="user.user_groups.length > 1 && group.group_owner == user.id_usuario && havePermission">
+            <div class="delete-group" v-on:click="excludeGroupModal(group.group_id)" v-if="$root.user.user_groups.length > 1 && group.group_owner == $root.user.id_usuario && havePermission">
                 <span class="material-icons">delete</span>
                 <p class="font-size-4">Excluir grupo</p>
             </div>
-            <div class="leave-group" v-on:click="leaveGroupModal(group.group_id)" v-if="user.user_groups.length > 1 && group.group_owner != user.id_usuario">
+            <div class="leave-group" v-on:click="leaveGroupModal(group.group_id)" v-if="$root.user.user_groups.length > 1 && group.group_owner != $root.user.id_usuario">
                 <span class="material-icons">delete</span>
                 <p class="font-size-4">Sair do grupo</p>
             </div>
-            <excludeGroupModal :group="group" :exclude="exclude_group" v-if="exclude_group && user.user_groups.length > 1 && havePermission" @closeModal="exclude_group = false"></excludeGroupModal>
-            <leaveGroupModal :group="group" :exclude="leave_group" v-if="leave_group && user.user_groups.length > 1" @closeModal="leave_group = false"></leaveGroupModal>
+            <excludeGroupModal :group="group" :exclude="exclude_group" v-if="exclude_group && $root.user.user_groups.length > 1 && havePermission" @closeModal="exclude_group = false"></excludeGroupModal>
+            <leaveGroupModal :group="group" :exclude="leave_group" v-if="leave_group && $root.user.user_groups.length > 1" @closeModal="leave_group = false"></leaveGroupModal>
         </div>
         
         <div class="group-informations">
@@ -136,7 +136,6 @@ export default {
         }
     },
     mounted: function () {
-        this.requireUser();
         this.checkPermission();
     },
     methods: {
@@ -244,7 +243,7 @@ export default {
                 return;
             }
 
-            if (user_email == self.user.email) {
+            if (user_email == self.$root.user.email) {
                 self.inviteResponse = "Você não pode entrar em um grupo que já faz parte.";
                 input.val("");
                 self.clearInvite();

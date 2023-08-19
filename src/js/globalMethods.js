@@ -31,57 +31,61 @@ export const globalMethods = {
             return localStorage.getItem("jwt_token");
         },
         checkIfUserIsAuthenticated: function (from_login = false) { // Função testará se usuário está logado para permitir sua entrada na página.
-            let self = this, pathName = window.location.href, jwt = "Bearer " + self.getJwtFromLocalStorage();
-            if (jwt == "Bearer null") {
-                if (pathName.indexOf("/login") == -1 && pathName.indexOf("/register") == -1 && pathName.indexOf("/reset-password") == -1 && pathName.indexOf("/enter-group") == -1 && pathName.indexOf("/maintenance") == -1) { // Se o usuário não estiver na página de login ou register, ele é redirecionado.
-                    self.$router.push("/login");
-                    return;
+            return new Promise((resolve, reject) => {
+                let self = this, pathName = window.location.href, jwt = "Bearer " + self.getJwtFromLocalStorage();
+                if (jwt == "Bearer null") {
+                    if (pathName.indexOf("/login") == -1 && pathName.indexOf("/register") == -1 && pathName.indexOf("/reset-password") == -1 && pathName.indexOf("/enter-group") == -1 && pathName.indexOf("/maintenance") == -1) { // Se o usuário não estiver na página de login ou register, ele é redirecionado.
+                        self.$router.push("/login");
+                        reject();
+                    }
+
+                    if (pathName.indexOf("/login") != -1 || pathName.indexOf("/register") != -1 || pathName.indexOf("/reset-password") != -1) {
+                        reject();
+                    }
                 }
 
-                if (pathName.indexOf("/login") != -1 || pathName.indexOf("/register") != -1 || pathName.indexOf("/reset-password") != -1) {
-                    return;
-                }
-            }
-
-            api.get("/system")
-            .then(function(response) {
-                if (response.data.response.in_maintenance) { 
-                    setTimeout(() => {
-                        $(".in-maintenance-element").show();
-                    }, 700); 
-                    setTimeout(self.checkIfUserIsAuthenticated, 60 * 1000); // Se o sistema estiver em manutenção e cair na página de manutenção, depois de 60 segundos é feita uma nova verificação.
-                    return;
-                } else {
-                    api.get("/usuarios/checkJWT", { // Se ja estiver logado no sistema e acessar a página de login, é checkado a valia do token JWT e então redirecionado para a index.
-                        headers: {
-                            Authorization: jwt
-                        }
-                    })
-                    .then(function () { 
-                        if (pathName.indexOf("/login") != -1) { // Se o usuário estiver logado e entrar em login, o mesmo é logado novamente e direcionado para a index.
-                            setTimeout(() => {
-                                $(".form-input").attr("disabled", true);
-                                $("#submit-button").attr("disabled", true);
-                                self.loading = true;
-    
-                                setTimeout(() => {
-                                    self.$router.push("/home");
-                                }, 1000);
-                            }, 100);
-                        }
-                    })
-                    .catch(function () { // Caso contrário ele é deslogado e enviado para login.
-                        self.logoutUser();
-                    })
-                    .then(function () {
-                        if (!from_login) {
-                            setTimeout(self.checkIfUserIsAuthenticated, 10 * 1000);
-                            if (pathName.indexOf("/maintenance") != -1) {
-                                self.$router.push("/home");
+                api.get("/system")
+                .then(function(response) {
+                    if (response.data.response.in_maintenance) { 
+                        setTimeout(() => {
+                            $(".in-maintenance-element").show();
+                        }, 700); 
+                        setTimeout(self.checkIfUserIsAuthenticated, 60 * 1000); // Se o sistema estiver em manutenção e cair na página de manutenção, depois de 60 segundos é feita uma nova verificação.
+                        return;
+                    } else {
+                        api.get("/usuarios/checkJWT", { // Se ja estiver logado no sistema e acessar a página de login, é checkado a valia do token JWT e então redirecionado para a index.
+                            headers: {
+                                Authorization: jwt
                             }
-                        }
-                    })
-                }
+                        })
+                        .then(function () { 
+                            if (pathName.indexOf("/login") != -1) { // Se o usuário estiver logado e entrar em login, o mesmo é logado novamente e direcionado para a index.
+                                setTimeout(() => {
+                                    $(".form-input").attr("disabled", true);
+                                    $("#submit-button").attr("disabled", true);
+                                    self.loading = true;
+        
+                                    setTimeout(() => {
+                                        self.$router.push("/home");
+                                    }, 1000);
+                                }, 100);
+                            }
+                            resolve();
+                        })
+                        .catch(function () { // Caso contrário ele é deslogado e enviado para login.
+                            self.logoutUser();
+                            reject();
+                        })
+                        .then(function () {
+                            if (!from_login) {
+                                setTimeout(self.checkIfUserIsAuthenticated, 10 * 1000);
+                                if (pathName.indexOf("/maintenance") != -1) {
+                                    self.$router.push("/home");
+                                }
+                            }
+                        })
+                    }
+                })
             })
         },
         addUserToGroup: function (group_id, token, user_id, user_email) { // Função adiciona usuário ao grupo.
@@ -114,15 +118,43 @@ export const globalMethods = {
             let project = JSON.parse(JSONproject);
             return project;
         },
-        loadSystemVersion: async function() {
-            this.app_version = await api.get("/system").then(response => response.data.response.system_version);
+        loadSystemVersion: async function(loadNow = false) {
+            let newAppVersion = await api.get("/system").then(response => response.data.response.system_version);
+
+            if (loadNow) {
+                this.$root.app_version = newAppVersion;
+                return;
+            }
+            
+            let inMaintenanceElement = $(".in-maintenance-element");
+            let newVersionElement = $(".new-version-availabe");
+
+            if (inMaintenanceElement && newVersionElement) {
+                if (this.$root.app_version != newAppVersion) {
+                    console.log("entrou")
+                    inMaintenanceElement.hide();
+                    newVersionElement.show();
+                    this.$root.app_version = newAppVersion;
+                }
+            }
+
             setTimeout(() => {
                 this.loadSystemVersion();
-            }, 60 * 1000);
+            }, 6 * 1000);
         },
-        requireUser: async function() { // Função retorna o usuário pelo id.
-            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
-            self.user = await api.get("/usuarios/return_user", { headers: { Authorization: jwt } }).then(res => res.data.returnObj);
+        requireUser: function(reloadNow = false) { // Função retorna o usuário pelo id.
+            return new Promise((resolve) => {
+                let self = this;
+                api.get("/usuarios/return_user").then((res) => {
+                    self.$root.user = res.data.returnObj;
+                    resolve();
+                    if (!reloadNow) {
+                        setTimeout(() => {
+                            this.requireUser();
+                        }, 10 * 6 * 10 * 1000)
+                    }
+                });
+            })
         },
         requireGroup: async function(group_id) { // Função retorna o usuário pelo id.
             let self = this;

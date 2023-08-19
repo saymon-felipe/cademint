@@ -1,5 +1,5 @@
 <template>
-    <nav class="header" v-if="!is_loading">
+    <nav class="header">
         <div class="in-maintenance-element">
             <h4>Cuidado! O sistema entrou em manutenção e as suas alterações não serão salvas!</h4>
         </div>
@@ -21,7 +21,7 @@
         <div class="current-project-container" v-if="$route.path.indexOf('/home') != -1 && $route.path.indexOf('/edit') == -1 && $route.path.indexOf('/update-profile') == -1">
             <div class="projects">
                 <select id="projects-name" v-model="project_value" @change="changeProject()">
-                    <option v-for="(project, index) in user.user_groups" :key="index" :value="project.groups_id">{{ project.group_name }}</option>
+                    <option v-for="(project, index) in $root.user.user_groups" :key="index" :value="project.groups_id">{{ project.group_name }}</option>
                 </select>
                 <span class="material-icons" id="change-project" v-on:click="openResponsiveChangeProject">sync</span>
                 <span class="material-icons" id="new-project" v-on:click="showNewGroup = true" @showModal="showModal = false">add</span>
@@ -30,12 +30,12 @@
         <div class="menu-wrapper" v-on:click="showResponsiveMenu = false; showMenu = false;"></div>
         <div class="go-to-user-profile">
             <div class="responsive-menu" v-on:click="showResponsiveMenu = !showResponsiveMenu">
-                <img class="avatar-p avatar-header" :src="user.profile_photo">
+                <img class="avatar-p avatar-header" :src="$root.user.profile_photo">
                 <span class="material-icons profile-more-options">expand_more</span>
                 <div class="responsive-menu-container">
                     <div class="responsive-profile-more-options-container">
                         <div class="responsive-user">
-                            <h3><span class="user-name">{{ user.nome }}</span></h3>
+                            <h3><span class="user-name">{{ $root.user.nome }}</span></h3>
                         </div>
                         <ul>
                             <li v-if="$route.path != '/home'"><router-link to="/home">Início</router-link></li>
@@ -48,8 +48,8 @@
             </div>
             
             <div class="go-to-user-profile-inner" v-on:click="showMenu = !showMenu">
-                <img class="avatar-p avatar-header" :src="user.profile_photo">
-                <h3>Olá, <span class="user-name">{{ user.nome }}</span></h3>
+                <img class="avatar-p avatar-header" :src="$root.user.profile_photo">
+                <h3>Olá, <span class="user-name">{{ $root.user.nome }}</span></h3>
                 <span class="material-icons profile-more-options">expand_more</span>
                 <div class="profile-more-options-container">
                     <ul>
@@ -63,7 +63,7 @@
         </div>
         <div class="responsive-choose-project-modal">
             <div class="responsive-projects-list">
-                <span v-for="(group, index) in user.user_groups" :key="index" :id="'project-' + group.groups_id" class="responsive-project" v-on:click="changeProject(false, group.groups_id, group.group_name, true)">{{ group.group_name }}</span>
+                <span v-for="(group, index) in $root.user.user_groups" :key="index" :id="'project-' + group.groups_id" class="responsive-project" v-on:click="changeProject(false, group.groups_id, group.group_name, true)">{{ group.group_name }}</span>
             </div>
         </div>
         <div class="overlay" v-on:click="closeResponsiveChangeProject"></div>
@@ -80,14 +80,11 @@ export default {
     mixins: [globalMethods],
     data() {
         return {
-            user: "",
             project_value: null,
             project_name: "",
             show_modal: false,
             is_loading: true,
             showNewGroup: false,
-            app_version: this.loadSystemVersion(),
-            older_app_version: this.app_version,
             showMenu: false,
             showResponsiveMenu: false,
             gid: null,
@@ -195,8 +192,8 @@ export default {
             let project = this.getCurrentProjectInLocalStorage();
             if (project == null || project == 'undefined') {
                 let selectGroup = {
-                    group_id: this.user.user_groups[0].groups_id,
-                    group_name: this.user.user_groups[0].group_name
+                    group_id: this.$root.user.user_groups[0].groups_id,
+                    group_name: this.$root.user.user_groups[0].group_name
                 }
                 if (this.gid != null) {
                     selectGroup.group_id = this.gid;
@@ -222,17 +219,6 @@ export default {
         }
     },
     watch: {
-        user: function () {
-            this.findProjectOption();
-            this.findResponsiveProject();
-            this.is_loading = false;
-        },
-        app_version: function () {
-            if (this.app_version != this.older_app_version) {
-                $(".in-maintenance-element").hide();
-                $(".new-version-availabe").show();
-            }
-        },
         showMenu: function () {
             if (this.showMenu) {
                 this.openMenu();
@@ -249,13 +235,15 @@ export default {
         }
     },
     mounted() {
+        console.log(this.$root.user)
         if (window.location.href.indexOf("/home") != -1) {
             let url = new URLSearchParams(window.location.search);
             this.gid = url.get("gid");
             this.gname = url.get("gname");
-            this.requireUser();
             this.checkIfProjectChanged();
         }
+        this.findProjectOption();
+        this.findResponsiveProject();
     },
     components: {
         newGroupModal

@@ -13,7 +13,7 @@
                     </div>
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('todo', $event)" @drop="handleDrop('todo', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members_objects" card_status="1" :user="user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <newTaskCard :group_users="project.group_members_objects" card_status="1" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
                             <Draggable v-for="task in todoList" :key="task.id_os" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('doing', $event)" @drop="handleDrop('doing', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members_objects" card_status="2" :user="user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <newTaskCard :group_users="project.group_members_objects" card_status="2" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
                             <Draggable v-for="task in doingList" :key="task.id_os" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
@@ -42,7 +42,7 @@
                     </div>
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('test', $event)" @drop="handleDrop('test', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members_objects" card_status="3" :user="user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <newTaskCard :group_users="project.group_members_objects" card_status="3" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
                             <Draggable v-for="task in testList" :key="task.id_os" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
@@ -56,7 +56,7 @@
                     </div>
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('done', $event)" @drop="handleDrop('done', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members_objects" card_status="4" :user="user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <newTaskCard :group_users="project.group_members_objects" card_status="4" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
                             <Draggable v-for="task in doneList" :key="task.id_os" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
@@ -88,7 +88,6 @@ export default {
     data() {
         return {
             in_drag: false,
-            user: {},
             task_list: {},
             is_loading: true,
             draggind_card: {
@@ -128,9 +127,6 @@ export default {
             setTimeout(() => {
                 this.checkAllowDrag = true;
             }, 100);
-        },
-        user: function () {
-            this.init();
         }
     },
     methods: {
@@ -338,18 +334,16 @@ export default {
             setTimeout(() => {
                 newTaskCard.hide();
                 if (emmit_event != undefined) {
-                    emmit_event.user_owner_name = this.user.nome;
+                    emmit_event.user_owner_name = this.$root.user.nome;
                     this.editTask(emmit_event);
                 }
             }, 400);
         }
     },
     mounted() {
-        
         setTimeout(() => {
             if (window.location.href.indexOf("/home") != -1) {
-                this.requireUser();
-
+                this.init();
                 if (this.current_project == null) {
                     return;
                 }

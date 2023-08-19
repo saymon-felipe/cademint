@@ -1,14 +1,14 @@
 <template>
-    <section class="update-profile-container">
+    <section class="update-profile-container" v-if="!loading">
         <div class="update-profile">
-            <div class="user-banner" :style="'background-image: url(' + user.user_cover_image + '); background-position-y: center;'">
+            <div class="user-banner" :style="'background-image: url(' + $root.user.user_cover_image + '); background-position-y: center;'">
                 <div class="change-banner" v-on:click="toggleBannerDetails()">
                     <span class="material-icons">edit</span>
                     <span>Capa</span>
                 </div>
                 <div class="banner-details" v-if="showBannerDetails">
                     <ul>
-                        <li v-if="user.user_cover_image != default_user_cover_image" v-on:click="showBanner">Ver foto</li>
+                        <li v-if="$root.user.user_cover_image != default_user_cover_image" v-on:click="showBanner">Ver foto</li>
                         <li v-on:click="removeBanner()" v-if="user.user_cover_image != default_user_cover_image">Excluir foto</li>
                         <li v-on:click="showSendPhoto(true)">Enviar foto</li>
                     </ul>
@@ -17,8 +17,8 @@
             <div class="informations-container">
                 <div class="user-image">
                     <div class="user-image-container">
-                        <img :src="user.profile_photo" class="profile-avatar">
-                        <div class="user-level-badge">Nível {{user.user_level}}</div>
+                        <img :src="$root.user.profile_photo" class="profile-avatar">
+                        <div class="user-level-badge">Nível {{$root.user.user_level}}</div>
                         <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="170px" height="170px">
                             <defs>
                                 <linearGradient id="GradientColor">
@@ -32,8 +32,8 @@
                             <span class="material-icons">photo_camera</span>
                             <div class="photo-details" v-if="showPhotoDetails">
                                 <ul>
-                                    <li v-if="user.profile_photo != default_user_image" v-on:click="showPhoto">Ver foto</li>
-                                    <li v-on:click="removePhoto()" v-if="user.profile_photo != default_user_image">Excluir foto</li>
+                                    <li v-if="$root.user.profile_photo != default_user_image" v-on:click="showPhoto">Ver foto</li>
+                                    <li v-on:click="removePhoto()" v-if="$root.user.profile_photo != default_user_image">Excluir foto</li>
                                     <li v-on:click="showSendPhoto()">Enviar foto</li>
                                 </ul>
                             </div>
@@ -42,17 +42,17 @@
                 </div>
                 <div class="profile-form-container">
                     <div class="user-informations">
-                        <h3 class="font-size-2-bold">{{ user.nome }}</h3>
+                        <h3 class="font-size-2-bold">{{ $root.user.nome }}</h3>
                         <div class="user-medals">
-                            <div class="user-medal-container" v-for="(medal, index) in user.user_medals" :key="index">
+                            <div class="user-medal-container" v-for="(medal, index) in $root.user.user_medals" :key="index">
                                 <img :src="require('../assets/img/medal-' + medal.id + '.svg')" class="user-medal" :title="medal.medal_description">
                             </div>
                         </div>
                     </div>
                     <div class="user-occupations">
-                        <div class="occupation" v-for="(occupation, index) in user_occupations" :key="index">
-                            <p class="font-size-5">{{ occupation }}</p>
-                            <div class="exclude-occupation" v-on:click="excludeOccupation(occupation)">
+                        <div class="occupation" v-for="(occupation, index) in $root.user.user_occupations" :key="index">
+                            <p class="font-size-5">{{ occupation.occupation_name }}</p>
+                            <div class="exclude-occupation" v-on:click="excludeOccupation(occupation.id)">
                                 <span class="material-icons">clear</span>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                 <div class="user-achievements">
                     <p class="font-size-3-bold user-achievements-title">Conquistas</p>
                     <div class="user-achievements-container">
-                        <div class="achievement" v-for="(achievement, index) in user.user_achievements" :key="index" :title="achievement.achievements_description">
+                        <div class="achievement" v-for="(achievement, index) in $root.user.user_achievements" :key="index" :title="achievement.achievements_description">
                             <div class="achievement-icon">
                                 <span class="material-icons">
                                     {{ findAchievementIcon(achievement.achievements_name) }}
@@ -80,17 +80,17 @@
                         <p class="font-size-3-bold">Biografia</p>
                         <span class="material-icons" v-on:click="editBio()">edit</span>
                     </div>
-                    <p class="bio" v-if="!editing_bio">{{ user_bio }}</p>
-                    <p class="bio" v-if="user_bio == '' && !editing_bio"><i>Conte sobre você...</i></p>
+                    <p class="bio" v-if="!editing_bio">{{ $root.user.user_bio }}</p>
+                    <p class="bio" v-if="$root.user.user_bio == '' && !editing_bio"><i>Conte sobre você...</i></p>
                     <div class="edit-bio" v-if="editing_bio">
-                        <textarea name="user_bio" id="user-bio" rows="7" v-model="user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)"></textarea>
+                        <textarea name="user_bio" id="user-bio" rows="7" v-model="$root.user.user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)"></textarea>
                         <p class="bio-counter">0 / 500</p>
                     </div>
                 </div>
                 <hr>
                 <div class="user-groups">
                     <p class="font-size-3-bold">Meus grupos</p>
-                    <div class="group" v-for="(group, index) in user.user_groups" :key="index">
+                    <div class="group" v-for="(group, index) in $root.user.user_groups" :key="index">
                         <router-link :to="{ name: 'edit-groups', params: { id: group.groups_id } }">
                         <div class="group">
                             <img :src="group.image">
@@ -159,7 +159,6 @@ export default {
     mixins: [globalMethods],
     data() {
         return {
-            user: {},
             user_occupations: [],
             showSubmit: false,
             response: "",
@@ -167,27 +166,24 @@ export default {
             showBannerDetails: false,
             showExpandedPhoto: false,
             showSendPhotoContainer: false,
-            loading: false,
+            loading: true,
             my_groups: {},
             showProfileMoreOptions: false,
             showExcludeAccount: false,
             isDeleting: false,
             addOccupation: false,
             editing_bio: false,
-            user_bio: "",
             password_response: "",
             reset_password_sent: false
         }
     },
     watch: {
-        user: function () {
-            this.my_groups = this.getMyGroups();
-            this.user_occupations = this.getUserOccupations(this.user.user_occupation);
-            this.setLevelProgress();
-            this.user_bio = this.user.user_bio;
-            setTimeout(() => {
-                this.requireUser();
-            }, 10 * 60 * 1000); //Chamada recursiva do requireUser após 10 minutos
+        changedUser: function () {
+            if (this.changedUser) {
+                console.log(this.$root.user.user_occupation)
+                this.my_groups = this.getMyGroups();
+                this.setLevelProgress();
+            }
         },
         showProfileMoreOptions: function () {
             let self = this;
@@ -239,8 +235,10 @@ export default {
             api.patch("/usuarios/change_bio", data)
             .then(function () {
                 self.closeBio();
-                self.user_bio = value;
-                self.requireUser();
+                self.$root.user.user_bio = value;
+                self.requireUser(true).then(() => {
+                    self.changedUser = true;
+                });
             })
         },
         editBio: function () {
@@ -252,31 +250,22 @@ export default {
         },
         closeBio: function () {
             this.editing_bio = false;
-            this.user_bio = this.user.user_bio;
         },
-        excludeOccupation: function (occupation) {
+        excludeOccupation: function (occupationId) {
             let self = this;
-            let new_ocupations;
-
-            self.user_occupations.splice(self.user_occupations.indexOf(occupation), 1);
-            new_ocupations = self.user_occupations.join(",");
-            if (self.user_occupations.length == 1) {
-                new_ocupations = self.user_occupations.join();
-            }
-            if (self.user_occupations.length == 0) {
-                new_ocupations = "";
-            }
             let data = {
-                user_occupation: new_ocupations
+                user_occupation: occupationId
             }
             api.patch('/usuarios/exclude_occupation', data)
             .then(function () {
-                self.getUserOccupations(self.user_occupations);
+                self.requireUser(true).then(() => {
+                    self.changedUser = true;
+                });
             })
         },
         sendOccupation: function () {
             let value = $(".occupation-input").val();
-            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
+            let self = this;
             let data = {
                 user_occupation: value
             }
@@ -284,17 +273,15 @@ export default {
                 this.addOccupation = false;
                 return;
             }
-            api.patch("/usuarios/add_occupation", data, { 
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.patch("/usuarios/add_occupation", data)
             .then(function () { 
-                self.returnUserOccupations();
-                self.addOccupation = false;
+                self.requireUser(true).then(() => {
+                    self.changedUser = true;
+                    self.returnUserOccupations();
+                    self.addOccupation = false;
+                });
             })
-            .catch(function (error) {
-                console.log(error.response.data.error)
+            .catch(function () {
                 self.addOccupation = false;
             })
         },
@@ -306,8 +293,10 @@ export default {
                     Authorization: jwt
                 }
             })
-            .then(function (response) {
-                self.user_occupations = self.getUserOccupations(response.data.user_occupations);
+            .then(function () {
+                self.requireUser(true).then(() => {
+                    self.changedUser = true;
+                })
             })
         },
         showOccupationInput: function () {
@@ -379,27 +368,15 @@ export default {
             }
             return iconClass;
         },
-        getUserOccupations: function (user_occupation) {
-            let occupation = user_occupation;
-            if (user_occupation.indexOf(",") != -1) {
-                occupation = user_occupation.split(",");
-            } else {
-                occupation = [user_occupation];
-            }
-            if (occupation == "") {
-                occupation = [];
-            }
-            return occupation;
-        },
         setLevelProgress: function () {
-            let progress = this.user.level_progress;
+            let progress = this.$root.user.level_progress;
             let circleElement = $("#circle-progress");
             circleElement.css("stroke-dashoffset", 495 - (495 * parseInt(progress) / 100));
         },
         getMyGroups: function () {
-            let self = this, groups = self.user.user_groups, my_groups = [];
+            let self = this, groups = self.$root.user.user_groups, my_groups = [];
             for (let i = 0; i < groups.length; i++) {
-                if (groups[i].group_owner == self.user.id_usuario) {
+                if (groups[i].group_owner == self.$root.user.id_usuario) {
                     my_groups.push(groups[i]);
                 }
             }
@@ -413,7 +390,10 @@ export default {
                         Authorization: jwt
                     }
             })
-            .then(function(response){
+            .then(async function(response){
+                self.requireUser(true).then(() => {
+                    self.changedUser = true;
+                });
                 if (!from_upload) {
                     location.reload();
                     self.response = response.data.response.action;
@@ -447,7 +427,7 @@ export default {
             let modal = $(".modal-expanded-photo");
             let img = $(".modal-expanded-photo img");
             modal.show();
-            img.attr("src", this.user.profile_photo).attr("title", "Foto de " + this.user.nome);
+            img.attr("src", this.$root.user.profile_photo).attr("title", "Foto de " + this.$root.user.nome);
             this.showExpandedPhoto = true;
             setTimeout(() => {
                 modal.css("opacity", 1).css("transform", "translateY(0)");
@@ -457,7 +437,7 @@ export default {
             let modal = $(".modal-expanded-photo");
             let img = $(".modal-expanded-photo img");
             modal.show();
-            img.attr("src", this.user.user_cover_image).attr("title", "Banner de " + this.user.nome);
+            img.attr("src", this.$root.user.user_cover_image).attr("title", "Banner de " + this.$root.user.nome);
             this.showExpandedPhoto = true;
             setTimeout(() => {
                 modal.css("opacity", 1).css("transform", "translateY(0)");
@@ -514,47 +494,14 @@ export default {
         toggleBannerDetails: function () {
             this.showBannerDetails = !this.showBannerDetails;
         },
-        updateProfile: function () {
-            let self = this, empty = 0, data = $("#profile-form").serializeArray().reduce(function (obj, item) { // Pega todos os dados do formulário e coloca em um objeto.
-                obj[item.name] = item.value;
-                return obj;
-            }, {});
-
-            if (data["nome"] == self.user.nome) {
-                self.showSubmit = false;
-                return;
-            }
-
-            $(".response").removeClass("error");
-            $(".response").removeClass("success");
-            self.response = "";
-
-            for (let [key, value] of Object.entries(data)) { // Verifica se algum campo está vazio.
-                if (key != null && value == "") {
-                    empty = 1;
-                }
-            }
-            if (empty == 1) {
-                $(".response").addClass("error");
-                self.response = "Campos inválidos";
-            }
-            api.post("/usuarios/update_name", data)
-            .then(function (response) { 
-                $(".response").addClass("success");
-                self.response = response.data.response.message;
-                location.reload();
-            })
-            .catch(function () {
-                $(".response").addClass("error");
-                self.response = "Ocorreu um erro";
-            })
-        }
+    },
+    mounted: function () {
+        this.requireUser(true).then(() => {
+            this.loading = false;
+        })
     },
     components: {
         uploadModal
-    },
-    mounted() {
-        this.requireUser();
     }
 }
 </script>
