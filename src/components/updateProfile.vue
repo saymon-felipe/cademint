@@ -9,7 +9,7 @@
                 <div class="banner-details" v-if="showBannerDetails">
                     <ul>
                         <li v-if="$root.user.user_cover_image != default_user_cover_image" v-on:click="showBanner">Ver foto</li>
-                        <li v-on:click="removeBanner()" v-if="user.user_cover_image != default_user_cover_image">Excluir foto</li>
+                        <li v-on:click="removeBanner()" v-if="$root.user.user_cover_image != default_user_cover_image">Excluir foto</li>
                         <li v-on:click="showSendPhoto(true)">Enviar foto</li>
                     </ul>
                 </div>
@@ -204,7 +204,7 @@ export default {
             let self = this;
 
             let data = {
-                email: self.user.email
+                email: self.$root.user.email
             }
 
             api.post("/usuarios/forgot_password", data)
