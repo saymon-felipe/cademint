@@ -29,16 +29,4 @@ const api = axios.create({
     baseURL: url_api
 });
 
-function checkAndSetJwt() {
-    let interval = setInterval(() => {
-        let jwt = localStorage.getItem("jwt_token");
-        if (jwt != null) {
-            api.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem("jwt_token")}`;
-            clearInterval(interval);
-        }
-    }, 100)
-}
-
-checkAndSetJwt();
-
 export default api;

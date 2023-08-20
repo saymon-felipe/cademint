@@ -235,7 +235,6 @@ export default {
         }
     },
     mounted() {
-        console.log(this.$root.user)
         if (window.location.href.indexOf("/home") != -1) {
             let url = new URLSearchParams(window.location.search);
             this.gid = url.get("gid");

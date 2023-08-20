@@ -23,12 +23,17 @@ export default {
     mounted: function () {
         let self = this;
         this.checkIfUserIsAuthenticated().then(() => {
-            self.requireUser().then(() => {
-                if (self.$root.user != undefined) {
-                    this.loadSystemVersion(true);
-                    self.initApp = true;
+            let interval = setInterval(() => {
+                if (self.$root.jwtLoaded) {
+                    self.requireUser().then(() => {
+                        if (self.$root.user != undefined) {
+                            self.loadSystemVersion(true);
+                            self.initApp = true;
+                        }
+                    });
+                    clearInterval(interval);
                 }
-            });
+            })
         }).catch(() => {})
     }
 }

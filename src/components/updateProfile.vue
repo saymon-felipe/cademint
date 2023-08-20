@@ -180,7 +180,6 @@ export default {
     watch: {
         changedUser: function () {
             if (this.changedUser) {
-                console.log(this.$root.user.user_occupation)
                 this.my_groups = this.getMyGroups();
                 this.setLevelProgress();
             }

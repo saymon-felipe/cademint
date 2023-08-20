@@ -31,16 +31,16 @@ export const globalMethods = {
             return localStorage.getItem("jwt_token");
         },
         checkIfUserIsAuthenticated: function (from_login = false) { // Função testará se usuário está logado para permitir sua entrada na página.
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 let self = this, pathName = window.location.href, jwt = "Bearer " + self.getJwtFromLocalStorage();
                 if (jwt == "Bearer null") {
                     if (pathName.indexOf("/login") == -1 && pathName.indexOf("/register") == -1 && pathName.indexOf("/reset-password") == -1 && pathName.indexOf("/enter-group") == -1 && pathName.indexOf("/maintenance") == -1) { // Se o usuário não estiver na página de login ou register, ele é redirecionado.
                         self.$router.push("/login");
-                        reject();
+                        return;
                     }
 
                     if (pathName.indexOf("/login") != -1 || pathName.indexOf("/register") != -1 || pathName.indexOf("/reset-password") != -1) {
-                        reject();
+                        return;
                     }
                 }
 
@@ -74,7 +74,7 @@ export const globalMethods = {
                         })
                         .catch(function () { // Caso contrário ele é deslogado e enviado para login.
                             self.logoutUser();
-                            reject();
+                            return;
                         })
                         .then(function () {
                             if (!from_login) {
@@ -131,7 +131,6 @@ export const globalMethods = {
 
             if (inMaintenanceElement && newVersionElement) {
                 if (this.$root.app_version != newAppVersion) {
-                    console.log("entrou")
                     inMaintenanceElement.hide();
                     newVersionElement.show();
                     this.$root.app_version = newAppVersion;
@@ -192,7 +191,20 @@ export const globalMethods = {
                     self.response = response.data.response.action;
                 }
             })
+        },
+        checkAndSetJwt: function() {
+            let interval = setInterval(() => {
+                let jwt = localStorage.getItem("jwt_token");
+                if (jwt != null) {
+                    api.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem("jwt_token")}`;
+                    this.$root.jwtLoaded = true;
+                    clearInterval(interval);
+                }
+            }, 100)
         }
+    },
+    mounted: function() {
+        this.checkAndSetJwt();
     },
     data() {
         return {
