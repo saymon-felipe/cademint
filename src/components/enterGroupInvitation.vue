@@ -23,19 +23,22 @@ export default {
     },
     methods: {
         enterGroup: function () {
-            let self = this, url = new URLSearchParams(window.location.search);
+            let self = this;
+            let url = new URLSearchParams(window.location.search);
             let tokenParam = url.get("tk"); // Armazena cada parametro da URL em variáveis.
             let emailParam = decodeURIComponent(url.get("email")); 
             let groupIdParam = url.get("gid");
             let groupNameParam = url.get("gname");
+            
             api.post("/usuarios/return_user_by_email", {
                 email: emailParam
             })
             .then(function(response){
-                let user_groups = response.data.response.usuario.user_groups;
+                let user = response.data.returnObj;
+                let user_groups = user.user_groups;
                 self.logoutUser(true);
-                if (user_groups.indexOf(groupIdParam) == -1) { // Se não existir o grupo solicitado na lista de grupos do usuário, o mesmo é adicionado no grupo, caso contrario aparece uma mensagem informativa e depois de 5 segundos é redirecionado para o login.
-                    self.addUserToGroup(groupIdParam, tokenParam, response.data.response.usuario.id_usuario, emailParam).then(() => {
+                if (user_groups.some(obj => obj.groups_id != groupIdParam)) { // Se não existir o grupo solicitado na lista de grupos do usuário, o mesmo é adicionado no grupo, caso contrario aparece uma mensagem informativa e depois de 5 segundos é redirecionado para o login.
+                    self.addUserToGroup(groupIdParam, tokenParam, user.id_usuario, emailParam).then(() => {
                         self.response = "Você entrou no grupo com sucesso!";
                         $(".response").addClass("success");
                         self.setTemporaryEmail(emailParam);

@@ -187,14 +187,15 @@ export default {
             }
             api.post("/projects/check_permission", data)
             .then(function () {
-                self.requireGroup(idParam);
                 self.havePermission = true;
             })
             .catch(function () {
                 self.blockFields();
             })
             .then(function () {
-                self.requireGroup(idParam);
+                self.requireGroup(idParam).then((results) => {
+                    self.group = results;
+                })
             })
         },
         clearInvite: function () {
@@ -263,7 +264,9 @@ export default {
                 $(".response").addClass("success");
                 self.inviteResponse = response.data.message;
                 self.initiateHourglassAnimation(true);
-                self.requireGroup(idParam);
+                self.requireGroup(idParam).then((results) => {
+                    self.group = results;
+                })
                 self.clearInvite();
                 setTimeout(() => {
                     self.inviteResponse = "";

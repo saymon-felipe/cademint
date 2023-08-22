@@ -155,12 +155,17 @@ export const globalMethods = {
                 });
             })
         },
-        requireGroup: async function(group_id) { // Função retorna o usuário pelo id.
-            let self = this;
-            let data = {
-                group_id: group_id
-            }
-            self.group = await api.post("/projects/return_group", data).then(res => res.data.returnObj);
+        requireGroup: function(group_id) { // Função retorna o usuário pelo id.
+            return new Promise((resolve) => {
+                let self = this;
+                let data = {
+                    group_id: group_id
+                }
+                api.post("/projects/return_group", data).then((response) => {
+                    self.group = response.data.returnObj;
+                    resolve(self.group);
+                })
+            })
         },
         removePhoto: function (from_upload = false, banner = false, group = false, group_id = null) {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
