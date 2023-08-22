@@ -151,7 +151,7 @@
             </div>
         </div>
         <div class="comment-input">
-            <textarea name="message" id="desc_comentario" placeholder="Faça um comentário" maxlength="2000" rows="1" v-on:keydown="countRows($event)" v-on:keyup="countRows($event, true)"></textarea>
+            <textarea name="message" id="desc_comentario" placeholder="Faça um comentário" maxlength="1000" rows="1" v-on:keydown="countRows($event)" v-on:keyup="countRows($event, true)"></textarea>
             <div class="send-icon" v-on:click="sendComment('#desc_comentario')">
                 <span class="material-icons">send</span>
             </div>

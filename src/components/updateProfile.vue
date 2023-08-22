@@ -83,7 +83,7 @@
                     <p class="bio" v-if="!editing_bio">{{ $root.user.user_bio }}</p>
                     <p class="bio" v-if="$root.user.user_bio == '' && !editing_bio"><i>Conte sobre você...</i></p>
                     <div class="edit-bio" v-if="editing_bio">
-                        <textarea name="user_bio" id="user-bio" rows="7" v-model="$root.user.user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)"></textarea>
+                        <textarea name="user_bio" id="user-bio" rows="7" v-model="$root.user.user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)" maxlength="500"></textarea>
                         <p class="bio-counter">0 / 500</p>
                     </div>
                 </div>

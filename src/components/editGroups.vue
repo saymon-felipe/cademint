@@ -29,7 +29,7 @@
                 </div>
                 <div class="group-input">
                     <label class="font-size-5" for="group_description">Descrição</label>
-                    <textarea name="group_description" id="group_description" cols="30" rows="10" v-model="group_description" v-on:keyup="countCharacters()" v-on:focusout="changeGroupDescription(group.group_id, $event)"></textarea>
+                    <textarea name="group_description" id="group_description" cols="30" rows="10" v-model="group_description" v-on:keyup="countCharacters()" v-on:focusout="changeGroupDescription(group.group_id, $event)" maxlength="500"></textarea>
                     <p class="font-size-5 description_counter">0 / 500</p>
                 </div>
                 <div class="invite-users" v-if="havePermission">
