@@ -145,7 +145,7 @@ export const globalMethods = {
             return new Promise((resolve) => {
                 let self = this;
                 api.get("/usuarios/return_user").then((res) => {
-                    self.$root.user = res.data.response;
+                    self.$root.user = res.data.returnObj;
                     resolve();
                     if (!reloadNow) {
                         setTimeout(() => {
