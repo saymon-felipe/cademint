@@ -10,7 +10,7 @@
         <router-link to="/home" v-if="$route.path.indexOf('/home') == -1">
             <i class="fas fa-arrow-circle-left return"></i>
         </router-link>
-        <div class="title-container">
+        <div class="title-container" :title="$root.app_version">
             <router-link to="/home">
                 <div class="header-images" v-on:click="goToHome()">
                     <img src="../assets/img/cademint-icon-blue.png" />
