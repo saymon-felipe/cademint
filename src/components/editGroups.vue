@@ -63,7 +63,7 @@
                         <div class="user-container" v-if="member != ''">
                             <div class="principal">
                                 <img :src="default_user_image" class="avatar-p" :alt="'Imagem de ' + member">
-                                <span class="font-size-3">{{ member }}</span>
+                                <span class="font-size-3">{{ member.pending_user_email }}</span>
                             </div>
                             <span class="material-icons hourglass-icon">hourglass_top</span>
                             <span class="material-icons delete-invitation" v-on:click="excludeInvitation(group.group_id, member, index)" v-if="havePermission">clear</span>
@@ -111,7 +111,7 @@ export default {
     },
     watch: {
         group: function () {
-            this.group_users = this.group.group_members_objects;
+            this.group_users = this.group.group_members;
             this.group_description = this.group.group_description;
             this.group_name = this.group.nome;
             setTimeout(() => {

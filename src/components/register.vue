@@ -63,26 +63,6 @@ export default {
                 self.fillEmail(self.email);
             }
         },
-        createNewProjectFromRegister: function (user_id, user_name) { // Cria um novo projeto quando um usuário se registra, o projeto é criado como: "Projeto de {nome do usuário}".
-            let data = {
-                group_name: "Projeto de " + user_name,
-                group_members: user_id,
-                group_owner: user_id,
-                id_usuario: user_id,
-                pending_users: ""
-            }, self = this; 
-
-            api.post("/projects", data)
-            .then(function(response){
-                self.updateUserGroup(response.data.response.grupo_criado.groups_id, user_id);
-            })
-        },
-        updateUserGroup: function (groups_id, user_id) {
-            api.post("/usuarios/update_groups", {
-                user_groups: groups_id,
-                id: user_id
-            })
-        },
         register: function () { // Função acontece quando dá submit do formulário de registro.
             let self = this;
             self.response = "";
@@ -113,13 +93,13 @@ export default {
                     .then(function(response2){
                         $("#register-form").find(".loading").hide();
                         $("#register-form").find('.response').addClass("success");
-                        self.response = response2.data.mensagem;
-                        self.createNewProjectFromRegister(response2.data.response.usuario_criado.id_usuario, response2.data.response.usuario_criado.nome); // Cria um novo projeto com base no nome do usuário cadastrado.
-                        self.setTemporaryEmail(response2.data.response.usuario_criado.email);
+                        console.log(response2)
+                        self.response = response2.data.message;
+                        self.setTemporaryEmail(response2.data.returnObj.email);
                         self.logoutUser(true);
                         setTimeout(() => {
                             if (self.joined_group) { // Se vier o parametro joined_group na url, o registro redireciona para o login e passa esse parâmetro.
-                                self.addUserToGroup(self.gid, self.tk, response2.data.response.usuario_criado.id_usuario, self.email);
+                                self.addUserToGroup(self.gid, self.tk, response2.data.returnObj.id_usuario, self.email);
                                 self.$router.push("/login?joined_group=true");
                             } else {
                                 self.$router.push("/login");

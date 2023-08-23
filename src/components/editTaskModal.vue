@@ -35,7 +35,7 @@
                             <span class="material-icons customized-select-icon">expand_more</span>
                         </div>
                         <div class="customized-select-option-group sponsor-select">
-                            <div class="customized-option" :class="selected_sponsor[0].id_usuario == member.id_usuario ? 'selected' : ''" :user_id="member.id_usuario" v-for="(member, index) in group.group_members_objects" :key="index" v-on:click="selected_sponsor = [member, '']; toggleSponsorSelect(); computeChanges('sponsor', member.id_usuario, member.nome)">
+                            <div class="customized-option" :class="selected_sponsor[0].id_usuario == member.id_usuario ? 'selected' : ''" :user_id="member.id_usuario" v-for="(member, index) in group.group_members" :key="index" v-on:click="selected_sponsor = [member, '']; toggleSponsorSelect(); computeChanges('sponsor', member.id_usuario, member.nome)">
                                 <img :src="member.profile_photo" class="avatar-pp" v-if="member.id_usuario != selected_sponsor[0].id_usuario">
                                 <span v-if="member.id_usuario != selected_sponsor[0].id_usuario">{{member.nome}}</span>
                             </div>
@@ -197,12 +197,12 @@ export default {
     },
     methods: {
         setSelectedSponsor: function (sponsor_id) {
-            let member = this.group.group_members_objects.filter(member => {return member.id_usuario == sponsor_id});
+            let member = this.group.group_members.filter(member => {return member.id_usuario == sponsor_id});
             this.selected_sponsor = member;
         },
         deleteTask: function () {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
-            api.delete("/os/delete_os", { data: {id: self.task.id}, headers: {Authorization: jwt}})
+            api.delete("/task/delete_os", { data: {id: self.task.id}, headers: {Authorization: jwt}})
             .then(function(){
                 self.closeEditTaskModal();
             }).catch(function(error){
@@ -215,7 +215,7 @@ export default {
                 task_comment_id: task_comment_id
             }
 
-            api.post("/os/like_task_comment", data, { // Requisição que atualiza a tarefa com os novos dados.
+            api.post("/task/like_task_comment", data, { // Requisição que atualiza a tarefa com os novos dados.
                 headers: {
                     Authorization: jwt
                 }
@@ -247,7 +247,7 @@ export default {
                 id_task: self.task.id
             }
             
-            api.post("/os/task_comment", comment, { // Requisição que atualiza a tarefa com os novos dados.
+            api.post("/task/task_comment", comment, { // Requisição que atualiza a tarefa com os novos dados.
                 headers: {
                     Authorization: jwt
                 }
@@ -265,7 +265,7 @@ export default {
             let data = {
                 id_task: self.task.id
             }
-            api.post("/os/get_task_comment", data, { // Requisição que atualiza a tarefa com os novos dados.
+            api.post("/task/get_task_comment", data, { // Requisição que atualiza a tarefa com os novos dados.
                 headers: {
                     Authorization: jwt
                 }
@@ -287,7 +287,7 @@ export default {
         saveTaskChanges: function () {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
 
-            api.patch("/os", self.changed_task, { // Requisição que atualiza a tarefa com os novos dados.
+            api.patch("/task", self.changed_task, { // Requisição que atualiza a tarefa com os novos dados.
                 headers: {
                     Authorization: jwt
                 }

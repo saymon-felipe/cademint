@@ -103,7 +103,7 @@ export default {
                 if (!response.data.response.in_maintenance) {
                     api.post("/usuarios/login", data)
                     .then(function(response2){
-                        self.setJwtInLocalStorage(response2.data.token);
+                        self.setJwtInLocalStorage(response2.data.returnObj);
                         self.response = response2.data.mensagem;
                         $('.response').addClass("success");
                         self.loading = false;

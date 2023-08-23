@@ -50,14 +50,15 @@
                         </div>
                     </div>
                     <div class="user-occupations">
-                        <div class="occupation" v-for="(occupation, index) in $root.user.user_occupations" :key="index">
+                        <p class="add-occupation-label" v-if="$root.user.user_occupations.length == 0">Adicione um cargo</p>
+                        <div class="occupation" v-for="(occupation, index) in $root.user.user_occupations" :key="index" :id="'cargo-' + index">
                             <p class="font-size-5">{{ occupation.occupation_name }}</p>
-                            <div class="exclude-occupation" v-on:click="excludeOccupation(occupation.id)">
+                            <div class="exclude-occupation" v-on:click="excludeOccupation(occupation.occupation_name, index)">
                                 <span class="material-icons">clear</span>
                             </div>
                         </div>
                         <input type="text" class="occupation-input" placeholder="Cargo" v-if="addOccupation" v-on:focusout="sendOccupation()" maxlength="15">
-                        <span class="material-icons add-occupation" v-on:click="showOccupationInput()" :style="user_occupations.length == 0 ? 'opacity: 1 !important' : ''">add_circle</span>
+                        <span class="material-icons add-occupation" v-on:click="showOccupationInput()">add_circle</span>
                     </div>
                 </div>
                 <hr>
@@ -178,12 +179,6 @@ export default {
         }
     },
     watch: {
-        changedUser: function () {
-            if (this.changedUser) {
-                this.my_groups = this.getMyGroups();
-                this.setLevelProgress();
-            }
-        },
         showProfileMoreOptions: function () {
             let self = this;
             if (self.showProfileMoreOptions) {
@@ -235,9 +230,7 @@ export default {
             .then(function () {
                 self.closeBio();
                 self.$root.user.user_bio = value;
-                self.requireUser(true).then(() => {
-                    self.changedUser = true;
-                });
+                self.requireUser(true);
             })
         },
         editBio: function () {
@@ -250,16 +243,16 @@ export default {
         closeBio: function () {
             this.editing_bio = false;
         },
-        excludeOccupation: function (occupationId) {
+        excludeOccupation: function (occupationName, index) {
             let self = this;
             let data = {
-                user_occupation: occupationId
+                user_occupation: occupationName
             }
+            
             api.patch('/usuarios/exclude_occupation', data)
             .then(function () {
-                self.requireUser(true).then(() => {
-                    self.changedUser = true;
-                });
+                self.requireUser(true);
+                $("#cargo-" + index).remove();
             })
         },
         sendOccupation: function () {
@@ -275,27 +268,11 @@ export default {
             api.patch("/usuarios/add_occupation", data)
             .then(function () { 
                 self.requireUser(true).then(() => {
-                    self.changedUser = true;
-                    self.returnUserOccupations();
                     self.addOccupation = false;
                 });
             })
             .catch(function () {
                 self.addOccupation = false;
-            })
-        },
-        returnUserOccupations: function () {
-            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
-
-            api.get("/usuarios/return_users_occupations", { 
-                headers: {
-                    Authorization: jwt
-                }
-            })
-            .then(function () {
-                self.requireUser(true).then(() => {
-                    self.changedUser = true;
-                })
             })
         },
         showOccupationInput: function () {
@@ -372,15 +349,6 @@ export default {
             let circleElement = $("#circle-progress");
             circleElement.css("stroke-dashoffset", 495 - (495 * parseInt(progress) / 100));
         },
-        getMyGroups: function () {
-            let self = this, groups = self.$root.user.user_groups, my_groups = [];
-            for (let i = 0; i < groups.length; i++) {
-                if (groups[i].group_owner == self.$root.user.id_usuario) {
-                    my_groups.push(groups[i]);
-                }
-            }
-            return my_groups;
-        },
         removeBanner: function (from_upload = false) {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
 
@@ -390,9 +358,7 @@ export default {
                     }
             })
             .then(async function(response){
-                self.requireUser(true).then(() => {
-                    self.changedUser = true;
-                });
+                self.requireUser(true);
                 if (!from_upload) {
                     location.reload();
                     self.response = response.data.response.action;
@@ -1189,11 +1155,22 @@ svg {
         opacity: 1;
     }
 
+@media (max-width: 450px) {
+    .add-occupation {
+        opacity: 1 !important;
+    }
+}
+
 .occupation-input {
     height: 27px;
     border-radius: 6px;
     border: 1px solid var(--gray-low);
     padding: 10px;
+}
+
+.add-occupation-label {
+    color: var(--gray-low);
+    font-style: italic;
 }
 
 @media (max-width: 480px) {
@@ -1207,6 +1184,10 @@ svg {
 
     .exclude-occupation {
         display: flex !important;
+    }
+
+    .add-occupation-label {
+        display: none;
     }
 
     .add-occupation {

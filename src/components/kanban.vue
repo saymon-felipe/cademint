@@ -13,7 +13,7 @@
                     </div>
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('todo', $event)" @drop="handleDrop('todo', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members_objects" card_status="1" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <newTaskCard :group_users="project.group_members" card_status="1" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
                             <Draggable v-for="task in todoList" :key="task.id_os" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('doing', $event)" @drop="handleDrop('doing', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members_objects" card_status="2" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <newTaskCard :group_users="project.group_members" card_status="2" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
                             <Draggable v-for="task in doingList" :key="task.id_os" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
@@ -42,7 +42,7 @@
                     </div>
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('test', $event)" @drop="handleDrop('test', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members_objects" card_status="3" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <newTaskCard :group_users="project.group_members" card_status="3" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
                             <Draggable v-for="task in testList" :key="task.id_os" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
@@ -56,7 +56,7 @@
                     </div>
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('done', $event)" @drop="handleDrop('done', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members_objects" card_status="4" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <newTaskCard :group_users="project.group_members" card_status="4" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
                             <Draggable v-for="task in doneList" :key="task.id_os" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
@@ -238,7 +238,7 @@ export default {
                 self.draggind_card.cardData.status_os = status;
                 $("#" + self.draggind_card.cardData.id).remove();
                 self.task_list.push(self.draggind_card.cardData)
-                api.patch("/os/os_status", {
+                api.patch("/task/os_status", {
                     id: self.draggind_card.cardData.id,
                     status_os: status
                 })
@@ -260,7 +260,7 @@ export default {
             }
 
             if (!self.in_drag) {
-                api.post("/os/return_os_list", {
+                api.post("/task/return_os_list", {
                     id: self.current_project.group_id
                 })
                 .then(function(response){

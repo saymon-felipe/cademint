@@ -160,13 +160,15 @@ export default {
                 self.response = "Nome de grupo inválido";
             } else {
                 name_input.removeClass("invalid-value");
+
                 api.post("/projects", data)
                 .then(function(response){
                     self.created_group = {
-                        group_id: response.data.returnObj.groups_id,
+                        group_id: response.data.returnObj.group_id,
                         group_name: response.data.returnObj.group_name
                     }
                     self.setCurrentProjectInLocalStorage(self.created_group.group_id, self.created_group.group_name);
+                    
                     $(".response").addClass("success");
                     self.response = "Grupo criado com sucesso";
                     if ($("#photo").val() != "") {

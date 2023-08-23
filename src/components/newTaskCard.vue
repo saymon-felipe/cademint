@@ -90,13 +90,9 @@ export default {
             this.$emit("closeTask");
         },
         createInitialTask: function (task_object) {
-            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
+            let self = this;
 
-            api.post("/os", task_object, { // Requisição cria nova tarefa com os dados do formulário.
-                headers: {
-                    Authorization: jwt
-                }
-            })
+            api.post("/task", task_object)// Requisição cria nova tarefa com os dados do formulário.
             .then(function(response){
                 self.$emit("closeTask", response.data.returnObj.created_task);
             }).catch(function(error){
@@ -189,7 +185,7 @@ export default {
     opacity: 0;
     display: none;
     position: absolute;
-    bottom: -172px;
+    top: 100%;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
     z-index: 4;
 }

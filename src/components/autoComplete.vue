@@ -59,10 +59,10 @@ export default {
             $(".cademint-autocomplete").css("opacity", 1);
             api.post('/usuarios/find_users', data)
             .then(function (response) {
-                if (response.data.status == "empty") {
+                self.user_list = response.data.returnObj;
+            }).catch((error) => {
+                if (error.response.status == 404) {
                     self.$emit('emptySearch');
-                } else {
-                    self.user_list = response.data.lista_de_usuarios;
                 }
             })
         },
