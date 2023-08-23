@@ -93,7 +93,7 @@ export default {
                     .then(function(response2){
                         $("#register-form").find(".loading").hide();
                         $("#register-form").find('.response').addClass("success");
-                        console.log(response2)
+                        
                         self.response = response2.data.message;
                         self.setTemporaryEmail(response2.data.returnObj.email);
                         self.logoutUser(true);
