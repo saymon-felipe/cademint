@@ -50,7 +50,7 @@
                         </div>
                     </div>
                     <div class="user-occupations">
-                        <p class="add-occupation-label" v-if="$root.user.user_occupations.length == 0">Adicione um cargo</p>
+                        <p class="add-occupation-label" v-if="$root.user.user_occupations.length == 0 && !addOccupation">Adicione um cargo</p>
                         <div class="occupation" v-for="(occupation, index) in $root.user.user_occupations" :key="index" :id="'cargo-' + index">
                             <p class="font-size-5">{{ occupation.occupation_name }}</p>
                             <div class="exclude-occupation" v-on:click="excludeOccupation(occupation.occupation_name, index)">
@@ -82,7 +82,7 @@
                         <span class="material-icons" v-on:click="editBio()">edit</span>
                     </div>
                     <p class="bio" v-if="!editing_bio">{{ $root.user.user_bio }}</p>
-                    <p class="bio" v-if="$root.user.user_bio == '' && !editing_bio"><i>Conte sobre você...</i></p>
+                    <p class="bio" v-if="$root.user.user_bio == null && !editing_bio"><i>Conte sobre você...</i></p>
                     <div class="edit-bio" v-if="editing_bio">
                         <textarea name="user_bio" id="user-bio" rows="7" v-model="$root.user.user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)" maxlength="500"></textarea>
                         <p class="bio-counter">0 / 500</p>
@@ -103,7 +103,7 @@
                 <hr>
                 <div class="user-change-password">
                     <p class="font-size-3-bold">Segurança</p>
-                    <button type="button" v-if="!reset_password_sent" v-on:click="requestResetPassword()">Esqueci minha senha</button>
+                    <button type="button" v-if="!reset_password_sent" v-on:click="requestResetPassword()" id="reset-password-button">Esqueci minha senha</button>
                     <div class="reset-password-in-progress" v-if="reset_password_sent">
                         <span class="material-icons">check_circle</span>
                         <p class="font-size-4-bold">{{ password_response }}</p>
@@ -197,6 +197,8 @@ export default {
     methods: {
         requestResetPassword: function () {
             let self = this;
+            let button = $("#reset-password-button");
+            button.html("Enviando...").attr("disabled", "disabled");
 
             let data = {
                 email: self.$root.user.email
@@ -206,6 +208,7 @@ export default {
             .then(function (response) {
                 self.password_response = response.data.message;
                 self.reset_password_sent = true;
+                button.html("Esqueci minha senha").attr("disabled", false);
             })
         },
         countCharacters: function () {
