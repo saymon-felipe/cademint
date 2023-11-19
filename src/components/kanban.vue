@@ -3,7 +3,40 @@
         <div class="loading-page" v-if="is_loading"></div>
         <joinedGroupModal :joined_group="joined_group" v-if="joined_group" @joined_group="joined_group = false" />
         <div class="kanban-container" v-if="!is_loading">
-            <h3 class="project-name font-size-h3">{{ current_project.group_name }}</h3>
+            <div class="project-header">
+                <div class="project-informations">
+                    <h3 class="project-name font-size-h3">{{ current_project.group_name }}</h3>
+                    <div class="project-status" v-on:click="toggleProjectStatus()">
+                        <span>Status do projeto</span>
+
+                        <div class="project-status-container">
+                            <div class="status-item on-track" v-on:click="changeProjectStatus(0)">
+                                <span>No caminho</span>
+                            </div>
+                            <div class="status-item at-risk" v-on:click="changeProjectStatus(1)">
+                                <span>Em risco</span>
+                            </div>
+                            <div class="status-item off-track" v-on:click="changeProjectStatus(2)">
+                                <span>Suspenso</span>
+                            </div>
+                            <div class="status-item on-hold" v-on:click="changeProjectStatus(3)">
+                                <span>Em espera</span>
+                            </div>
+                        </div>
+                        <!-- 0 No caminho, 1 Em risco, 2 Suspenso, 3 Em espera -->
+                    </div>
+                    <div class="project-status-wrapper" v-on:click="toggleProjectStatus()"></div>
+                </div>
+                
+                <div class="project-settings">
+                    <div>
+                        <span class="material-icons history-sprint-button" v-on:click="viewHistoricSprints()">history</span>
+                    </div>
+                    <div>
+                        <span class="material-icons sprint-button" v-on:click="configureProjectSprint()">timeline</span>
+                    </div>
+                </div>
+            </div>
             <div class="kanban-columns">
                 <div class="kanban-column" id="column-1">
                     <div class="kanban-column-header">
@@ -67,6 +100,10 @@
             </div>
             <editTaskModal class="edit-task-container" v-if="show_edit_task" :task="edit_task" :group="project" @closeEditTaskModal="closeEditTask('.edit-task-container', $event)" />
             <div class="edit-task-wrapper" v-if="show_edit_task" v-on:click="closeEditTask('.edit-task-container', true)"></div>
+            <modalComponent :modalname="modalName" v-if="showModal" @modalClosed="showModal = false" :saved="saved">
+                <sprintModalContent @saved="saved = true" v-if="newSprint"></sprintModalContent>
+                <historySprintModalContent @saved="saved = true" v-if="historySprint"></historySprintModalContent>
+            </modalComponent>
         </div>
     </section>
 </template>
@@ -80,6 +117,9 @@ import card from './card.vue';
 import joinedGroupModal from './joinedGroupModal.vue';
 import newTaskCard from "./newTaskCard.vue";
 import editTaskModal from './editTaskModal.vue';
+import modalComponent from "./modalComponent.vue";
+import sprintModalContent from './sprintModalContent.vue';
+import historySprintModalContent from './historySprintModalContent.vue';
 
 export default {
     name: "kanban",
@@ -87,9 +127,12 @@ export default {
     mixins: [globalMethods],
     data() {
         return {
+            saved: false,
             in_drag: false,
             task_list: {},
             is_loading: true,
+            newSprint: false,
+            historySprint: false,
             draggind_card: {
                 status: '',
                 col: '',
@@ -102,7 +145,9 @@ export default {
             edit_task: {},
             show_edit_task: false,
             temporary_task: {},
-            checkAllowDrag: false
+            checkAllowDrag: false,
+            modalName: "",
+            showModal: false
         }
     },
     computed: {
@@ -130,6 +175,39 @@ export default {
         }
     },
     methods: {
+        resetModalContentVariables: function () {
+            this.newSprint = false;
+            this.historySprint = false;
+        },
+        configureProjectSprint: function () {
+            this.resetModalContentVariables();
+
+            this.newSprint = true;
+            this.showModalFunction();
+            this.setModalVariables("Configurar sprint");
+        },
+        viewHistoricSprints: function () {
+            this.resetModalContentVariables();
+
+            this.historySprint = true;
+            this.showModalFunction();
+            this.setModalVariables("Sprints anteriores");
+        },
+        changeProjectStatus: function (projectStatus) {
+            console.log(projectStatus);
+        },
+        toggleProjectStatus: function () {
+            let wrapper = $(".project-status-wrapper");
+            let projectStatusContainer = $(".project-status-container");
+            if (projectStatusContainer.is(":visible")) {
+                projectStatusContainer.hide();
+                wrapper.hide();
+                
+            } else {
+                projectStatusContainer.show();
+                wrapper.show();
+            }
+        },
         editTask: function (task) {
             if ($(".edit-task-container").is(":visible")) {
                 this.closeEditTask(".edit-task-container", true);
@@ -356,12 +434,133 @@ export default {
         Container,
         joinedGroupModal,
         newTaskCard,
-        editTaskModal
+        editTaskModal,
+        modalComponent,
+        sprintModalContent,
+        historySprintModalContent
     }
 }
 </script>
 
 <style scoped>
+
+/* HEADER */
+
+.project-header {
+    width: 100%;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--gray-high);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.project-settings {
+    display: flex;
+}
+
+    .project-settings span {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 5px;
+    }
+
+        .project-settings span:hover {
+            background: var(--gray-high);
+        }
+
+.project-informations {
+    display: flex;
+    align-items: center;
+}
+
+.project-status {
+    border: 1px solid var(--gray-high);
+    margin: 0 1rem;
+    padding: 5px 10px 5px 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+}
+
+    .project-status:hover {
+        background: var(--gray-high);
+    }
+
+    .project-status.on-track::before, .status-item.on-track::before {
+        background: var(--green-high);
+        border: 1px solid var(--green-high);
+    }
+
+    .project-status.at-risk::before, .status-item.at-risk::before {
+        background: var(--yellow);
+        border: 1px solid var(--yellow);
+    }
+
+    .project-status.off-track::before, .status-item.off-track::before {
+        background: var(--red);
+        border: 1px solid var(--red);
+    }
+
+    .project-status.on-hold::before, .status-item.on-hold::before {
+        background: var(--blue);
+        border: 1px solid var(--blue);
+    }
+
+    .project-status::before, .status-item::before {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 1px solid var(--gray);
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        left: 10px;
+    }
+
+    .project-status-container {
+        position: absolute;
+        left: 0;
+        top: 120%;
+        background: var(--white);
+        border: 1px solid var(--gray-high);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        padding: .7rem;
+        display: none;
+        z-index: 11;
+    }
+
+    .project-status-wrapper {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        z-index: 10;
+        cursor: default;
+        display: none;
+    }
+
+    .status-item {
+        padding: 7px 7px 7px 32px;
+        cursor: pointer;
+        position: relative;
+    }
+
+        .status-item:hover {
+            background: var(--gray-high);
+        }
+
+/* HEADER */
 
 .edit-task-container {
     transition: all 0.4s;
@@ -386,45 +585,38 @@ export default {
     transition: all 0.4s;
 }
 
-/* NEW TASK */
-
 .kanban {
     height: 100vh;
-    justify-content: center;
-    overflow-y: hidden;
-    overflow-x: scroll;
-    width: 100%;
+    overflow: hidden;
+    width: 100vw;
     padding-top: 56px;
 }
-
-/* INÍCIO ALTERAÇÃO VISUAL */
 
 .smooth-dnd-container {
     height: 100%;
 }
 
 .kanban-container {
-    height: 100%;
-    width: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    height: calc(100% - 92px);
+    width: 100%;
 }
 
 .kanban-columns {
+    width: 100%;
+    min-width: 100%;
     height: 100%;
     display: flex;
     justify-content: flex-start;
-    padding: .5rem 2rem;
+    padding: 0.5rem 2rem;
     overflow: hidden;
-}
-
-.project-name {
-    margin: 1rem 2rem .5rem;
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 .kanban-column {
-    width: 350px;
+    min-width: 330px;
+    max-width: 330px;
+    width: 330px;
     min-height: 100%;
     display: flex;
     flex-direction: column;
@@ -523,254 +715,4 @@ export default {
         min-width: 230px;
     }
 }
-
-/* FIM ALTERAÇÃO VISUAL */
-
-/*.os-list-container {
-    width: 100%;
-    height: 100%;
-}
-
-.smooth-dnd-container.vertical > .smooth-dnd-draggable-wrapper, .draggable-card {
-    overflow: initial;
-    width: 90%;
-}
-
-@media (max-width: 865px) {
-    .smooth-dnd-container.vertical > .smooth-dnd-draggable-wrapper, .draggable-card {
-        width: auto !important;
-    }
-}
-
-
-
-@media (max-width: 865px) {
-    .kanban-container {
-        overflow-y: scroll;
-        overflow-x: hidden;
-    }
-}
-
-@media (max-width: 646px) {
-    .kanban-container {
-        margin-top: 3.3rem;
-    }
-}
-
-.kanban-title-container {
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    background: white;
-    z-index: 3;
-}
-
-.kanban-title {
-    width: 25%;
-    position: relative;
-    border-right: 1px solid #dee2e6;
-}
-
-.kanban-title:last-child {
-    border-right: none;
-}
-
-.kanban-title:nth-child(2) {
-    width: calc(25% + 1px);
-}
-
-.kanban-title, .kanban-title-responsive {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.kanban-title h5 {
-    font-size: 1.25rem;
-    font-weight: 500;
-    margin: 0.4rem 0;
-}
-
-.kanban-title-responsive {
-    display: none;
-    width: 100%;
-    border: 1px solid #dee2e6;
-}
-
-.new-os-container {
-    position: absolute;
-    top: 2.5rem;
-    width: 97%;
-    height: 155%;
-    z-index: 3;
-    background: var(--white);
-    border-radius: 10px;
-}
-
-.new-os {
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 85%;
-    margin: .5rem auto -.7rem;
-    cursor: pointer;
-    border-radius: 10px;
-    padding: .6rem 0;
-    color: var(--black);
-    transition: all 0.3s;
-}
-
-    .new-os:hover {
-        background:var(--gray-high-3);
-    }
-
-    .new-os h6 {
-        margin: 0;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        line-height: 1.2;
-        font-weight: 500;
-        font-size: 1rem;
-    }
-
-    .new-os .material-icons {
-        margin-right: .6rem;
-        font-size: 28px;
-    }
-
-.kanban-column {
-    min-height: calc(100vh - 100px);
-    width: 100vw;
-    display: flex;
-}
-
-.col-scrum {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: calc(100vh - 115px);
-    padding: 3.5rem 7px 0;
-    width: 25%!important;
-}
-
-.col-scrum:nth-child(1), .col-scrum:nth-child(2), .col-scrum:nth-child(3) {
-    border-right: 1px solid var(--gray-high)!important;
-}
-
-.kanban-title-responsive {
-    display: none;
-    width: 100%;
-    border: 1px solid #dee2e6;
-}
-
-.os-list {
-    list-style: none;
-    width: 100%;
-    height: 100%;
-    margin: .5rem 0;
-    overflow-y: scroll;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.os-list-overlay {
-    background: rgba(0, 162, 232, 0.268);
-}
-
-
-
-@media (min-width: 866px) {
-    .kanban-column .new-os {
-        display: none;
-    }
-}
-
-@media (max-width: 865px) {
-    .kanban-title-container {
-        display: none;
-    }
-
-    .kanban-title {
-        width: 100%;
-        border-top: 1px solid #dee2e6!important;
-    }
-
-    .kanban-title-container {
-        display: none;
-    }
-
-    .kanban-title-responsive {
-        display: flex;
-    }
-
-    .new-os {
-        position: absolute;
-        right: .5rem;
-        top: 0;
-        bottom: -2.4rem;
-        margin: auto;
-        width: 3rem;
-        height: 3rem;
-    }
-
-        .new-os .material-icons {
-            margin: 0;
-        }
-
-        .new-os h6 {
-            display: none;
-        }
-
-    .responsive-kanban-column {
-        flex-direction: column;
-        overflow: hidden;
-        width: 100vw;
-        height: auto;
-        margin: 0;
-    }
-
-    .kanban-title-responsive {
-        display: flex;
-    }
-
-    .os-list {
-        flex-direction: row;
-    }
-
-    .responsive-kanban {
-        display: flex;
-        align-items: center;
-        width: 100vw!important;
-        height: auto;
-        border: none!important;
-        position: relative;
-        padding: 0;
-    }
-
-        .responsive-kanban h5 {
-            font-size: 1.25rem;
-            font-weight: 500;
-            line-height: 1.2;
-        }
-
-        .responsive-kanban .os-list {
-            display: flex;
-            overflow-x: scroll;
-            min-height: 3rem;
-        }
-
-    .with-new {
-        width: calc(100vw - 60px);
-    }
-
-    .card-link {
-        margin: 0 .8rem!important;
-        display: flex;
-        align-items: center;
-    }
-}*/
 </style>

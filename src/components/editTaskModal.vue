@@ -117,17 +117,20 @@
                 </div>
             </div>
             <div class="edit-task-footer">
-                <div class="footer-list-menu">
+                <div class="tabs-list-menu">
                     <ul>
-                        <li class="menu-item selected font-size-3">
+                        <li class="menu-item selected font-size-3" id="footer-comments" v-on:click="selectFooterMenu(0)">
                             Comentários
                             <div class="menu-underline"></div>
                         </li>
+                        <li class="menu-item font-size-3" style="display: none;" id="footer-hours" v-on:click="selectFooterMenu(1)">
+                            Horas
+                            <div class="menu-underline"></div>
+                        </li>
                     </ul>
-                    
                 </div>
-                <div class="footer-content">
-                    <div class="comments-list" v-if="task.id != undefined">
+                <div class="tabs-content">
+                    <div class="comments-list" v-if="task.id != undefined && viewComments">
                         <div class="comment" v-for="(comment, index) in task_comments" :key="index">
                             <div class="comment-header">
                                 <div class="author-photo">
@@ -146,6 +149,9 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="task-hours" v-if="viewHours">
+                        Horas da tarefa
                     </div>
                 </div>
             </div>
@@ -181,7 +187,9 @@ export default {
             task_create_date: this.task.task_create_date,
             haveChanges: false,
             changed_task: {},
-            task_comments: {}
+            task_comments: {},
+            viewComments: true,
+            viewHours: false
         }
     },
     mounted() {
@@ -196,8 +204,30 @@ export default {
         this.setSelectedSponsor(this.task.sponsor);
     },
     methods: {
+        selectFooterMenu: function (menuItem) {
+            this.viewComments = false;
+            this.viewHours = false;
+
+            let comments = $("#footer-comments");
+            let hours = $("#footer-hours");
+
+            comments.removeClass("selected");
+            hours.removeClass("selected");
+
+            switch (menuItem) {
+                case 0: 
+                    this.viewComments = true;
+                    comments.addClass("selected");
+                    break;
+                case 1:
+                    this.viewHours = true;
+                    hours.addClass("selected");
+                    break;
+            }
+        },
         setSelectedSponsor: function (sponsor_id) {
             let member = this.group.group_members.filter(member => {return member.id_usuario == sponsor_id});
+
             this.selected_sponsor = member;
         },
         deleteTask: function () {
@@ -689,40 +719,6 @@ export default {
 
 .priority-text {
     color: var(--red);
-}
-
-.footer-list-menu {
-    margin-top: 1rem;
-    border-bottom: 1px solid var(--gray);
-}
-
-    .footer-list-menu ul {
-        list-style: none;
-        display: inline-block;
-    }
-
-        .footer-list-menu ul li {
-            cursor: pointer;
-        }
-
-.menu-item {
-    color: var(--gray);
-}
-
-.menu-item.selected {
-    color: var(--blue);
-}
-
-.menu-underline {
-    height: 2px;
-    border-radius: 6px;
-    margin-top: 7px;
-    width: 100%;
-    background: var(--blue);
-}
-
-.footer-content {
-    margin-top: 1rem;
 }
 
 .comment {

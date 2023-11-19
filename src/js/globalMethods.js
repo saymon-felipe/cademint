@@ -141,6 +141,16 @@ export const globalMethods = {
                 this.loadSystemVersion();
             }, 6 * 1000);
         },
+        showModalFunction: function () {
+            this.showModal = true;
+        },
+        resetModalVariables: function () {
+            this.modalName = "";
+        },
+        setModalVariables: function (modalName) {
+            this.resetModalVariables();
+            this.modalName = modalName;
+        },
         requireUser: function(reloadNow = false) { // Função retorna o usuário pelo id.
             return new Promise((resolve) => {
                 let self = this;

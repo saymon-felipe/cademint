@@ -61,8 +61,21 @@
     --black: #222222 !important;
 }
 
-input {
-    border: 1px solid var(--gray) !important;
+input[type="range"] {
+    width: 100%;
+}
+
+input:not([type="checkbox"]):not([type="range"]) {
+    border-radius: 6px;
+    border: 1px solid var(--gray-low);
+    padding: 7px 10px;
+    width: 100%;
+    margin: 8px 0;
+    height: 40px;
+}
+
+.hidden-input {
+    opacity: 0;
 }
 
 hr {
@@ -186,8 +199,11 @@ html, body {
 .loading-page {
     width: 150px;
     height: 150px;
-    background: transparent;
     margin: calc(2vh + 3rem) auto 0;
+}
+
+.loading-page {
+    background: transparent;
     border-radius: 100%;
     border: 6px solid var(--blue);
     border-right: 6px solid transparent;
@@ -295,4 +311,75 @@ html, body {
     left: 0;
     z-index: 999;
     display: none;
+}
+
+.btn {
+    padding: 7px 15px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s;
+    margin: 5px;
+}
+
+.primary {
+    background: var(--blue);
+    color: var(--white);
+}
+
+    .primary:hover {
+        background: var(--blue-low);
+    }
+
+.btn-gray {
+    background: var(--gray-high);
+}
+
+    .btn-gray:hover {
+        background: var(--gray-soft);
+    }
+
+/* ESTILOS ABAS */
+
+.tabs-list-menu {
+    margin-top: 1rem;
+    border-bottom: 1px solid var(--gray);
+}
+
+    .tabs-list-menu ul {
+        list-style: none;
+        display: flex;
+    }
+
+        .tabs-list-menu ul li {
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+.tabs-list-menu .menu-item.selected .menu-underline {
+    display: block;
+}
+
+.tabs-list-menu .menu-item .menu-underline {
+    display: none;
+}
+
+.tabs-list-menu .menu-item {
+    color: var(--gray);
+}
+
+.tabs-list-menu .menu-item.selected {
+    color: var(--blue);
+}
+
+.tabs-list-menu .menu-underline {
+    height: 2px;
+    border-radius: 6px;
+    margin-top: 7px;
+    width: 100%;
+    background: var(--blue);
+}
+
+.tabs-content {
+    margin-top: 1rem;
 }
