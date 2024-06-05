@@ -2,8 +2,8 @@ import axios from 'axios'
 
 let url_api;
 
-const dev_environment = "http://192.168.15.43:3000"; //Ambiente de desenvolvimento.
-const production_environment = "https://cademint-api.herokuapp.com"; //Ambiente de produção.
+const dev_environment = "http://192.168.15.167:3000"; //Ambiente de desenvolvimento.
+const production_environment = "https://coretest-cademint-0012d7964dfd.herokuapp.com"; //Ambiente de produção.
 // TROCA DO AMBIENTE DA API
 //
 // O parâmetro que deverá ser informado será 0 ou 1, sendo que:
