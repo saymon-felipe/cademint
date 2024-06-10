@@ -129,6 +129,7 @@ export default {
 
     .card-task {
         min-width: 180px;
+        max-width: 220px;
         margin: 0;
         height: 100%;
     }
@@ -149,85 +150,4 @@ export default {
         margin-right: 10px;
     }
 }
-
-/* FIM ALTERAÇÕES CARD */
-
-/*
-
-.card-os {
-    background: rgb(242, 242, 242);
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    max-height: 15rem;
-    max-width: 447px;
-    border-radius: 15px;
-    padding: 1rem;
-    margin: .9rem auto;
-    position: relative;
-    z-index: 2;
-}
-
-    .card-os:hover .os-tooltip {
-        display: block;
-    }
-
-.card-os-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.sponsor-card-name {
-    font-weight: 500;
-}
-
-.card-os-body {
-    position: relative;
-    margin-bottom: 28px;
-}
-
-.os-description {
-    overflow-y: scroll;
-    max-height: 7.5rem;
-    margin-bottom: .4rem;
-}
-
-.text-elipsis {
-    display: none;
-    line-height: 1.2rem;
-    font-size: 1.4rem;
-    color: black;
-    background: rgb(242, 242, 242);
-    padding: 0 6px 5px;
-    position: absolute;
-    right: 0;
-    bottom: 1px;
-}
-
-.priority-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    border-radius: 2.5rem;
-    position: absolute;
-    bottom: .6rem;
-    left: 0;
-    right: 0;
-    margin: auto;
-    width: 80%;
-}
-
-.normal {
-    background: orange;
-}
-
-.priority {
-    background: var(--red);
-}
-
-@media (max-width: 865px) {
-    .card-os {
-        width: 15rem;
-    }
-}*/
 </style>
