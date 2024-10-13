@@ -9,7 +9,7 @@
                 </div>
             </div>
             <div class="card-os-body">
-                <p class="task-description font-size-4">{{ task.desc_os }}</p>
+                <p class="task-description font-size-4" v-html="formatDescOs(task.desc_os)"></p>
             </div>
             <p class="font-size-4 sponsor">Responsável: <strong>{{ task.sponsor_name }}</strong></p>
         </div>
@@ -36,6 +36,14 @@ export default {
                     if (badge == 1) { return "priority" }
                     return "Prioritário";
             }
+        },
+        formatDescOs: function (os_string) {
+            const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/ig;
+            let replacedString = os_string.replace(urlPattern, function(url) {
+                return `<a href="${url}" target="_blank" style="text-decoration: underline; color: var(--blue-low); position: relative; z-index: 2;">${url}</a>`;
+            });
+
+            return replacedString.replace(/\n/g, '<br>');
         }
     },
     mounted() {

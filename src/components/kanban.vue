@@ -672,6 +672,7 @@ export default {
     width: 100%;
     height: 91%;
     cursor: pointer;
+    z-index: 1;
 }
 
 @media (max-width: 720px) {

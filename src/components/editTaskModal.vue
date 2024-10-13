@@ -692,7 +692,6 @@ export default {
     border-radius: 6px;
     border: 1px solid var(--gray);
     resize: vertical;
-    max-height: 170px;
     min-height: 50px;
     outline-color: transparent;
     transition: outline-color 0.4s;
