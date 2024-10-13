@@ -142,8 +142,8 @@
                                         <span class="comment-create-time font-size-5">{{ formatDate(comment.data_criacao_comentario) }}</span>
                                     </div>
                                 </div>
-                                <div class="comment-options-wrapper" v-on:click="toggleCommentContainer()"></div>
-                                <span class="material-icons comment-options" v-on:click="toggleCommentContainer()" v-if="comment.criador_comentario == $root.user.id_usuario">more_vert</span>
+                                <div class="comment-options-wrapper" v-on:click="toggleCommentContainer(index)"></div>
+                                <span class="material-icons comment-options" v-on:click="toggleCommentContainer(index)" v-if="comment.criador_comentario == $root.user.id_usuario">more_vert</span>
                                 <div class="comment-options-container">
                                     <ul>
                                         <li v-on:click="handleEditComment(index)">Editar</li>
@@ -152,8 +152,8 @@
                             </div>
                             <div class="comment-body">
                                 <div class="comment-text">
-                                    <span v-if="!editComment">{{ comment.desc_comentario }}</span>
-                                    <textarea v-model="comment.desc_comentario" v-on:focusout="handleSaveComment(comment)" v-if="editComment"></textarea>
+                                    <span>{{ comment.desc_comentario }}</span>
+                                    <textarea v-model="comment.desc_comentario" v-on:focusout="handleSaveComment(comment, index)"></textarea>
                                 </div>
                                 <div class="comment-like" v-on:click="commentLike(comment.id_comentario)" :class="comment.user_has_liked == 1 ? 'liked' : 'unliked'">
                                     <span class="material-icons like-icon">thumb_up</span>
@@ -188,7 +188,6 @@ export default {
     mixins: [globalMethods],
     data() {
         return {
-            editComment: false,
             selected_sponsor: [
                 {
                     id_usuario: 0
@@ -218,15 +217,18 @@ export default {
     },
     methods: {
         handleEditComment: function (index) {
-            this.editComment = true;
-            this.toggleCommentContainer();
+            let textarea = $("#comment-" + index + " textarea");
+
+            textarea.show();
+            $("#comment-" + index + " .comment-text span").hide();
+
+            this.toggleCommentContainer(index);
 
             setTimeout(() => {
-                let textarea = $("#comment-" + index + " textarea");
                 textarea.focus();
             }, 1)
         },
-        handleSaveComment: function (comment) {
+        handleSaveComment: function (comment, index) {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
             let data = {
                 comment: comment
@@ -238,14 +240,15 @@ export default {
                 }
             })
             .then(function(){
-                self.editComment = false;
+                $("#comment-" + index + " textarea").hide();
+                $("#comment-" + index + " .comment-text span").show();
             }).catch(function(error){
                 console.log(error)
             })
         },
-        toggleCommentContainer: function () {
-            let commentOptions = $(".comment-options-container");
-            let wrapper = $(".comment-options-wrapper");
+        toggleCommentContainer: function (index) {
+            let commentOptions = $("#comment-" + index + " .comment-options-container");
+            let wrapper = $("#comment-" + index + " .comment-options-wrapper");
             
 
             if (commentOptions.is(":visible")) {
@@ -652,7 +655,7 @@ export default {
 .edit-task-inner {
     overflow-y: scroll;
     overflow-x: hidden;
-    height: calc(100% - 60px);
+    height: calc(100% - 64px);
     padding: 20px;
 }
 
@@ -862,6 +865,10 @@ export default {
     -webkit-box-orient: vertical; 
 }
 
+    .comment-text textarea {
+        display: none;
+    }
+
 .comment-like {
     padding: 5px;
     width: 60px;
@@ -903,16 +910,18 @@ export default {
     left: 0;
     display: flex;
     align-items: center;
-    padding: 20px;
+    padding: 7px;
     box-shadow: 0 0 1px solid var(--gray);
 }
 
     .comment-input textarea {
         outline: none;
         padding: 5px;
+        margin: 5px;
         border: none;
-        border-radius: 10px 0 0 10px;
-        width: calc(100% - 55px);
+        border-radius: 10px;
+        overflow: hidden;
+        width: 100%;
         resize: none;
         min-height: 40px;
         max-height: 100px;
@@ -920,9 +929,9 @@ export default {
 
 .send-icon {
     position: absolute;
-    right: 20px;
+    right: 12px;
     background: var(--white);
-    height: 40px;
+    height: calc(100% - 24px);
     width: 55px;
     border-radius: 0 10px 10px 0;
     display: flex;

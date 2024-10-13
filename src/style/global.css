@@ -77,6 +77,10 @@ input:not([type="checkbox"]):not([type="range"]), textarea {
     margin: 8px 0;
 }
 
+input:not([type="checkbox"]):not([type="range"]):focus, textarea:focus, select:focus {
+    outline: 2px solid var(--blue) !important;
+}
+
 textarea {
     resize: none;
 }
