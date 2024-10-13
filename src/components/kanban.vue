@@ -610,7 +610,6 @@ export default {
     padding: 0.5rem 2rem;
     overflow: hidden;
     overflow-x: auto;
-    white-space: nowrap;
 }
 
 .kanban-column {
@@ -689,6 +688,8 @@ export default {
 
     .kanban-column {
         width: 100%;
+        min-width: 100%;
+        max-width: 100%;
         min-height: 160px;
         max-height: 280px;
         margin: 1rem 0 2rem;

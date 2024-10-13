@@ -30,12 +30,6 @@
                             <span>{{ rangeCounter }}</span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="sprint-period">Horas por usuario por dia</label>
-                        <div class="range-container">
-                            <input type="number" id="sprint-hours" v-model="hours_day_user" required>
-                        </div>
-                    </div>
                 </div>
                 <div class="users" v-if="users">
                     <label>Membros do grupo</label>
@@ -57,14 +51,16 @@
 </template>
 <script>
 import $ from 'jquery';
+import api from '../configs/api.js';
+import {globalMethods} from '../js/globalMethods.js';
 
 export default {
     name: "sprintModalContent",
+    mixins: [globalMethods],
     data() {
         return {
             rangeCounter: "15 dias",
             rangeValue: 15,
-            hours_day_user: 2,
             sprintName: "",
             groupUsers: [
                 {
@@ -78,7 +74,8 @@ export default {
                 sprintNumber: "Gerado automaticamente"
             },
             sprint: true,
-            users: false
+            users: false,
+            sprintId: null
         }
     },
     methods: {
@@ -106,7 +103,22 @@ export default {
         changeRange: function () {
             this.rangeCounter = this.rangeValue + " dias";
         },
+        returnSprint: function () {
+            let self = this;
+
+            let data = {
+                project_id: self.getCurrentProjectId()
+            }
+
+            api.post("/projects/sprint", data)
+            .then(function(response){
+                self.sprintId = response.data.returnObj;
+            }).catch(function(error){
+                console.log(error.data);
+            })
+        },
         setSprint: function () {
+            let self = this;
             let sprintPeriod = this.rangeValue;
             let sprintName = this.sprintName;
             let sprintUsers = this.groupUsers;
@@ -114,17 +126,30 @@ export default {
             let data = {
                 name: sprintName,
                 period: sprintPeriod,
-                users: sprintUsers
+                users: sprintUsers,
+                project_id: self.getCurrentProjectId()
             }
 
             if ($('form')[0].checkValidity()) {
                 $(".modal-body").addClass("valid");
-                console.log(data)
-                setTimeout(() => {
-                    this.$emit("saved", true);
-                }, 2000)
+                
+                let path = "/create";
+
+                if (this.sprintId != null) {
+                    path = "/modify"
+                }
+
+                api.post("/projects/sprint" + path, data)
+                .then(function(){
+                    self.$emit("saved", true);
+                }).catch(function(error){
+                    console.log(error.data);
+                })
             }
         }
+    },
+    mounted: function () {
+        this.returnSprint();
     }
 }
 </script>

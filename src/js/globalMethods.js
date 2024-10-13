@@ -118,6 +118,11 @@ export const globalMethods = {
             let project = JSON.parse(JSONproject);
             return project;
         },
+        getCurrentProjectId: function () {
+            let JSONproject = localStorage.getItem("current_project");
+            let project = JSON.parse(JSONproject).group_id;
+            return project;
+        },
         loadSystemVersion: async function(loadNow = false) {
             let newAppVersion = await api.get("/system").then(response => response.data.response.system_version);
 
@@ -165,7 +170,7 @@ export const globalMethods = {
                 });
             })
         },
-        requireGroup: function(group_id) { // Função retorna o usuário pelo id.
+        requireGroup: function(group_id) { // Função retorna o grupo pelo id.
             return new Promise((resolve) => {
                 let self = this;
                 let data = {

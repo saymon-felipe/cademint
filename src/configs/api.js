@@ -2,25 +2,31 @@ import axios from 'axios'
 
 let url_api;
 
-const dev_environment = "http://192.168.15.43:3000"; //Ambiente de desenvolvimento.
-const production_environment = "https://cademint-api.herokuapp.com"; //Ambiente de produção.
+const dev_environment = "http://192.168.15.167:3000"; //Ambiente de desenvolvimento.
+const test_environment = "https://coretest-cademint-0012d7964dfd.herokuapp.com"; //Ambiente de teste.
+const production_environment = ""; //Ambiente de produção.
+
 // TROCA DO AMBIENTE DA API
 //
-// O parâmetro que deverá ser informado será 0 ou 1, sendo que:
-// 0 - Ambiente de teste
-// 1 - Ambiente de produção
+// O parâmetro que deverá ser informado será 0, 1 ou 2, sendo que:
+// 0 - Ambiente de desenvolvimento
+// 1 - Ambiente de teste
+// 2 - Ambiente de produção
 // 
 // ==============================
-let test_or_prod = 1;
+let ambient = 1;
 // ==============================
 //
 
 
-switch (test_or_prod) {
+switch (ambient) {
     case 0:
         url_api = dev_environment;
         break;
     case 1: 
+        url_api = test_environment;
+        break;
+    case 2: 
         url_api = production_environment;
         break;
 }
