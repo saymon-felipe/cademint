@@ -59,13 +59,14 @@ export default {
             let key = event.keyCode, input = $(input_id);
 
             if (keydown) {
-                if (key != 13) {
-                    return;
-                }
-                event.preventDefault();
-                if(event.shiftKey){
+                if(event.shiftKey && key == 13){
+                    event.preventDefault();
                     $(input).val($(input).val() + '\n'); // shift + enter = Quebra linha
                     $(input).scrollTop(10000000);
+                    return;
+                }
+
+                if (key != 13) {
                     return;
                 }
             }
