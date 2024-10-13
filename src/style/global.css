@@ -66,12 +66,19 @@ input[type="range"] {
 }
 
 input:not([type="checkbox"]):not([type="range"]) {
+    height: 40px;
+}
+
+input:not([type="checkbox"]):not([type="range"]), textarea {
     border-radius: 6px;
     border: 1px solid var(--gray-low);
     padding: 7px 10px;
     width: 100%;
     margin: 8px 0;
-    height: 40px;
+}
+
+textarea {
+    resize: none;
 }
 
 .hidden-input {

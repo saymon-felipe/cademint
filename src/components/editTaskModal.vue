@@ -131,18 +131,30 @@
                 </div>
                 <div class="tabs-content">
                     <div class="comments-list" v-if="task.id != undefined && viewComments">
-                        <div class="comment" v-for="(comment, index) in task_comments" :key="index">
+                        <div class="comment" v-for="(comment, index) in task_comments" :key="index" :id="'comment-' + index">
                             <div class="comment-header">
-                                <div class="author-photo">
-                                    <img :src="comment.criador_imagem" class="avatar-pp">
+                                <div class="comment-header-inner">
+                                    <div class="author-photo">
+                                        <img :src="comment.criador_imagem" class="avatar-pp">
+                                    </div>
+                                    <div class="author-informations">
+                                        <span class="author-name">{{comment.criador_nome}}</span>
+                                        <span class="comment-create-time font-size-5">{{ formatDate(comment.data_criacao_comentario) }}</span>
+                                    </div>
                                 </div>
-                                <div class="author-informations">
-                                    <span class="author-name">{{comment.criador_nome}}</span>
-                                    <span class="comment-create-time font-size-5">{{ formatDate(comment.data_criacao_comentario) }}</span>
+                                <div class="comment-options-wrapper" v-on:click="toggleCommentContainer()"></div>
+                                <span class="material-icons comment-options" v-on:click="toggleCommentContainer()" v-if="comment.criador_comentario == $root.user.id_usuario">more_vert</span>
+                                <div class="comment-options-container">
+                                    <ul>
+                                        <li v-on:click="handleEditComment(index)">Editar</li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="comment-body">
-                                <div class="comment-text">{{ comment.desc_comentario }}</div>
+                                <div class="comment-text">
+                                    <span v-if="!editComment">{{ comment.desc_comentario }}</span>
+                                    <textarea v-model="comment.desc_comentario" v-on:focusout="handleSaveComment(comment)" v-if="editComment"></textarea>
+                                </div>
                                 <div class="comment-like" v-on:click="commentLike(comment.id_comentario)" :class="comment.user_has_liked == 1 ? 'liked' : 'unliked'">
                                     <span class="material-icons like-icon">thumb_up</span>
                                     <span class="comment-like-count">{{ comment.curtidas_comentario }}</span>
@@ -176,6 +188,7 @@ export default {
     mixins: [globalMethods],
     data() {
         return {
+            editComment: false,
             selected_sponsor: [
                 {
                     id_usuario: 0
@@ -204,6 +217,45 @@ export default {
         this.setSelectedSponsor(this.task.sponsor);
     },
     methods: {
+        handleEditComment: function (index) {
+            this.editComment = true;
+            this.toggleCommentContainer();
+
+            setTimeout(() => {
+                let textarea = $("#comment-" + index + " textarea");
+                textarea.focus();
+            }, 1)
+        },
+        handleSaveComment: function (comment) {
+            let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
+            let data = {
+                comment: comment
+            }
+
+            api.post("/task/edit_task_comment", data, {
+                headers: {
+                    Authorization: jwt
+                }
+            })
+            .then(function(){
+                self.editComment = false;
+            }).catch(function(error){
+                console.log(error)
+            })
+        },
+        toggleCommentContainer: function () {
+            let commentOptions = $(".comment-options-container");
+            let wrapper = $(".comment-options-wrapper");
+            
+
+            if (commentOptions.is(":visible")) {
+                commentOptions.hide();
+                wrapper.hide();
+            } else {
+                commentOptions.show();
+                wrapper.show();
+            }
+        },
         selectFooterMenu: function (menuItem) {
             this.viewComments = false;
             this.viewHours = false;
@@ -737,8 +789,50 @@ export default {
 }
 
 .comment-header {
+    justify-content: space-between;
+}
+
+.comment-options {
+    cursor: pointer;
+}
+
+.comment-options-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+}
+
+.comment-options-container {
+    position: absolute;
+    top: 100%;
+    right: 10px;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    display: none;
+}
+
+    .comment-options-container ul {
+        list-style: none;
+    }
+
+        .comment-options-container ul li {
+            cursor: pointer;
+            padding: 10px;
+        }
+
+            .comment-options-container ul li:hover {
+                background: var(--gray-soft-2);
+            }
+
+.comment-header, .comment-header-inner {
     display: flex;
     align-items: center;
+    position: relative;
 }
 
     .comment-header img {
@@ -828,7 +922,7 @@ export default {
     position: absolute;
     right: 20px;
     background: var(--white);
-    height: calc(100% - 40px);
+    height: 40px;
     width: 55px;
     border-radius: 0 10px 10px 0;
     display: flex;
