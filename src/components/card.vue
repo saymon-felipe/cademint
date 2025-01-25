@@ -152,6 +152,7 @@ export default {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        -webkit-line-clamp: 2;
     }
 
     .card-task, .card-loading {
