@@ -304,7 +304,7 @@ export default {
 
             for (let i = 0; i < lastArray.length; i++) {
                 if (lastArray[i].id == this.draggind_card.cardData.id) {
-                    currentIndex = i - 1;
+                    currentIndex = i;
                 }
             }
 
