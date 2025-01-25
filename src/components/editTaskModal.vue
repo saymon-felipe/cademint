@@ -36,8 +36,8 @@
                         </div>
                         <div class="customized-select-option-group sponsor-select">
                             <div class="customized-option" :class="selected_sponsor[0].id_usuario == member.id_usuario ? 'selected' : ''" :user_id="member.id_usuario" v-for="(member, index) in group.group_members" :key="index" v-on:click="selected_sponsor = [member, '']; toggleSponsorSelect(); computeChanges('sponsor', member.id_usuario, member.nome)">
-                                <img :src="member.profile_photo" class="avatar-pp" v-if="member.id_usuario != selected_sponsor[0].id_usuario">
-                                <span v-if="member.id_usuario != selected_sponsor[0].id_usuario">{{member.nome}}</span>
+                                <img :src="member.profile_photo" class="avatar-pp">
+                                <span>{{member.nome}}</span>
                             </div>
                         </div>
                     </div>
@@ -52,10 +52,10 @@
                             <span class="material-icons customized-select-icon">expand_more</span>
                         </div>
                         <div class="customized-select-option-group priority-select">
-                            <div class="customized-option" priority="1" :class="selected_priority == 1 ? 'selected' : ''" v-if="selected_priority != 1" v-on:click="selected_priority = 1; togglePrioritySelect(); computeChanges('priority', 1)">
+                            <div class="customized-option" priority="1" :class="selected_priority == 1 ? 'selected' : ''" v-on:click="selected_priority = 1; togglePrioritySelect(); computeChanges('priority', 1)">
                                 <span>Normal</span>
                             </div>
-                            <div class="customized-option" priority="2" :class="selected_priority == 2 ? 'selected' : ''" v-if="selected_priority != 2" v-on:click="selected_priority = 2; togglePrioritySelect(); computeChanges('priority', 2)">
+                            <div class="customized-option" priority="2" :class="selected_priority == 2 ? 'selected' : ''" v-on:click="selected_priority = 2; togglePrioritySelect(); computeChanges('priority', 2)">
                                 <span class="priority-text">Importante</span>
                             </div>
                         </div>
@@ -71,13 +71,13 @@
                             <span class="material-icons customized-select-icon">expand_more</span>
                         </div>
                         <div class="customized-select-option-group size-select">
-                            <div class="customized-option" size="P" :class="selected_size == 'P' ? 'selected' : ''" v-if="selected_size != 'P'" v-on:click="selected_size = 'P'; toggleSizeSelect(); computeChanges('size', 'P')">
+                            <div class="customized-option" size="P" :class="selected_size == 'P' ? 'selected' : ''" v-on:click="selected_size = 'P'; toggleSizeSelect(); computeChanges('size', 'P')">
                                 <span>P - Pequeno</span>
                             </div>
-                            <div class="customized-option" size="M" :class="selected_size == 'M' ? 'selected' : ''" v-if="selected_size != 'M'" v-on:click="selected_size = 'M'; toggleSizeSelect(); computeChanges('size', 'M')">
+                            <div class="customized-option" size="M" :class="selected_size == 'M' ? 'selected' : ''" v-on:click="selected_size = 'M'; toggleSizeSelect(); computeChanges('size', 'M')">
                                 <span>M - Medio</span>
                             </div>
-                            <div class="customized-option" size="G" :class="selected_size == 'G' ? 'selected' : ''" v-if="selected_size != 'G'" v-on:click="selected_size = 'G'; toggleSizeSelect(); computeChanges('size', 'G')">
+                            <div class="customized-option" size="G" :class="selected_size == 'G' ? 'selected' : ''" v-on:click="selected_size = 'G'; toggleSizeSelect(); computeChanges('size', 'G')">
                                 <span>G - Grande</span>
                             </div>
                         </div>
@@ -86,24 +86,16 @@
                 <div class="input-group">
                     <label>Status</label>
                     <div class="cademint-customized-select">
-                        <div class="customized-select-selected" v-on:click="toggleStatusSelect()">
+                        <span v-if="statusList.length == 0" style="color: var(--gray)">Carregando status...</span>
+                        <div v-else class="customized-select-selected" v-on:click="toggleStatusSelect()">
                             <div class="customized-option" :status="selected_status">
                                 <span>{{returnStatusName(selected_status)}}</span>
                             </div>
                             <span class="material-icons customized-select-icon">expand_more</span>
                         </div>
                         <div class="customized-select-option-group status-select">
-                            <div class="customized-option" status="1" :class="selected_status == 1 ? 'selected' : ''" v-if="selected_status != 1" v-on:click="selected_status = 1; toggleStatusSelect(); computeChanges('status', 1)">
-                                <span>A Fazer</span>
-                            </div>
-                            <div class="customized-option" status="2" :class="selected_status == 2 ? 'selected' : ''" v-if="selected_status != 2" v-on:click="selected_status = 2; toggleStatusSelect(); computeChanges('status', 2)">
-                                <span>Fazendo</span>
-                            </div>
-                            <div class="customized-option" status="3" :class="selected_status == 3 ? 'selected' : ''" v-if="selected_status != 3" v-on:click="selected_status = 3; toggleStatusSelect(); computeChanges('status', 3)">
-                                <span>Teste</span>
-                            </div>
-                            <div class="customized-option" status="4" :class="selected_status == 4 ? 'selected' : ''" v-if="selected_status != 4" v-on:click="selected_status = 4; toggleStatusSelect(); computeChanges('status', 4)">
-                                <span>Concluído</span>
+                            <div v-for="(column, index) in statusList" :key="index" class="customized-option" :status="column.id" :class="selected_status == column.id ? 'selected' : ''" v-on:click="selected_status = column.id; toggleStatusSelect(); computeChanges('status', column.id)">
+                                <span>{{ column.name }}</span>
                             </div>
                         </div>
                     </div>
@@ -201,7 +193,8 @@ export default {
             changed_task: {},
             task_comments: {},
             viewComments: true,
-            viewHours: false
+            viewHours: false,
+            statusList: []
         }
     },
     mounted() {
@@ -214,8 +207,19 @@ export default {
         $("#task_description").val(this.task.desc_os);
         
         this.setSelectedSponsor(this.task.sponsor);
+        this.returnColumns();
     },
     methods: {
+        returnColumns: function () {
+            let self = this;
+
+            api.post("/projects/columns", {
+                project_id: self.group.group_id
+            })
+            .then((response) => {
+                self.statusList = response.data.returnObj;
+            })
+        },
         handleEditComment: function (index) {
             let textarea = $("#comment-" + index + " textarea");
 
@@ -541,17 +545,9 @@ export default {
             }
         },
         returnStatusName: function (status) {
-            let statusString = status.toString();
-            switch (statusString) {
-                case "1":
-                    return "A Fazer";
-                case "2": 
-                    return "Fazendo";
-                case "3": 
-                    return "Teste";
-                case "4":
-                    return "Concluído";
-            }
+            let column = this.statusList.filter((column) => { return column.id == status });
+
+            return column[0].name;
         },
         countRows: function (event, keyup = false) {
             let input = $("#" + event.target.id), length = input.val().length, keycode = event.keyCode;
@@ -706,7 +702,6 @@ export default {
 .cademint-customized-select {
     border: 1px solid var(--gray);
     border-radius: 6px;
-    padding: 10px;
     position: relative;
 }
 
@@ -715,13 +710,13 @@ export default {
     top: calc(100% + 10px);
     left: 0;
     background: var(--white);
-    padding: 5px;
     border-radius: 6px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     transition: opacity 0.4s;
     opacity: 0;
     display: none;
     z-index: 6;
+    gap: 5px;
 }
 
 .customized-select-option-group-wrapper {
@@ -737,10 +732,9 @@ export default {
 .customized-option {
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
     cursor: pointer;
     transition: background 0.4s;
-    padding: 10px;
+    padding: 14px;
 }
 
     .customized-option:hover {
@@ -751,14 +745,17 @@ export default {
         margin-right: 15px;
     }
 
-.customized-select-selected .customized-option, .customized-option.selected {
-    margin: 0;
-    padding: 0;
+.customized-select-selected .customized-option {
+    border-radius: 6px;
 }
 
-    .customized-select-selected .customized-option:hover {
-        background: var(--white);
-    }
+.customized-option.selected {
+    background: var(--blue-high-2);
+}
+
+.customized-select-selected .customized-option:hover {
+    background: var(--white);
+}
 
 .customized-select-icon {
     position: absolute;

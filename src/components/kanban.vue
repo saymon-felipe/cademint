@@ -11,7 +11,7 @@
 
                         <div class="project-status-container">
                             <div class="status-item on-track" v-on:click="changeProjectStatus(0)">
-                                <span>No caminho</span>
+                                <span>Em andamento</span>
                             </div>
                             <div class="status-item at-risk" v-on:click="changeProjectStatus(1)">
                                 <span>Em risco</span>
@@ -28,7 +28,7 @@
                     <div class="project-status-wrapper" v-on:click="toggleProjectStatus()"></div>
                 </div>
                 
-                <div class="project-settings">
+                <div class="project-settings" v-if="false">
                     <div>
                         <span class="material-icons history-sprint-button" v-on:click="viewHistoricSprints()">history</span>
                     </div>
@@ -38,11 +38,41 @@
                 </div>
             </div>
             <div class="kanban-columns">
-                <div class="kanban-column" id="column-1">
+                <div class="kanban-column" v-for="(column, index) in kanbanColumns" :key="index" :id="'column-' + column.id">
+                    <div class="kanban-column-header">
+                        <div class="column-informations">
+                            <input type="text" v-model="column.name" @focusout="renameColumn(column.id, column.name)" class="rename-column-input" style="display: none;">
+                            <p class="font-size-5 column-name">{{ column.name }}</p>
+                            <span class="material-icons" v-on:click="showMoreOptions(column.id)">more_vert</span>
+                            
+                            <div class="more-options">
+                                <ul>
+                                    <li v-on:click="excludeColumn(column.id)">Excluir coluna</li>
+                                    <li v-on:click="showRenameColumn(column.id)">Renomear coluna</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <span class="material-icons new-task-icon" v-on:click="createTask(column.id)">add</span>
+                    </div>
+                    <div class="kanban-column-body">
+                        <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart(column.id, $event)" @drop="handleDrop(column.id, $event)" :get-child-payload="getChildPayload">
+                            <newTaskCard :group_users="project.group_members" :card_status="column.id" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
+                            <Draggable v-for="task in column.tasks" :key="task.id" class="draggable-card">
+                                <card :task="task" />
+                                <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
+                            </Draggable>
+                        </Container>
+                    </div>
+                </div>
+                <div class="wrapper-container" v-on:click="hideMoreOptions()"></div>
+                <div class="create-new-column" v-on:click="createNewColumn()">
+                    <span class="material-icons">add</span>
+                    <span>{{ kanbanColumns.length == 0 ? "Adicione uma coluna" : "Adicione outra coluna" }}</span>
+                </div>
+                <!--<div class="kanban-column" id="column-1">
                     <div class="kanban-column-header">
                         <p class="font-size-5">A fazer</p>
                         <span class="material-icons new-task-icon" v-on:click="createTask(1)">add</span>
-                        
                     </div>
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('todo', $event)" @drop="handleDrop('todo', $event)" :get-child-payload="getChildPayload">
@@ -96,7 +126,7 @@
                             </Draggable>
                         </Container>
                     </div>
-                </div>
+                </div>-->
             </div>
             <editTaskModal class="edit-task-container" v-if="show_edit_task" :task="edit_task" :group="project" @closeEditTaskModal="closeEditTask('.edit-task-container', $event)" />
             <div class="edit-task-wrapper" v-if="show_edit_task" v-on:click="closeEditTask('.edit-task-container', true)"></div>
@@ -148,10 +178,7 @@ export default {
             checkAllowDrag: false,
             modalName: "",
             showModal: false,
-            todoList: [],
-            doingList: [],
-            testList: [],
-            doneList: [],
+            kanbanColumns: []
         }
     },
     watch: {
@@ -165,24 +192,96 @@ export default {
         },
     },
     methods: {
-        fillKanbanColumns: function () {
-            this.todoList = this.task_list
-                .filter(task => task.status_os == 1)
-                .sort((a, b) => a.task_index - b.task_index);
+        showMoreOptions: function (column_id) {
+            $("#column-" + column_id + " .more-options").show();
+            $(".wrapper-container").show();
+        },
+        hideMoreOptions: function () {
+            $(".more-options").hide();
+            $(".wrapper-container").hide();
+        },
+        filterKanbanCards: function () {
+            for (let i = 0; i < this.kanbanColumns.length; i++) {
+                let currentColumn = this.kanbanColumns[i];
 
-            this.doingList = this.task_list
-                .filter(task => task.status_os == 2)
-                .sort((a, b) => a.task_index - b.task_index);
+                currentColumn.tasks = [];
 
-            this.testList = this.task_list
-                .filter(task => task.status_os == 3)
-                .sort((a, b) => a.task_index - b.task_index);
+                for (let j = 0; j < this.task_list.length; j++) {
+                    let currentTask = this.task_list[j];
 
-            this.doneList = this.task_list
-                .filter(task => task.status_os == 4)
-                .sort((a, b) => a.task_index - b.task_index);
+                    if (currentTask.status_os == currentColumn.id) {
+                        currentColumn.tasks.push(currentTask);
+                    }
+                }
+
+                currentColumn.tasks = currentColumn.tasks.sort((a, b) => a.task_index - b.task_index);
+            }
 
             this.is_loading = false;
+        },
+        showRenameColumn: function (column_id) {
+            let column = $("#column-" + column_id);
+
+            this.hideMoreOptions();
+
+            column.find(".rename-column-input").show().focus();
+            column.find(".column-name").hide();
+        },
+        renameColumn: function (column_id, name) {
+            let self = this;
+
+            $(".rename-column-input").hide();
+            $(".column-name").show();
+
+            api.post("/projects/columns/rename", {
+                project_id: self.current_project.group_id,
+                column_id: column_id,
+                name: name
+            }).then(() => {
+                self.returnColumns(false, false);
+            })
+        },
+        excludeColumn: function (column_id) {
+            let self = this;
+
+            this.hideMoreOptions();
+
+            if (!confirm("Tem certeza que deseja excluir a coluna? \n\n Todas as tarefas pertencentes à essa coluna serão apagadas.")) {
+                return;
+            }
+
+            api.post("/projects/columns/delete", {
+                project_id: self.current_project.group_id,
+                column_id: column_id
+            })
+            .then(() => {
+                self.returnColumns(false, false);
+            })
+        },
+        createNewColumn: function () {
+            let self = this;
+
+            api.post("/projects/columns/create", {
+                project_id: self.current_project.group_id
+            })
+            .then(() => {
+                self.returnColumns(false, false);
+            })
+        },
+        returnColumns: function (initial = false, returnTasks = true) {
+            let self = this;
+
+            api.post("/projects/columns", {
+                project_id: self.current_project.group_id
+            })
+            .then((response) => {
+                self.kanbanColumns = response.data.returnObj;
+                self.filterKanbanCards();
+
+                if (returnTasks) {
+                    self.getAllOs(!initial);
+                }
+            })
         },
         resetModalContentVariables: function () {
             this.newSprint = false;
@@ -245,8 +344,14 @@ export default {
         init: function () {
             setTimeout(() => {
                 this.current_project = this.getCurrentProjectInLocalStorage();
+
+                if (this.current_project == null) {
+                    return;
+                }
+
                 this.getCurrentProject(this.current_project.group_id);
-                this.getAllOs();
+                this.returnColumns();
+
                 let url = new URLSearchParams(window.location.search);
                 this.joined_group = url.get("joined_group") != null ? url.get("joined_group") : false;
             }, 300);
@@ -262,34 +367,21 @@ export default {
             if (!this.verifyAllowDrop()) {
                 return;
             }
+            
             const {payload, isSource} = dragResult;
-            let status, data, self = this;
+
             sessionStorage.setItem("in_drag", "true");
-            switch (col) {
-                case 'todo':
-                    status = 1;
-                    data = self.todoList;
-                    break;
-                case 'doing':
-                    status = 2;
-                    data = self.doingList;
-                    break;
-                case 'test':
-                    status = 3;
-                    data = self.testList;
-                    break;
-                case 'done':
-                    status = 4;
-                    data = self.doneList;
-                    break;
-            }
+
             if (isSource) {
-                this.draggind_card = {
-                    status,
-                    col,
-                    index: payload.index - 1,
-                    cardData: {
-                        ...data[payload.index - 1]
+                for (let i = 0; i < this.kanbanColumns.length; i++) {
+                    let currentColumn = this.kanbanColumns[i];
+
+                    if (currentColumn.id == col) {
+                        this.draggind_card = {
+                            col,
+                            index: payload.index,
+                            cardData: currentColumn.tasks[payload.index - 1]
+                        }
                     }
                 }
             }
@@ -298,8 +390,20 @@ export default {
             sessionStorage.setItem("in_drag", "false");
         },
         reorderTasks: function (addedIndex, col, lastCol) {
-            let array = this.$data[col + "List"];
-            let lastArray = this.$data[lastCol + "List"];
+            let array, lastArray;
+
+            for (let i = 0; i < this.kanbanColumns.length; i++) {
+                let currentColumn = this.kanbanColumns[i];
+
+                if (currentColumn.id == col) {
+                    array = currentColumn.tasks;
+                }
+
+                if (currentColumn.id == lastCol) {
+                    lastArray = currentColumn.tasks;
+                }
+            }
+
             let currentIndex; 
 
             for (let i = 0; i < lastArray.length; i++) {
@@ -319,7 +423,7 @@ export default {
         handleDrop: function (col, dropResult) {
             const { removedIndex, addedIndex } = dropResult;
 
-            let self = this, status;
+            let self = this;
 
             if (removedIndex === addedIndex) {
                 return;
@@ -327,19 +431,17 @@ export default {
 
             let reorderedColumn = this.reorderTasks(addedIndex - 1, col, self.draggind_card.col);
 
-            status = self.getStatusValue(col);
-
             if (addedIndex != null) {
-                self.draggind_card.cardData.status_os = status;
+                self.draggind_card.cardData.status_os = col;
                 self.task_list.push(self.draggind_card.cardData); 
                 
                 api.patch("/task/os_status", {
                     id: self.draggind_card.cardData.id,
-                    status_os: status,
+                    status_os: col,
                     reorderedColumn: reorderedColumn
                 })
                 .then(() => {
-                    self.getAllOs(col);
+                    self.getAllOs(true);
                 })
             }
         },
@@ -379,7 +481,8 @@ export default {
                 .then(function(response){
                     self.task_list = response.data.returnObj.os_list;
 
-                    self.fillKanbanColumns();
+                    self.filterKanbanCards();
+                    //self.fillKanbanColumns();
 
                     if (!programatic) { // Só vai ter chamada recursiva se a chamada não for feita por outra função
                         setTimeout(self.getAllOs, 60000); // Chamada recursiva da requisição a cada 60 segundos.
@@ -459,9 +562,6 @@ export default {
         setTimeout(() => {
             if (window.location.href.indexOf("/home") != -1) {
                 this.init();
-                if (this.current_project == null) {
-                    return;
-                }
             }
         }, 10);
     },
@@ -574,6 +674,7 @@ export default {
         padding: .7rem;
         display: none;
         z-index: 11;
+        white-space: nowrap;
     }
 
     .project-status-wrapper {
@@ -664,6 +765,59 @@ export default {
     margin-left: 0;
 }
 
+.create-new-column {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    background: var(--gray-high);
+    padding: 1.3rem;
+    height: 20px;
+    border-radius: 6px;
+    min-width: 330px;
+    margin: 0 .8rem;
+
+    &:hover {
+        background: var(--gray-soft);
+    }
+}
+
+.column-informations {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    position: relative;
+
+    & span {
+        cursor: pointer;
+    }
+
+    & .more-options {
+        position: absolute;
+        background: var(--white);
+        border-radius: 6px;
+        top: -30%;
+        box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
+        left: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        display: none;
+        z-index: 2;
+
+        & ul {
+            list-style: none;
+
+            & li {
+                padding: .8rem;
+                cursor: pointer;
+
+                &:hover {
+                    background: var(--gray-soft);
+                }
+            }
+        }
+    }
+}
 
 .kanban-column-header {
     width: 100%;
@@ -700,16 +854,23 @@ export default {
 
 .draggable-card {
     position: relative;
+    cursor: pointer;
 }
 
-.edit-task-wrapper-container {
+.edit-task-wrapper-container, .wrapper-container {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 91%;
+    height: 90%;
     cursor: pointer;
     z-index: 1;
+}
+
+.wrapper-container {
+    display: none;
+    height: 100%;
+    cursor: default;
 }
 
 @media (max-width: 720px) {
