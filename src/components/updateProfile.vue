@@ -1,15 +1,15 @@
 <template>
     <section class="update-profile-container" v-if="!loading">
         <div class="update-profile">
-            <div class="user-banner" :style="'background-image: url(' + user.user_cover_image + '); background-position-y: center;'">
+            <div class="user-banner" :style="'background-image: url(' + $root.user.user_cover_image + '); background-position-y: center;'">
                 <div class="change-banner" v-on:click="toggleBannerDetails()">
                     <span class="material-icons">edit</span>
                     <span>Capa</span>
                 </div>
                 <div class="banner-details" v-if="showBannerDetails">
                     <ul>
-                        <li v-if="user.user_cover_image != default_user_cover_image" v-on:click="showBanner">Ver foto</li>
-                        <li v-on:click="removeBanner()" v-if="user.user_cover_image != default_user_cover_image">Excluir foto</li>
+                        <li v-if="$root.user.user_cover_image != default_user_cover_image" v-on:click="showBanner">Ver foto</li>
+                        <li v-on:click="removeBanner()" v-if="$root.user.user_cover_image != default_user_cover_image">Excluir foto</li>
                         <li v-on:click="showSendPhoto(true)">Enviar foto</li>
                     </ul>
                 </div>
@@ -17,8 +17,8 @@
             <div class="informations-container">
                 <div class="user-image">
                     <div class="user-image-container">
-                        <img :src="user.profile_photo" class="profile-avatar">
-                        <div class="user-level-badge">Nível {{user.user_level}}</div>
+                        <img :src="$root.user.profile_photo" class="profile-avatar">
+                        <div class="user-level-badge">Nível {{$root.user.user_level}}</div>
                         <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="170px" height="170px">
                             <defs>
                                 <linearGradient id="GradientColor">
@@ -32,8 +32,8 @@
                             <span class="material-icons">photo_camera</span>
                             <div class="photo-details" v-if="showPhotoDetails">
                                 <ul>
-                                    <li v-if="user.profile_photo != default_user_image" v-on:click="showPhoto">Ver foto</li>
-                                    <li v-on:click="removePhoto()" v-if="user.profile_photo != default_user_image">Excluir foto</li>
+                                    <li v-if="$root.user.profile_photo != default_user_image" v-on:click="showPhoto">Ver foto</li>
+                                    <li v-on:click="removePhoto()" v-if="$root.user.profile_photo != default_user_image">Excluir foto</li>
                                     <li v-on:click="showSendPhoto()">Enviar foto</li>
                                 </ul>
                             </div>
@@ -49,9 +49,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="user-occupations">
-                        <p class="add-occupation-label" v-if="user.user_occupations.length == 0 && !addOccupation">Adicione um cargo</p>
-                        <div class="occupation" v-for="(occupation, index) in user.user_occupations" :key="index" :id="'cargo-' + index">
+                    <div class="user-occupations" :style="loadingOccupations ? 'opacity: 0;' : ''">
+                        <p class="add-occupation-label" v-if="$root.user.user_occupations.length == 0 && !addOccupation">Adicione um cargo</p>
+                        <div class="occupation" v-for="(occupation, index) in $root.user.user_occupations" :key="index" :id="'cargo-' + index">
                             <p class="font-size-5">{{ occupation.occupation_name }}</p>
                             <div class="exclude-occupation" v-on:click="excludeOccupation(occupation.occupation_name, index)">
                                 <span class="material-icons">clear</span>
@@ -65,7 +65,7 @@
                 <div class="user-achievements">
                     <p class="font-size-3-bold user-achievements-title">Conquistas</p>
                     <div class="user-achievements-container">
-                        <div class="achievement" v-for="(achievement, index) in user.user_achievements" :key="index" :title="achievement.achievements_description">
+                        <div class="achievement" v-for="(achievement, index) in $root.user.user_achievements" :key="index" :title="achievement.achievements_description">
                             <div class="achievement-icon">
                                 <span class="material-icons">
                                     {{ findAchievementIcon(achievement.achievements_name) }}
@@ -81,10 +81,10 @@
                         <p class="font-size-3-bold">Biografia</p>
                         <span class="material-icons" v-on:click="editBio()">edit</span>
                     </div>
-                    <p class="bio" v-if="!editing_bio">{{ user.user_bio }}</p>
-                    <p class="bio" v-if="user.user_bio == null && !editing_bio"><i>Conte sobre você...</i></p>
+                    <p class="bio" v-if="!editing_bio">{{ $root.user.user_bio }}</p>
+                    <p class="bio" v-if="$root.user.user_bio == null && !editing_bio"><i>Conte sobre você...</i></p>
                     <div class="edit-bio" v-if="editing_bio">
-                        <textarea name="user_bio" id="user-bio" rows="7" v-model="user.user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)" maxlength="500"></textarea>
+                        <textarea name="user_bio" id="user-bio" rows="7" v-model="$root.user.user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)" maxlength="500"></textarea>
                         <p class="bio-counter">0 / 500</p>
                     </div>
                 </div>
@@ -174,7 +174,7 @@ export default {
             editing_bio: false,
             password_response: "",
             reset_password_sent: false,
-            user: this.$root.user
+            loadingOccupations: false
         }
     },
     watch: {
@@ -251,13 +251,13 @@ export default {
                 user_occupation: occupationName
             }
             
+            self.loadingOccupations = true;
+
             api.patch('/users/exclude_occupation', data)
             .then(function () {
-                self.requireUser(true);
-
-                setTimeout(() => {
-                    self.user = self.$root.user;
-                }, 500)
+                self.requireUser(true).then(() => {
+                    self.loadingOccupations = false;
+                });
 
                 $("#cargo-" + index).remove();
             })
