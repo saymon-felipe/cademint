@@ -81,10 +81,10 @@
                         <p class="font-size-3-bold">Biografia</p>
                         <span class="material-icons" v-on:click="editBio()">edit</span>
                     </div>
-                    <p class="bio" v-if="!editing_bio">{{ $root.user.user_bio }}</p>
-                    <p class="bio" v-if="$root.user.user_bio == null && !editing_bio"><i>Conte sobre você...</i></p>
+                    <p class="bio" v-if="!editing_bio">{{ user.user_bio }}</p>
+                    <p class="bio" v-if="user.user_bio == null && !editing_bio"><i>Conte sobre você...</i></p>
                     <div class="edit-bio" v-if="editing_bio">
-                        <textarea name="user_bio" id="user-bio" rows="7" v-model="$root.user.user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)" maxlength="500"></textarea>
+                        <textarea name="user_bio" id="user-bio" rows="7" v-model="user.user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)" maxlength="500"></textarea>
                         <p class="bio-counter">0 / 500</p>
                     </div>
                 </div>
@@ -160,7 +160,6 @@ export default {
     mixins: [globalMethods],
     data() {
         return {
-            user_occupations: [],
             showSubmit: false,
             response: "",
             showPhotoDetails: false,
@@ -168,14 +167,14 @@ export default {
             showExpandedPhoto: false,
             showSendPhotoContainer: false,
             loading: true,
-            my_groups: {},
             showProfileMoreOptions: false,
             showExcludeAccount: false,
             isDeleting: false,
             addOccupation: false,
             editing_bio: false,
             password_response: "",
-            reset_password_sent: false
+            reset_password_sent: false,
+            user: this.$root.user
         }
     },
     watch: {
@@ -255,6 +254,11 @@ export default {
             api.patch('/users/exclude_occupation', data)
             .then(function () {
                 self.requireUser(true);
+
+                setTimeout(() => {
+                    self.user = self.$root.user;
+                }, 500)
+
                 $("#cargo-" + index).remove();
             })
         },
