@@ -842,13 +842,14 @@ export default {
 
     & span {
         cursor: pointer;
+        color: var(--gray-low);
     }
 
     & .more-options {
         position: absolute;
         background: var(--white);
         border-radius: 6px;
-        top: -30%;
+        top: -7%;
         box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
         left: 100%;
         white-space: nowrap;
@@ -884,6 +885,7 @@ export default {
     .kanban-column-header p {
         text-transform: uppercase;
         color: var(--gray-low);
+        margin-top: 3px;
     }
 
 .kanban-column-body {
