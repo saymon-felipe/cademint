@@ -147,21 +147,11 @@ export default {
             temporary_task: {},
             checkAllowDrag: false,
             modalName: "",
-            showModal: false
-        }
-    },
-    computed: {
-        todoList() {
-            return this.task_list.filter(task => task.status_os == 1);
-        },
-        doingList() {
-            return this.task_list.filter(task => task.status_os == 2);
-        },
-        testList() {
-            return this.task_list.filter(task => task.status_os == 3);
-        },
-        doneList() {
-            return this.task_list.filter(task => task.status_os == 4);
+            showModal: false,
+            todoList: [],
+            doingList: [],
+            testList: [],
+            doneList: [],
         }
     },
     watch: {
@@ -172,9 +162,26 @@ export default {
             setTimeout(() => {
                 this.checkAllowDrag = true;
             }, 100);
-        }
+        },
     },
     methods: {
+        fillKanbanColumns: function () {
+            this.todoList = this.task_list
+                .filter(task => task.status_os == 1)
+                .sort((a, b) => a.task_index - b.task_index);
+
+            this.doingList = this.task_list
+                .filter(task => task.status_os == 2)
+                .sort((a, b) => a.task_index - b.task_index);
+
+            this.testList = this.task_list
+                .filter(task => task.status_os == 3)
+                .sort((a, b) => a.task_index - b.task_index);
+
+            this.doneList = this.task_list
+                .filter(task => task.status_os == 4)
+                .sort((a, b) => a.task_index - b.task_index);
+        },
         resetModalContentVariables: function () {
             this.newSprint = false;
             this.historySprint = false;
@@ -288,38 +295,55 @@ export default {
         handleDragEnd: function () {
             sessionStorage.setItem("in_drag", "false");
         },
+        reorderTasks: function (addedIndex, col) {
+            let array = this.$data[col + "List"];
+            const currentIndex = array.findIndex(item => item.id === this.draggind_card.cardData.id) - 1;
+
+            const [movedObject] = array.splice(currentIndex, 1);
+
+            array.splice(addedIndex, 0, movedObject);
+
+            return array;
+        },
         handleDrop: function (col, dropResult) {
-            const {removedIndex, addedIndex} = dropResult;
+            const { removedIndex, addedIndex } = dropResult;
+
             let self = this, status;
-            if (col === this.draggind_card.col || removedIndex === addedIndex) {
+
+            if (removedIndex === addedIndex) {
                 return;
             }
 
-            switch (col) {
-                case 'todo':
-                    status = 1;
-                    break;
-                case 'doing':
-                    status = 2;
-                    break;
-                case 'test':
-                    status = 3;
-                    break;
-                case 'done':
-                    status = 4;
-                    break;
-            }
+            let reorderedColumn = this.reorderTasks(addedIndex, col);
 
-            self.task_list = self.task_list.filter(function(id) { return id !== self.draggind_card.cardData.id; });
+            status = self.getStatusValue(col);
 
             if (addedIndex != null) {
                 self.draggind_card.cardData.status_os = status;
-                $("#" + self.draggind_card.cardData.id).remove();
-                self.task_list.push(self.draggind_card.cardData)
+                self.task_list.push(self.draggind_card.cardData); 
+                
                 api.patch("/task/os_status", {
                     id: self.draggind_card.cardData.id,
-                    status_os: status
+                    status_os: status,
+                    reorderedColumn: reorderedColumn
                 })
+                .then(() => {
+                    self.getAllOs(col);
+                })
+            }
+        },
+        getStatusValue: function(column) {
+            switch (column) {
+                case 'todo':
+                    return 1;
+                case 'doing':
+                    return 2;
+                case 'test':
+                    return 3;
+                case 'done':
+                    return 4;
+                default:
+                    return null;
             }
         },
         getChildPayload: function (index) {
@@ -344,6 +368,9 @@ export default {
                 .then(function(response){
                     self.task_list = response.data.returnObj.os_list;
                     self.is_loading = false;
+
+                    self.fillKanbanColumns();
+
                     if (!programatic) { // Só vai ter chamada recursiva se a chamada não for feita por outra função
                         setTimeout(self.getAllOs, 60000); // Chamada recursiva da requisição a cada 60 segundos.
                     }
