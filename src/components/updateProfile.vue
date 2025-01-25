@@ -57,7 +57,7 @@
                                 <span class="material-icons">clear</span>
                             </div>
                         </div>
-                        <input type="text" class="occupation-input" placeholder="Cargo" v-if="addOccupation" v-on:focusout="sendOccupation()">
+                        <input type="text" class="occupation-input" placeholder="Cargo" v-if="addOccupation" v-on:focusout="sendOccupation()" maxlength="50">
                         <span class="material-icons add-occupation" v-on:click="showOccupationInput()">add_circle</span>
                     </div>
                 </div>
