@@ -1,15 +1,15 @@
 <template>
     <section class="update-profile-container" v-if="!loading">
         <div class="update-profile">
-            <div class="user-banner" :style="'background-image: url(' + $root.user.user_cover_image + '); background-position-y: center;'">
+            <div class="user-banner" :style="'background-image: url(' + user.user_cover_image + '); background-position-y: center;'">
                 <div class="change-banner" v-on:click="toggleBannerDetails()">
                     <span class="material-icons">edit</span>
                     <span>Capa</span>
                 </div>
                 <div class="banner-details" v-if="showBannerDetails">
                     <ul>
-                        <li v-if="$root.user.user_cover_image != default_user_cover_image" v-on:click="showBanner">Ver foto</li>
-                        <li v-on:click="removeBanner()" v-if="$root.user.user_cover_image != default_user_cover_image">Excluir foto</li>
+                        <li v-if="user.user_cover_image != default_user_cover_image" v-on:click="showBanner">Ver foto</li>
+                        <li v-on:click="removeBanner()" v-if="user.user_cover_image != default_user_cover_image">Excluir foto</li>
                         <li v-on:click="showSendPhoto(true)">Enviar foto</li>
                     </ul>
                 </div>
@@ -17,8 +17,8 @@
             <div class="informations-container">
                 <div class="user-image">
                     <div class="user-image-container">
-                        <img :src="$root.user.profile_photo" class="profile-avatar">
-                        <div class="user-level-badge">Nível {{$root.user.user_level}}</div>
+                        <img :src="user.profile_photo" class="profile-avatar">
+                        <div class="user-level-badge">Nível {{user.user_level}}</div>
                         <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="170px" height="170px">
                             <defs>
                                 <linearGradient id="GradientColor">
@@ -32,8 +32,8 @@
                             <span class="material-icons">photo_camera</span>
                             <div class="photo-details" v-if="showPhotoDetails">
                                 <ul>
-                                    <li v-if="$root.user.profile_photo != default_user_image" v-on:click="showPhoto">Ver foto</li>
-                                    <li v-on:click="removePhoto()" v-if="$root.user.profile_photo != default_user_image">Excluir foto</li>
+                                    <li v-if="user.profile_photo != default_user_image" v-on:click="showPhoto">Ver foto</li>
+                                    <li v-on:click="removePhoto()" v-if="user.profile_photo != default_user_image">Excluir foto</li>
                                     <li v-on:click="showSendPhoto()">Enviar foto</li>
                                 </ul>
                             </div>
@@ -50,8 +50,8 @@
                         </div>
                     </div>
                     <div class="user-occupations">
-                        <p class="add-occupation-label" v-if="$root.user.user_occupations.length == 0 && !addOccupation">Adicione um cargo</p>
-                        <div class="occupation" v-for="(occupation, index) in $root.user.user_occupations" :key="index" :id="'cargo-' + index">
+                        <p class="add-occupation-label" v-if="user.user_occupations.length == 0 && !addOccupation">Adicione um cargo</p>
+                        <div class="occupation" v-for="(occupation, index) in user.user_occupations" :key="index" :id="'cargo-' + index">
                             <p class="font-size-5">{{ occupation.occupation_name }}</p>
                             <div class="exclude-occupation" v-on:click="excludeOccupation(occupation.occupation_name, index)">
                                 <span class="material-icons">clear</span>
@@ -65,7 +65,7 @@
                 <div class="user-achievements">
                     <p class="font-size-3-bold user-achievements-title">Conquistas</p>
                     <div class="user-achievements-container">
-                        <div class="achievement" v-for="(achievement, index) in $root.user.user_achievements" :key="index" :title="achievement.achievements_description">
+                        <div class="achievement" v-for="(achievement, index) in user.user_achievements" :key="index" :title="achievement.achievements_description">
                             <div class="achievement-icon">
                                 <span class="material-icons">
                                     {{ findAchievementIcon(achievement.achievements_name) }}
