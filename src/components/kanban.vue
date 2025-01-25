@@ -6,20 +6,21 @@
             <div class="project-header">
                 <div class="project-informations">
                     <h3 class="project-name font-size-h3">{{ current_project.group_name }}</h3>
-                    <div class="project-status" v-on:click="toggleProjectStatus()">
-                        <span>Status do projeto</span>
-
+                    <div style="position: relative;">
+                        <div class="project-status" :class="chooseProjectStatus(projectStatus)">
+                            <span v-on:click="toggleProjectStatus()">{{ chooseProjectStatus(projectStatus, true) }}</span>
+                        </div>
                         <div class="project-status-container">
-                            <div class="status-item on-track" v-on:click="changeProjectStatus(0)">
+                            <div class="status-item on-track" v-on:click="changeProjectStatus(1)">
                                 <span>Em andamento</span>
                             </div>
-                            <div class="status-item at-risk" v-on:click="changeProjectStatus(1)">
+                            <div class="status-item at-risk" v-on:click="changeProjectStatus(2)">
                                 <span>Em risco</span>
                             </div>
-                            <div class="status-item off-track" v-on:click="changeProjectStatus(2)">
+                            <div class="status-item off-track" v-on:click="changeProjectStatus(3)">
                                 <span>Suspenso</span>
                             </div>
-                            <div class="status-item on-hold" v-on:click="changeProjectStatus(3)">
+                            <div class="status-item on-hold" v-on:click="changeProjectStatus(4)">
                                 <span>Em espera</span>
                             </div>
                         </div>
@@ -178,7 +179,8 @@ export default {
             checkAllowDrag: false,
             modalName: "",
             showModal: false,
-            kanbanColumns: []
+            kanbanColumns: [],
+            projectStatus: 1
         }
     },
     watch: {
@@ -192,6 +194,34 @@ export default {
         },
     },
     methods: {
+        chooseProjectStatus: function (status, label = false) {
+            switch (status) {
+                case 1: 
+                    if (label) {
+                        return "Em andamento";
+                    }
+
+                    return "on-track";
+                case 2: 
+                    if (label) {
+                        return "Em risco";
+                    }
+                    
+                    return "at-risk";
+                case 3: 
+                    if (label) {
+                        return "Suspenso";
+                    }
+                    
+                    return "off-track";
+                case 4: 
+                    if (label) {
+                        return "Em espera";
+                    }
+                    
+                    return "on-hold";
+            }
+        },
         showMoreOptions: function (column_id) {
             $("#column-" + column_id + " .more-options").show();
             $(".wrapper-container").show();
@@ -301,16 +331,34 @@ export default {
             this.showModalFunction();
             this.setModalVariables("Sprints anteriores");
         },
+        returnProjectStatus: function () {
+            let self = this;
+
+            api.post("/projects/status", {
+                project_id: self.current_project.group_id
+            }).then((response) => {
+                self.projectStatus = response.data.returnObj[0].status;
+            })
+        },
         changeProjectStatus: function (projectStatus) {
-            console.log(projectStatus);
+            this.toggleProjectStatus();
+
+            let self = this;
+
+            api.post("/projects/status/change", {
+                project_id: self.current_project.group_id,
+                status: projectStatus
+            }).then(() => {
+                self.returnProjectStatus();
+            })
         },
         toggleProjectStatus: function () {
             let wrapper = $(".project-status-wrapper");
             let projectStatusContainer = $(".project-status-container");
+
             if (projectStatusContainer.is(":visible")) {
                 projectStatusContainer.hide();
                 wrapper.hide();
-                
             } else {
                 projectStatusContainer.show();
                 wrapper.show();
@@ -351,6 +399,7 @@ export default {
 
                 this.getCurrentProject(this.current_project.group_id);
                 this.returnColumns();
+                this.returnProjectStatus();
 
                 let url = new URLSearchParams(window.location.search);
                 this.joined_group = url.get("joined_group") != null ? url.get("joined_group") : false;
@@ -434,7 +483,7 @@ export default {
             if (addedIndex != null) {
                 self.draggind_card.cardData.status_os = col;
                 self.task_list.push(self.draggind_card.cardData); 
-                
+
                 api.patch("/task/os_status", {
                     id: self.draggind_card.cardData.id,
                     status_os: col,
@@ -663,15 +712,18 @@ export default {
         left: 10px;
     }
 
+    .status-item::before {
+        left: 18px;
+    }
+
     .project-status-container {
         position: absolute;
-        left: 0;
+        left: 16px;
         top: 120%;
         background: var(--white);
         border: 1px solid var(--gray-high);
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         border-radius: 10px;
-        padding: .7rem;
         display: none;
         z-index: 11;
         white-space: nowrap;
@@ -689,7 +741,7 @@ export default {
     }
 
     .status-item {
-        padding: 7px 7px 7px 32px;
+        padding: 15px 15px 15px 47px;
         cursor: pointer;
         position: relative;
     }
