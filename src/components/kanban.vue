@@ -559,7 +559,7 @@ export default {
                 this.current_project.group_name = project.group_name;
                 this.show_edit_task = false;
                 this.getCurrentProject(project.group_id, true);
-                this.getAllOs(true);
+                this.returnColumns(false, true);
             }
 
             setTimeout(() => {
