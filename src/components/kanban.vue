@@ -309,6 +309,7 @@ export default {
                 self.filterKanbanCards();
 
                 if (returnTasks) {
+                    self.returnProjectStatus();
                     self.getAllOs(!initial);
                 }
             })
@@ -399,7 +400,6 @@ export default {
 
                 this.getCurrentProject(this.current_project.group_id);
                 this.returnColumns();
-                this.returnProjectStatus();
 
                 let url = new URLSearchParams(window.location.search);
                 this.joined_group = url.get("joined_group") != null ? url.get("joined_group") : false;
@@ -494,20 +494,6 @@ export default {
                 })
             }
         },
-        getStatusValue: function(column) {
-            switch (column) {
-                case 'todo':
-                    return 1;
-                case 'doing':
-                    return 2;
-                case 'test':
-                    return 3;
-                case 'done':
-                    return 4;
-                default:
-                    return null;
-            }
-        },
         getChildPayload: function (index) {
             return {
                 index,
@@ -531,7 +517,6 @@ export default {
                     self.task_list = response.data.returnObj.os_list;
 
                     self.filterKanbanCards();
-                    //self.fillKanbanColumns();
 
                     if (!programatic) { // Só vai ter chamada recursiva se a chamada não for feita por outra função
                         setTimeout(self.getAllOs, 60000); // Chamada recursiva da requisição a cada 60 segundos.
