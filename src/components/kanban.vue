@@ -47,7 +47,7 @@
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('todo', $event)" @drop="handleDrop('todo', $event)" :get-child-payload="getChildPayload">
                             <newTaskCard :group_users="project.group_members" card_status="1" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
-                            <Draggable v-for="task in todoList" :key="task.id_os" class="draggable-card">
+                            <Draggable v-for="task in todoList" :key="task.id" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
                             </Draggable>
@@ -62,7 +62,7 @@
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('doing', $event)" @drop="handleDrop('doing', $event)" :get-child-payload="getChildPayload">
                             <newTaskCard :group_users="project.group_members" card_status="2" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
-                            <Draggable v-for="task in doingList" :key="task.id_os" class="draggable-card">
+                            <Draggable v-for="task in doingList" :key="task.id" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
                             </Draggable>
@@ -76,7 +76,7 @@
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('test', $event)" @drop="handleDrop('test', $event)" :get-child-payload="getChildPayload">
                             <newTaskCard :group_users="project.group_members" card_status="3" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
-                            <Draggable v-for="task in testList" :key="task.id_os" class="draggable-card">
+                            <Draggable v-for="task in testList" :key="task.id" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
                             </Draggable>
@@ -90,7 +90,7 @@
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('done', $event)" @drop="handleDrop('done', $event)" :get-child-payload="getChildPayload">
                             <newTaskCard :group_users="project.group_members" card_status="4" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
-                            <Draggable v-for="task in doneList" :key="task.id_os" class="draggable-card">
+                            <Draggable v-for="task in doneList" :key="task.id" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
                             </Draggable>
@@ -181,6 +181,8 @@ export default {
             this.doneList = this.task_list
                 .filter(task => task.status_os == 4)
                 .sort((a, b) => a.task_index - b.task_index);
+
+            this.is_loading = false;
         },
         resetModalContentVariables: function () {
             this.newSprint = false;
@@ -295,11 +297,20 @@ export default {
         handleDragEnd: function () {
             sessionStorage.setItem("in_drag", "false");
         },
-        reorderTasks: function (addedIndex, col) {
+        reorderTasks: function (addedIndex, col, lastCol) {
             let array = this.$data[col + "List"];
-            const currentIndex = array.findIndex(item => item.id === this.draggind_card.cardData.id) - 1;
+            let lastArray = this.$data[lastCol + "List"];
+            let currentIndex; 
 
-            const [movedObject] = array.splice(currentIndex, 1);
+            for (let i = 0; i < lastArray.length; i++) {
+                if (lastArray[i].id == this.draggind_card.cardData.id) {
+                    currentIndex = i - 1;
+                }
+            }
+
+            if (currentIndex == undefined) return [];
+
+            const [movedObject] = lastArray.splice(currentIndex, 1);
 
             array.splice(addedIndex, 0, movedObject);
 
@@ -314,7 +325,7 @@ export default {
                 return;
             }
 
-            let reorderedColumn = this.reorderTasks(addedIndex, col);
+            let reorderedColumn = this.reorderTasks(addedIndex - 1, col, self.draggind_card.col);
 
             status = self.getStatusValue(col);
 
@@ -367,7 +378,6 @@ export default {
                 })
                 .then(function(response){
                     self.task_list = response.data.returnObj.os_list;
-                    self.is_loading = false;
 
                     self.fillKanbanColumns();
 
