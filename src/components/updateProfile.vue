@@ -204,7 +204,7 @@ export default {
                 email: self.$root.user.email
             }
 
-            api.post("/usuarios/forgot_password", data)
+            api.post("/users/forgot_password", data)
             .then(function (response) {
                 self.password_response = response.data.message;
                 self.reset_password_sent = true;
@@ -229,7 +229,7 @@ export default {
                 user_bio: event.target.value
             }
 
-            api.patch("/usuarios/change_bio", data)
+            api.patch("/users/change_bio", data)
             .then(function () {
                 self.closeBio();
                 self.$root.user.user_bio = value;
@@ -252,7 +252,7 @@ export default {
                 user_occupation: occupationName
             }
             
-            api.patch('/usuarios/exclude_occupation', data)
+            api.patch('/users/exclude_occupation', data)
             .then(function () {
                 self.requireUser(true);
                 $("#cargo-" + index).remove();
@@ -268,7 +268,7 @@ export default {
                 this.addOccupation = false;
                 return;
             }
-            api.patch("/usuarios/add_occupation", data)
+            api.patch("/users/add_occupation", data)
             .then(function () { 
                 self.requireUser(true).then(() => {
                     self.addOccupation = false;
@@ -355,7 +355,7 @@ export default {
         removeBanner: function (from_upload = false) {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
 
-            api.patch("/usuarios/exclude_banner", "", {
+            api.patch("/users/exclude_banner", "", {
                 headers: {
                         Authorization: jwt
                     }
@@ -442,7 +442,7 @@ export default {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
             self.isDeleting = true;
 
-            api.post("/usuarios/exclude_user", "", {
+            api.post("/users/exclude_user", "", {
                 headers: {
                     Authorization: jwt
                 }
@@ -698,6 +698,10 @@ export default {
     align-items: center;
     justify-content: center;
     margin-bottom: 2rem;
+}
+
+.profile-form-container {
+    width: 100%;
 }
 
 @media (max-width: 580px) {
@@ -1150,13 +1154,8 @@ svg {
     font-size: 30px;
     cursor: pointer;
     transition:all 0.4s;
-    opacity: 0;
     color: var(--gray-low);
 }
-
-    .add-occupation:hover {
-        opacity: 1;
-    }
 
 @media (max-width: 450px) {
     .add-occupation {
@@ -1169,6 +1168,8 @@ svg {
     border-radius: 6px;
     border: 1px solid var(--gray-low);
     padding: 10px;
+    flex: 1;
+    min-width: 150px;
 }
 
 .add-occupation-label {

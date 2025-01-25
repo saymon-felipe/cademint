@@ -89,7 +89,7 @@ export default {
             api.get("/system")
             .then(function(response){
                 if (!response.data.response.in_maintenance) {
-                    api.post("/usuarios/cadastro", data)
+                    api.post("/users/register", data)
                     .then(function(response2){
                         $("#register-form").find(".loading").hide();
                         $("#register-form").find('.response').addClass("success");

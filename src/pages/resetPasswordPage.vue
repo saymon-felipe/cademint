@@ -129,7 +129,7 @@ export default {
 
             self.response = "";
 
-            api.patch("/usuarios/change_password", data)
+            api.patch("/users/change_password", data)
             .then(function (response) {
                 $(".response").addClass("success");
                 self.response = response.data.mensagem;
@@ -174,7 +174,7 @@ export default {
 
             self.resetVariables();
 
-            api.post("/usuarios/validate_reset_password_token", data)
+            api.post("/users/validate_reset_password_token", data)
             .then(function () {
                 self.createNewPassword = true;
             })
@@ -199,7 +199,7 @@ export default {
                 email: input.val()
             }
 
-            api.post("/usuarios/forgot_password", data)
+            api.post("/users/forgot_password", data)
             .then(function () {
                 self.emailSent();
             })

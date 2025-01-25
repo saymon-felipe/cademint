@@ -10,7 +10,7 @@
                     <span>JPG, PNG</span>
                 </div>
                 <h6 class="file-name" v-if="previewPhoto != ''">{{ fileName }}</h6>
-                <input type="file" name="photo" id="photo" @change.prevent="preSendPhoto($event)" title="Envie uma foto nos formatos PNG ou JPG">
+                <input type="file" name="photo" id="photo" accept="image/*" @change.prevent="preSendPhoto($event)" title="Envie uma foto nos formatos PNG ou JPG">
                 <button type="submit" id="send-photo-button" class="save-button" v-if="previewPhoto != ''">Enviar foto</button>
             </form>
         </div>
@@ -46,7 +46,7 @@ export default {
             let self = this;
 
             let dataTarget = $(".upload").attr("data_target");
-            let path = '/usuarios/';
+            let path = '/users/';
             let target = "upload_photo";
 
             switch (dataTarget) {

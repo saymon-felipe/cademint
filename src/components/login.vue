@@ -101,7 +101,7 @@ export default {
             api.get("/system")
             .then(function(response){
                 if (!response.data.response.in_maintenance) {
-                    api.post("/usuarios/login", data)
+                    api.post("/users/login", data)
                     .then(function(response2){
                         self.setJwtInLocalStorage(response2.data.returnObj);
                         self.response = response2.data.mensagem;

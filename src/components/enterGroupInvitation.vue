@@ -30,7 +30,7 @@ export default {
             let groupIdParam = url.get("gid");
             let groupNameParam = url.get("gname");
             
-            api.post("/usuarios/return_user_by_email", {
+            api.post("/users/return_user_by_email", {
                 email: emailParam
             })
             .then(function(response){

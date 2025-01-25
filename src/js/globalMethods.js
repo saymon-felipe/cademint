@@ -53,7 +53,7 @@ export const globalMethods = {
                         setTimeout(self.checkIfUserIsAuthenticated, 60 * 1000); // Se o sistema estiver em manutenção e cair na página de manutenção, depois de 60 segundos é feita uma nova verificação.
                         return;
                     } else {
-                        api.get("/usuarios/checkJWT", { // Se ja estiver logado no sistema e acessar a página de login, é checkado a valia do token JWT e então redirecionado para a index.
+                        api.get("/users/checkJWT", { // Se ja estiver logado no sistema e acessar a página de login, é checkado a valia do token JWT e então redirecionado para a index.
                             headers: {
                                 Authorization: jwt
                             }
@@ -159,7 +159,7 @@ export const globalMethods = {
         requireUser: function(reloadNow = false) { // Função retorna o usuário pelo id.
             return new Promise((resolve) => {
                 let self = this;
-                api.get("/usuarios/return_user").then((res) => {
+                api.get("/users/return_user").then((res) => {
                     self.$root.user = res.data.returnObj;
                     resolve();
                     if (!reloadNow) {
@@ -185,7 +185,7 @@ export const globalMethods = {
         removePhoto: function (from_upload = false, banner = false, group = false, group_id = null) {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
             let target = "exclude_photo";
-            let path = "/usuarios/";
+            let path = "/users/";
             let data = "";
 
             if (banner) {

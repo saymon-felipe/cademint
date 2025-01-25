@@ -57,7 +57,7 @@ export default {
                 search: self.searchParam
             }
             $(".cademint-autocomplete").css("opacity", 1);
-            api.post('/usuarios/find_users', data)
+            api.post('/users/find_users', data)
             .then(function (response) {
                 self.user_list = response.data.returnObj;
             }).catch((error) => {
