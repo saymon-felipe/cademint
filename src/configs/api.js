@@ -14,7 +14,7 @@ const production_environment = ""; //Ambiente de produção.
 // 2 - Ambiente de produção
 // 
 // ==============================
-let ambient = 0;
+let ambient = 1;
 // ==============================
 //
 
