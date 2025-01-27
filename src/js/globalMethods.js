@@ -111,6 +111,7 @@ export const globalMethods = {
                 group_id: group_id,
                 group_name: group_name
             }
+
             localStorage.setItem("current_project", JSON.stringify(current_project));
         },
         getCurrentProjectInLocalStorage: function () { // Retorna o id do projeto de session storage.
@@ -122,6 +123,34 @@ export const globalMethods = {
             let JSONproject = localStorage.getItem("current_project");
             let project = JSON.parse(JSONproject).group_id;
             return project;
+        },
+        chooseProjectStatus: function (status, label = false) {
+            switch (status) {
+                case 1: 
+                    if (label) {
+                        return "Em andamento";
+                    }
+
+                    return "on-track";
+                case 2: 
+                    if (label) {
+                        return "Em risco";
+                    }
+                    
+                    return "at-risk";
+                case 3: 
+                    if (label) {
+                        return "Suspenso";
+                    }
+                    
+                    return "off-track";
+                case 4: 
+                    if (label) {
+                        return "Em espera";
+                    }
+                    
+                    return "on-hold";
+            }
         },
         loadSystemVersion: async function(loadNow = false) {
             let newAppVersion = await api.get("/system").then(response => response.data.response.system_version);

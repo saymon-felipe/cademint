@@ -6,7 +6,7 @@
         <div class="new-version-availabe">
             <h6 class="font-size-5">Nova versão do sistema disponível! Salve o que está fazendo e <span v-on:click="$router.go()">recarregue aqui!</span></h6>
         </div>
-        <newGroupModal v-if="showNewGroup" :showNewGroup="showNewGroup" :user="user" @showNewGroup="showNewGroup = false" /> 
+        
         <router-link to="/home" v-if="$route.path.indexOf('/home') == -1">
             <i class="fas fa-arrow-circle-left return"></i>
         </router-link>
@@ -18,15 +18,7 @@
                 </div>
             </router-link>
         </div>
-        <div class="current-project-container" v-if="$route.path.indexOf('/home') != -1 && $route.path.indexOf('/edit') == -1 && $route.path.indexOf('/update-profile') == -1">
-            <div class="projects">
-                <select id="projects-name" v-model="project_value" @change="changeProject()">
-                    <option v-for="(project, index) in $root.user.user_groups" :key="index" :value="project.groups_id">{{ project.group_name }}</option>
-                </select>
-                <span class="material-icons" id="change-project" v-on:click="openResponsiveChangeProject">sync</span>
-                <span class="material-icons" id="new-project" v-on:click="showNewGroup = true" @showModal="showModal = false">add</span>
-            </div>
-        </div>
+        <changeProjectDropdown v-if="showProjectDropdown" :gid="gid" />
         <div class="menu-wrapper" v-on:click="showResponsiveMenu = false; showMenu = false;"></div>
         <div class="go-to-user-profile">
             <div class="responsive-menu" v-on:click="showResponsiveMenu = !showResponsiveMenu">
@@ -46,7 +38,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="go-to-user-profile-inner" v-on:click="showMenu = !showMenu">
                 <img class="avatar-p avatar-header" :src="$root.user.profile_photo">
                 <h3>Olá, <span class="user-name">{{ $root.user.nome }}</span></h3>
@@ -61,19 +52,13 @@
                 </div>
             </div>
         </div>
-        <div class="responsive-choose-project-modal">
-            <div class="responsive-projects-list">
-                <span v-for="(group, index) in $root.user.user_groups" :key="index" :id="'project-' + group.groups_id" class="responsive-project" v-on:click="changeProject(false, group.groups_id, group.group_name, true)">{{ group.group_name }}</span>
-            </div>
-        </div>
-        <div class="overlay" v-on:click="closeResponsiveChangeProject"></div>
     </nav>
 </template>
 
 <script>
 import $ from 'jquery';
 import { globalMethods } from '../js/globalMethods';
-import newGroupModal from './newGroupModal.vue';
+import changeProjectDropdown from "./changeProjectDropdown.vue";
 
 export default {
     name: "headerComponent",
@@ -84,39 +69,20 @@ export default {
             project_name: "",
             show_modal: false,
             is_loading: true,
-            showNewGroup: false,
             showMenu: false,
             showResponsiveMenu: false,
             gid: null,
-            gname: ""
+            gname: "",
+            showProjectDropdown: true
         }
     },
     methods: {
         goToHome: function () {
-            let location = window.location.pathname;
-            if (location == "/home") {
-                this.$router.go();
+            if (this.$router.path == "/home") {
                 return;
             }
-            window.location.pathname = "/home";
-        },
-        openResponsiveChangeProject: function () {
-            let modal = $(".responsive-choose-project-modal"), overlay = $(".overlay");
 
-            overlay.show();
-            modal.show();
-            setTimeout(() => {
-                modal.css("opacity", 1).css("transform", "translateY(0)");
-            }, 10);
-        },
-        closeResponsiveChangeProject: function () {
-            let modal = $(".responsive-choose-project-modal"), overlay = $(".overlay");
-
-            modal.css("opacity", 0).css("transform", "translateY(-100px)");
-            setTimeout(() => {
-                overlay.hide();
-                modal.hide();
-            }, 400);
+            this.$router.push("/home");
         },
         closeMenu: function () {
             $(".profile-more-options").toggleClass("rotate");
@@ -149,76 +115,16 @@ export default {
                 $(".responsive-profile-more-options-container").css("opacity", 1);
                 $(".menu-wrapper").show();
             }, 10);
-        },
-        changeProject: function (programatic = false, projectId = null, project_name = null, responsive = false) { // No onchange do select procura o grupo pelo nome no input e armazena em session storage.
-            if (programatic) {
-                this.setProjectNameAndId(projectId, project_name);
-                this.setCurrentProjectInLocalStorage(projectId, project_name);
-                return;
-            }
-
-            if ($("#projects-name").val() != null) {
-                this.setCurrentProjectInLocalStorage($("#projects-name").val(), $("#projects-name option:selected").html());
-                this.setProjectNameAndId($("#projects-name").val(), $("#projects-name option:selected").html());
-                return;
-            }
-            
-            if (responsive) {
-                this.setCurrentProjectInLocalStorage(projectId, project_name);
-                $(".responsive-project").removeClass("active");
-                $("#project-" + projectId).addClass("active");
-                this.closeResponsiveChangeProject();
-                return;
-            }
-        },
-        setProjectNameAndId: function (project_id, project_name) {
-            this.project_name = project_name;
-            this.project_value = project_id;
-        },
-        checkIfProjectChanged: function () {
-            let jwt = this.getJwtFromLocalStorage();
-            let project = this.getCurrentProjectInLocalStorage();
-            if (jwt == "" || jwt == undefined || jwt == null || project == null) {
-                return;
-            }
-            if (this.project_value != project.group_id) {
-                this.setProjectNameAndId(this.project_value, this.project_name);
-            }
-            setTimeout(() => {
-                this.checkIfProjectChanged();
-            }, 1000);
-        },
-        findProjectOption: function () {
-            let project = this.getCurrentProjectInLocalStorage();
-            if (project == null || project == 'undefined') {
-                let selectGroup = {
-                    group_id: this.$root.user.user_groups[0].groups_id,
-                    group_name: this.$root.user.user_groups[0].group_name
-                }
-                if (this.gid != null) {
-                    selectGroup.group_id = this.gid;
-                    selectGroup.group_name = this.gname;
-                }
-                this.setProjectNameAndId(selectGroup.group_id, selectGroup.group_name);
-                this.setCurrentProjectInLocalStorage(this.project_value, this.project_name);
-                setTimeout(() => {
-                    this.changeProject(true, this.project_value, this.project_name);
-                }, 10);
-            } else {
-                this.changeProject(true, project.group_id, project.group_name);
-            }
-        },
-        findResponsiveProject: function () {
-            setTimeout(() => {
-                let project = this.getCurrentProjectInLocalStorage();
-                if (project == null) {
-                    return;
-                }
-                $("#project-" + project.group_id).addClass("active");
-            }, 200);
         }
     },
     watch: {
+        $route(obj) {
+            if (obj.path != "/home") {
+                this.showProjectDropdown = false;
+            } else {
+                this.showProjectDropdown = true;
+            }
+        },
         showMenu: function () {
             if (this.showMenu) {
                 this.openMenu();
@@ -237,15 +143,19 @@ export default {
     mounted() {
         if (window.location.href.indexOf("/home") != -1) {
             let url = new URLSearchParams(window.location.search);
+
             this.gid = url.get("gid");
             this.gname = url.get("gname");
-            this.checkIfProjectChanged();
         }
-        this.findProjectOption();
-        this.findResponsiveProject();
+        
+        if (window.location.pathname == "/home") {
+            this.showProjectDropdown = true;
+        } else {
+            this.showProjectDropdown = false;
+        }
     },
     components: {
-        newGroupModal
+        changeProjectDropdown
     }
 }
 </script>
@@ -268,63 +178,6 @@ export default {
     .overlay {
         opacity: 0.4;
     }
-
-    .responsive-choose-project-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: auto;
-        width: 90vw;
-        max-width: 800px;
-        max-height: 600px;
-        height: 70vh;
-        background: var(--white);
-        border-radius: 1rem;
-        z-index: 9999;
-        transition: all 0.4s;
-        transform: translateY(-100px);
-        padding: 1rem;
-        overflow: hidden;
-    }
-
-    .responsive-projects-list {
-        height: 100%;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        overflow-y: scroll;
-    }
-
-        .responsive-projects-list span {
-            cursor: pointer;
-            background: var(--gray-high);
-            padding: .5rem 1.7rem;
-            display: flex;
-            justify-content: center;
-            width: 90%;
-            border-radius: 10px;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin: .3rem 0;
-        }
-
-            .responsive-projects-list span.active {
-                color: var(--white);
-            }
-
-            .responsive-projects-list span:hover {
-                background: var(--gray-high);
-            }
-
-    @media (max-width: 388px) {
-        .responsive-projects-list span {
-            font-size: .9rem;
-        }
-    }  
 
     .in-maintenance-element {
         display: none;
@@ -408,7 +261,7 @@ export default {
     .header {
         display: flex;
         align-items: center;
-        justify-content: end;
+        justify-content: space-between;
         position: fixed;
         top: 0;
         left: 0;
@@ -434,15 +287,10 @@ export default {
             height: 17px;
         }
 
-    .title-container {
-        width: 100%;
-    }
-
     .title-container a {
         display: flex;
         flex-direction: column;
         text-align: center;
-        width: 12rem;
     }
 
     .page-title {

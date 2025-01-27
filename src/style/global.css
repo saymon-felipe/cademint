@@ -290,26 +290,47 @@ html, body {
     }
 }
 
-.os-tooltip {
-    background: rgb(242, 242, 242);
-    box-shadow: 0 0 10px rgba(197, 197, 197, 0.2);
-    max-height: 15rem;
-    border-radius: 15px;
-    padding: 1.5rem 3rem;
-    margin: 1.5rem;
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    z-index: 999;
-    transition: all 0.4s;
+.status-item {
+    padding: 15px 15px 15px 47px;
+    cursor: pointer;
+    position: relative;
 }
 
-    .os-tooltip .os-tooltip-number {
-        margin-bottom: 1rem;
+    .status-item:hover {
+        background: var(--gray-high);
     }
 
-    .os-tooltip h6 {
-        font-size: 1rem;
+    .status-item::before {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 1px solid var(--gray);
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        left: 18px;
+    }
+
+    .on-track::before {
+        background: var(--green-high);
+        border: 1px solid var(--green-high);
+    }
+
+    .at-risk::before {
+        background: var(--yellow);
+        border: 1px solid var(--yellow);
+    }
+
+    .off-track::before {
+        background: var(--red);
+        border: 1px solid var(--red);
+    }
+
+    .on-hold::before {
+        background: var(--blue);
+        border: 1px solid var(--blue);
     }
 
 .overlay {

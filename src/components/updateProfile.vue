@@ -90,7 +90,10 @@
                 </div>
                 <hr>
                 <div class="user-groups">
-                    <p class="font-size-3-bold">Meus grupos</p>
+                    <div class="user-groups-header">
+                        <p class="font-size-3-bold">Meus grupos</p>
+                        <span class="material-icons" v-on:click="showNewGroup = true">add</span>
+                    </div>
                     <div class="group" v-for="(group, index) in $root.user.user_groups" :key="index">
                         <router-link :to="{ name: 'edit-groups', params: { id: group.groups_id } }">
                         <div class="group">
@@ -145,6 +148,7 @@
             <div class="overlay" v-on:click="hidePhoto(); hideSendPhoto(); hideExcludeAccountModal();" v-if="showExpandedPhoto || showSendPhotoContainer || showExcludeAccount"></div>
             <div class="wrapper" v-on:click="hideBannerDetails(); hidePhotoDetails();" v-if="showPhotoDetails || showBannerDetails"></div>
             
+            <newGroupModal v-if="showNewGroup" :showNewGroup="showNewGroup" @showNewGroup="showNewGroup = false" /> 
             <uploadModal group="" v-if="showSendPhotoContainer"></uploadModal>
         </div>
     </section>
@@ -154,6 +158,7 @@ import { globalMethods } from '../js/globalMethods';
 import api from '../configs/api.js';
 import $ from 'jquery';
 import uploadModal from './uploadImageModal.vue';
+import newGroupModal from './newGroupModal.vue';
 
 export default {
     name: "updateProfile",
@@ -174,7 +179,8 @@ export default {
             editing_bio: false,
             password_response: "",
             reset_password_sent: false,
-            loadingOccupations: false
+            loadingOccupations: false,
+            showNewGroup: false
         }
     },
     watch: {
@@ -473,7 +479,8 @@ export default {
         })
     },
     components: {
-        uploadModal
+        uploadModal,
+        newGroupModal
     }
 }
 </script>
@@ -1081,6 +1088,25 @@ svg {
 
 .user-groups {
     margin: 10px 0;
+    width: 100%;
+
+    & .user-groups-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        & span {
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.4s;
+
+            &:hover {
+                cursor: pointer;
+                background: var(--gray-soft);
+            }
+        }
+    }
 }
 
 .achievement {

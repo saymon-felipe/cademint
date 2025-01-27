@@ -53,7 +53,7 @@ import autoComplete from './autoComplete.vue';
 
 export default {
     name:  'newGroupModal',
-    props: ['showNewGroup', 'user'],
+    props: ['showNewGroup'],
     mixins: [globalMethods],
     data() {
         return {
@@ -87,7 +87,7 @@ export default {
                     self.hideModal();
                     $(".loading").hide();
                     setTimeout(() => {
-                        location.reload();
+                        self.$router.go();
                     }, 400);
                 }, 1000);
             })
@@ -167,12 +167,16 @@ export default {
                         group_id: response.data.returnObj.group_id,
                         group_name: response.data.returnObj.group_name
                     }
-                    self.setCurrentProjectInLocalStorage(self.created_group.group_id, self.created_group.group_name);
+
+                    self.setCurrentProjectInLocalStorage(self.created_group.group_id);
                     
                     $(".response").addClass("success");
                     self.response = "Grupo criado com sucesso";
+
                     if ($("#photo").val() != "") {
                         $("#submit-image-form").click();
+                    } else {
+                        self.$router.go();
                     }
                 })
                 .catch(function (error) {

@@ -194,34 +194,6 @@ export default {
         },
     },
     methods: {
-        chooseProjectStatus: function (status, label = false) {
-            switch (status) {
-                case 1: 
-                    if (label) {
-                        return "Em andamento";
-                    }
-
-                    return "on-track";
-                case 2: 
-                    if (label) {
-                        return "Em risco";
-                    }
-                    
-                    return "at-risk";
-                case 3: 
-                    if (label) {
-                        return "Suspenso";
-                    }
-                    
-                    return "off-track";
-                case 4: 
-                    if (label) {
-                        return "Em espera";
-                    }
-                    
-                    return "on-hold";
-            }
-        },
         showMoreOptions: function (column_id) {
             $("#column-" + column_id + " .more-options").show();
             $(".wrapper-container").show();
@@ -541,6 +513,7 @@ export default {
 
             if (project.group_id != this.project.group_id) {
                 this.current_project.group_id = project.group_id;
+                console.log(project.group_name)
                 this.current_project.group_name = project.group_name;
                 this.show_edit_task = false;
                 this.getCurrentProject(project.group_id, true);
@@ -649,11 +622,12 @@ export default {
 .project-informations {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 10px
 }
 
 .project-status {
     border: 1px solid var(--gray-high);
-    margin: 0 1rem;
     padding: 5px 10px 5px 30px;
     border-radius: 10px;
     cursor: pointer;
@@ -664,27 +638,7 @@ export default {
         background: var(--gray-high);
     }
 
-    .project-status.on-track::before, .status-item.on-track::before {
-        background: var(--green-high);
-        border: 1px solid var(--green-high);
-    }
-
-    .project-status.at-risk::before, .status-item.at-risk::before {
-        background: var(--yellow);
-        border: 1px solid var(--yellow);
-    }
-
-    .project-status.off-track::before, .status-item.off-track::before {
-        background: var(--red);
-        border: 1px solid var(--red);
-    }
-
-    .project-status.on-hold::before, .status-item.on-hold::before {
-        background: var(--blue);
-        border: 1px solid var(--blue);
-    }
-
-    .project-status::before, .status-item::before {
+    .project-status::before {
         content: '';
         width: 10px;
         height: 10px;
@@ -695,10 +649,6 @@ export default {
         bottom: 0;
         margin: auto;
         left: 10px;
-    }
-
-    .status-item::before {
-        left: 18px;
     }
 
     .project-status-container {
@@ -724,16 +674,6 @@ export default {
         cursor: default;
         display: none;
     }
-
-    .status-item {
-        padding: 15px 15px 15px 47px;
-        cursor: pointer;
-        position: relative;
-    }
-
-        .status-item:hover {
-            background: var(--gray-high);
-        }
 
 /* HEADER */
 
