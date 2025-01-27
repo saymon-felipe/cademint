@@ -140,6 +140,8 @@ import ProjectListComponent from './projectListComponent.vue';
     border-radius: 6px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     z-index: 6;
+    max-height: 50vh;
+    overflow: auto;
 }
 
 .project-members {
