@@ -351,11 +351,6 @@ input[type='file'] {
             margin: .5rem 0;
         }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-
 .add-users-container {
     position: relative;
 }

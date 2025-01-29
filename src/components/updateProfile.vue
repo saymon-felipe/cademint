@@ -40,102 +40,138 @@
                         </div>
                     </div>
                 </div>
-                <div class="profile-form-container">
-                    <div class="user-informations">
-                        <h3 class="font-size-2-bold">{{ $root.user.nome }}</h3>
-                        <div class="user-medals">
-                            <div class="user-medal-container" v-for="(medal, index) in $root.user.user_medals" :key="index">
-                                <img :src="require('../assets/img/medal-' + medal.id + '.svg')" class="user-medal" :title="medal.medal_description">
+                <div class="tabs-list-menu">
+                    <ul>
+                        <li class="menu-item selected font-size-3" id="principal" v-on:click="selectTab(0)">
+                            Informações principais
+                            <div class="menu-underline"></div>
+                        </li>
+                        <li class="menu-item font-size-3" id="settings" v-on:click="selectTab(1)">
+                            Configurações
+                            <div class="menu-underline"></div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tabs-content">
+                    <div class="account-informations">
+                        <div class="profile-form-container">
+                            <div class="user-informations">
+                                <h3 class="font-size-2-bold">{{ $root.user.nome }}</h3>
+                                <div class="user-medals">
+                                    <div class="user-medal-container" v-for="(medal, index) in $root.user.user_medals" :key="index">
+                                        <img :src="require('../assets/img/medal-' + medal.id + '.svg')" class="user-medal" :title="medal.medal_description">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="user-occupations" :style="loadingOccupations ? 'opacity: 0;' : ''">
+                                <p class="add-occupation-label" v-if="$root.user.user_occupations.length == 0 && !addOccupation">Adicione um cargo</p>
+                                <div class="occupation" v-for="(occupation, index) in $root.user.user_occupations" :key="index" :id="'cargo-' + index">
+                                    <p class="font-size-5">{{ occupation.occupation_name }}</p>
+                                    <div class="exclude-occupation" v-on:click="excludeOccupation(occupation.occupation_name, index)">
+                                        <span class="material-icons">clear</span>
+                                    </div>
+                                </div>
+                                <input type="text" class="occupation-input" placeholder="Cargo" v-if="addOccupation" v-on:focusout="sendOccupation()" maxlength="50">
+                                <span class="material-icons add-occupation" v-on:click="showOccupationInput()">add_circle</span>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="user-achievements">
+                            <p class="font-size-3-bold user-achievements-title">Conquistas</p>
+                            <div class="user-achievements-container">
+                                <div class="achievement" v-for="(achievement, index) in $root.user.user_achievements" :key="index" :title="achievement.achievements_description">
+                                    <div class="achievement-icon">
+                                        <span class="material-icons">
+                                            {{ findAchievementIcon(achievement.achievements_name) }}
+                                        </span>
+                                    </div>
+                                    <p class="font-size-5"><strong>{{ achievement.achievements_name }}</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="user-biography">
+                            <div class="user-biography-header">
+                                <p class="font-size-3-bold">Biografia</p>
+                                <span class="material-icons" v-on:click="editBio()">edit</span>
+                            </div>
+                            <p class="bio" v-if="!editing_bio">{{ $root.user.user_bio }}</p>
+                            <p class="bio" v-if="$root.user.user_bio == null && !editing_bio"><i>Conte sobre você...</i></p>
+                            <div class="edit-bio" v-if="editing_bio">
+                                <textarea name="user_bio" id="user-bio" rows="7" v-model="$root.user.user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)" maxlength="500"></textarea>
+                                <p class="bio-counter">0 / 500</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="user-groups">
+                            <div class="user-groups-header">
+                                <p class="font-size-3-bold">Meus grupos</p>
+                                <span class="material-icons" v-on:click="showNewGroup = true">add</span>
+                            </div>
+                            <div class="group" v-for="(group, index) in $root.user.user_groups" :key="index">
+                                <router-link :to="{ name: 'edit-groups', params: { id: group.groups_id } }">
+                                <div class="group">
+                                    <img :src="group.image">
+                                    <h4>{{ group.group_name }}</h4>
+                                </div>
+                            </router-link>
                             </div>
                         </div>
                     </div>
-                    <div class="user-occupations" :style="loadingOccupations ? 'opacity: 0;' : ''">
-                        <p class="add-occupation-label" v-if="$root.user.user_occupations.length == 0 && !addOccupation">Adicione um cargo</p>
-                        <div class="occupation" v-for="(occupation, index) in $root.user.user_occupations" :key="index" :id="'cargo-' + index">
-                            <p class="font-size-5">{{ occupation.occupation_name }}</p>
-                            <div class="exclude-occupation" v-on:click="excludeOccupation(occupation.occupation_name, index)">
-                                <span class="material-icons">clear</span>
+                    <div class="account-settings">
+                        <div class="preferences">
+                            <p class="font-size-3-bold">Preferências</p>
+                            <div class="form-group">
+                                <div class="radio-group">
+                                    <input type="checkbox" id="notifications" v-model="notifications.enable">
+                                    <label for="notifications">Desejo receber lembretes de uso da plataforma</label>
+                                </div>
+                                <form @submit.prevent="updatePreferences()" v-if="notifications.enable" style="padding-left: 3rem;">
+                                    <div class="radio-group" v-if="notifications.enable">
+                                        <input type="radio" id="whatsapp" :checked="notifications.enable" required>
+                                        <label for="whatsapp">Por Whatsapp</label>
+                                    </div>
+                                    <input type="tel" v-model="notifications.tel" placeholder="Celular (XX) XXXXX-XXXX" inputmode="numeric" maxlength="11" required>
+                                    <input type="number" v-model="notifications.days_recurrency" placeholder="Frequência de envio (dias)" required>
+                                    <button type="submit" class="btn primary" v-if="!isEqual(notifications, notifications2) && !saved">Salvar</button>
+                                </form>
                             </div>
                         </div>
-                        <input type="text" class="occupation-input" placeholder="Cargo" v-if="addOccupation" v-on:focusout="sendOccupation()" maxlength="50">
-                        <span class="material-icons add-occupation" v-on:click="showOccupationInput()">add_circle</span>
-                    </div>
-                </div>
-                <hr>
-                <div class="user-achievements">
-                    <p class="font-size-3-bold user-achievements-title">Conquistas</p>
-                    <div class="user-achievements-container">
-                        <div class="achievement" v-for="(achievement, index) in $root.user.user_achievements" :key="index" :title="achievement.achievements_description">
-                            <div class="achievement-icon">
-                                <span class="material-icons">
-                                    {{ findAchievementIcon(achievement.achievements_name) }}
-                                </span>
+                        <hr>
+                        <div class="user-change-password">
+                            <p class="font-size-3-bold">Segurança</p>
+                            <button type="button" v-if="!reset_password_sent" v-on:click="requestResetPassword()" id="reset-password-button">Esqueci minha senha</button>
+                            <div class="reset-password-in-progress" v-if="reset_password_sent">
+                                <span class="material-icons">check_circle</span>
+                                <p class="font-size-4-bold">{{ password_response }}</p>
                             </div>
-                            <p class="font-size-5"><strong>{{ achievement.achievements_name }}</strong></p>
                         </div>
-                    </div>
-                </div>
-                <hr>
-                <div class="user-biography">
-                    <div class="user-biography-header">
-                        <p class="font-size-3-bold">Biografia</p>
-                        <span class="material-icons" v-on:click="editBio()">edit</span>
-                    </div>
-                    <p class="bio" v-if="!editing_bio">{{ $root.user.user_bio }}</p>
-                    <p class="bio" v-if="$root.user.user_bio == null && !editing_bio"><i>Conte sobre você...</i></p>
-                    <div class="edit-bio" v-if="editing_bio">
-                        <textarea name="user_bio" id="user-bio" rows="7" v-model="$root.user.user_bio" v-on:keyup="countCharacters()" v-on:focusout="saveBio($event)" maxlength="500"></textarea>
-                        <p class="bio-counter">0 / 500</p>
-                    </div>
-                </div>
-                <hr>
-                <div class="user-groups">
-                    <div class="user-groups-header">
-                        <p class="font-size-3-bold">Meus grupos</p>
-                        <span class="material-icons" v-on:click="showNewGroup = true">add</span>
-                    </div>
-                    <div class="group" v-for="(group, index) in $root.user.user_groups" :key="index">
-                        <router-link :to="{ name: 'edit-groups', params: { id: group.groups_id } }">
-                        <div class="group">
-                            <img :src="group.image">
-                            <h4>{{ group.group_name }}</h4>
-                        </div>
-                    </router-link>
-                    </div>
-                </div>
-                <hr>
-                <div class="user-change-password">
-                    <p class="font-size-3-bold">Segurança</p>
-                    <button type="button" v-if="!reset_password_sent" v-on:click="requestResetPassword()" id="reset-password-button">Esqueci minha senha</button>
-                    <div class="reset-password-in-progress" v-if="reset_password_sent">
-                        <span class="material-icons">check_circle</span>
-                        <p class="font-size-4-bold">{{ password_response }}</p>
-                    </div>
-                </div>
-                <hr>
-                <div class="exclude-account">
-                    <p class="font-size-3-bold">Encerrar conta</p>
-                    <div class="exclude-account-container">
-                        <p>Excluir sua conta da Cademint</p>
-                        <button type="button" v-on:click="showExcludeAccountModal()">Excluir</button>
-                    </div>
-                    <div class="delete-user-confirmation-modal">
-                        <h4 class="font-size-h5">Tem certeza que deseja excluir a sua conta?</h4>
-                        <div class="exclude-account-buttons">
-                            <button id="exclude-account-confirmation-button" class="font-size-3" v-on:click="excludeAccount">Sim, excluir</button>
-                            <button id="skip-exclude-confirmation" class="font-size-3" v-on:click="hideExcludeAccountModal">Não, cancelar</button>
-                        </div>
-                        <div class="exclude-account-warning" v-if="!isDeleting">
-                            <h6 class="font-size-4"><span><strong>ATENÇÃO</strong></span>, essa ação é <span><strong>irreversível</strong></span>!</h6>
-                            <p class="font-size-5">
-                                Ao excluir sua conta, todas as suas informações pessoais são apagadas. <br>
-                                Qualquer dúvida entre em contato pelo nosso email: 
-                            </p>
-                            <a href="mailto:contato.scrumcademint@gmail.com" class="font-size-6">contato.scrumcademint@gmail.com</a>
-                        </div>
-                        <div class="deleting-message" v-if="isDeleting">
-                            <h6>Apagando usuário...</h6>
-                            <div class="loading"></div>
+                        <hr>
+                        <div class="exclude-account">
+                            <p class="font-size-3-bold">Encerrar conta</p>
+                            <div class="exclude-account-container">
+                                <p>Excluir sua conta da Cademint</p>
+                                <button type="button" v-on:click="showExcludeAccountModal()">Excluir</button>
+                            </div>
+                            <div class="delete-user-confirmation-modal">
+                                <h4 class="font-size-h5">Tem certeza que deseja excluir a sua conta?</h4>
+                                <div class="exclude-account-buttons">
+                                    <button id="exclude-account-confirmation-button" class="font-size-3" v-on:click="excludeAccount">Sim, excluir</button>
+                                    <button id="skip-exclude-confirmation" class="font-size-3" v-on:click="hideExcludeAccountModal">Não, cancelar</button>
+                                </div>
+                                <div class="exclude-account-warning" v-if="!isDeleting">
+                                    <h6 class="font-size-4"><span><strong>ATENÇÃO</strong></span>, essa ação é <span><strong>irreversível</strong></span>!</h6>
+                                    <p class="font-size-5">
+                                        Ao excluir sua conta, todas as suas informações pessoais são apagadas. <br>
+                                        Qualquer dúvida entre em contato pelo nosso email: 
+                                    </p>
+                                    <a href="mailto:contato.scrumcademint@gmail.com" class="font-size-6">contato.scrumcademint@gmail.com</a>
+                                </div>
+                                <div class="deleting-message" v-if="isDeleting">
+                                    <h6>Apagando usuário...</h6>
+                                    <div class="loading"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -166,7 +202,6 @@ export default {
     data() {
         return {
             showSubmit: false,
-            response: "",
             showPhotoDetails: false,
             showBannerDetails: false,
             showExpandedPhoto: false,
@@ -180,10 +215,18 @@ export default {
             password_response: "",
             reset_password_sent: false,
             loadingOccupations: false,
-            showNewGroup: false
+            showNewGroup: false,
+            notifications: JSON.parse(JSON.stringify(this.$root.user.notifications)),
+            notifications2: JSON.parse(JSON.stringify(this.$root.user.notifications)),
+            saved: false
         }
     },
     watch: {
+        "notifications.enable": function () {
+            if (!this.notifications.enable) {
+                this.updatePreferences();
+            }
+        },
         showProfileMoreOptions: function () {
             let self = this;
             if (self.showProfileMoreOptions) {
@@ -200,6 +243,42 @@ export default {
         }
     },
     methods: {
+        isEqual: function (obj1, obj2) {
+            let result = JSON.stringify(obj1) == JSON.stringify(obj2);
+            
+            if (!result) {
+                this.saved = false;
+            }
+
+            return result;
+        },
+        updatePreferences: function () {
+            let self = this;
+
+            api.post("/users/update_preferences", { preferences: self.notifications }).then(() => {
+                self.notifications2 = JSON.parse(JSON.stringify(self.notifications));
+                self.saved = true;
+            });
+        },
+        selectTab: function (menu) {
+            let principal = $("#principal");
+            let settings = $("#settings");
+            let accountInformations = $(".account-informations");
+            let accountSettings = $(".account-settings");
+
+            principal.removeClass("selected");
+            settings.removeClass("selected");
+
+            if (menu == 0) {
+                accountInformations.show();
+                accountSettings.hide();
+                principal.addClass("selected");
+            } else if (menu == 1) {
+                settings.addClass("selected");
+                accountInformations.hide();
+                accountSettings.show();
+            }
+        },
         requestResetPassword: function () {
             let self = this;
             let button = $("#reset-password-button");
@@ -370,11 +449,10 @@ export default {
                         Authorization: jwt
                     }
             })
-            .then(async function(response){
+            .then(async function(){
                 self.requireUser(true);
                 if (!from_upload) {
                     location.reload();
-                    self.response = response.data.response.action;
                 }
             })
         },
@@ -461,10 +539,6 @@ export default {
                 self.logoutUser(true);
                 self.$router.push("/login");
             })
-            .catch(function () {
-                $(".response").addClass("error");
-                self.response = "Ocorreu um erro";
-            })
         },
         togglePhotoDetails: function () {
             this.showPhotoDetails = !this.showPhotoDetails;
@@ -476,6 +550,9 @@ export default {
     mounted: function () {
         this.requireUser(true).then(() => {
             this.loading = false;
+            this.$nextTick(() => {
+                this.selectTab(0);
+            })
         })
     },
     components: {
@@ -485,6 +562,10 @@ export default {
 }
 </script>
 <style scoped>
+.tabs-content > div {
+    padding-top: 1.5rem;
+}
+
 .wrapper {
     width: 100vw;
     height: 100vh;

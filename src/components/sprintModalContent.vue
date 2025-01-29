@@ -161,10 +161,6 @@ export default {
         display: inline-block;
     }
 
-    .form-group {
-        margin-bottom: .7rem;
-    }
-
     .range-container {
         display: flex;
         flex-direction: column;
