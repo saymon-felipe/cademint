@@ -14,7 +14,15 @@ const production_environment = ""; //Ambiente de produção.
 // 2 - Ambiente de produção
 // 
 // ==============================
-let ambient = 1;
+let ambient;
+    
+if (window.location.hostname.indexOf("localhost") != -1 || window.location.hostname.indexOf("192.168") != -1) {
+    ambient = 0;
+} else if (window.location.hostname.indexOf("test.") != -1 || window.location.hostname.indexOf("test-") != -1) {
+    ambient = 1;
+} else {
+    ambient = 2;
+}
 // ==============================
 //
 

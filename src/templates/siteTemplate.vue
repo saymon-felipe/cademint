@@ -33,7 +33,7 @@ export default {
                     });
                     clearInterval(interval);
                 }
-            })
+            }, 100)
         }).catch(() => {})
     }
 }
