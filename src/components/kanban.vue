@@ -42,7 +42,7 @@
                 <div class="kanban-column" v-for="(column, index) in kanbanColumns" :key="index" :id="'column-' + column.id">
                     <div class="kanban-column-header">
                         <div class="column-informations">
-                            <input type="text" v-model="column.name" @focusout="renameColumn(column.id, column.name)" class="rename-column-input" style="display: none;">
+                            <input type="text" @focusout="renameColumn(column.id, $event)" class="rename-column-input" style="display: none;">
                             <p class="font-size-5 column-name">{{ column.name }}</p>
                             <span class="material-icons" v-on:click="showMoreOptions(column.id)">more_vert</span>
                             
@@ -225,12 +225,16 @@ export default {
             let column = $("#column-" + column_id);
 
             this.hideMoreOptions();
+            $(".rename-column-input").val(column.find(".column-name").text());
 
-            column.find(".rename-column-input").show().focus();
-            column.find(".column-name").hide();
+            this.$nextTick(() => {
+                column.find(".rename-column-input").show().focus();
+                column.find(".column-name").hide();
+            })
         },
-        renameColumn: function (column_id, name) {
+        renameColumn: function (column_id, event) {
             let self = this;
+            let name = event.target.value;
 
             $(".rename-column-input").hide();
             $(".column-name").show();
@@ -241,6 +245,7 @@ export default {
                 name: name
             }).then(() => {
                 self.returnColumns(false, false);
+                $(".rename-column-input").val("");
             })
         },
         excludeColumn: function (column_id) {
