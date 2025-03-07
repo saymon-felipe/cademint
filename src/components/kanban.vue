@@ -42,7 +42,7 @@
                 <div class="kanban-column" v-for="(column, index) in kanbanColumns" :key="index" :id="'column-' + column.id">
                     <div class="kanban-column-header">
                         <div class="column-informations">
-                            <input type="text" @focusout="renameColumn(column.id, $event)" class="rename-column-input" style="display: none;">
+                            <input type="text" @focusout="renameColumn(column.id, $event); column.name = $event.target.value" class="rename-column-input" style="display: none;">
                             <p class="font-size-5 column-name">{{ column.name }}</p>
                             <span class="material-icons" v-on:click="showMoreOptions(column.id)">more_vert</span>
                             
