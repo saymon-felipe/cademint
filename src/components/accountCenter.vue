@@ -8,6 +8,10 @@
             <span class="material-icons" v-on:click="addAccount()">add_circle</span>
         </div>
         <div class="account-container">
+            <loading :loading="loading" v-if="loading" />
+            <div class="empty-accounts" v-if="filteredAccounts.length == 0 && !loading">
+                <h4 class="cinza text-center">Você ainda não cadastrou nenhuma conta</h4>
+            </div>
             <div class="account" v-for="(account, index) in filteredAccounts" :key="index">
                 <div class="account-principal-container">
                     <div class="account-principal">
@@ -48,6 +52,7 @@ import { globalMethods } from '../js/globalMethods';
 import api from '../configs/api.js';
 import createAccountModalContent from "./createAccountModalContent.vue";
 import modal from "./modal.vue";
+import loading from "./loading.vue";
 
 export default {
     name: "accountCenter",
@@ -56,7 +61,8 @@ export default {
         return {
             searchString: "",
             filteredAccounts: [],
-            accounts: []
+            accounts: [],
+            loading: true
         }
     },
     methods: {
@@ -134,6 +140,7 @@ export default {
             api.get("/users/return_accounts").then((response) => {
                 self.accounts = response.data.returnObj;
                 self.filteredAccounts = response.data.returnObj;
+                self.loading = false;
             });
         }
     },
@@ -142,7 +149,8 @@ export default {
     },
     components: {
         createAccountModalContent,
-        modal
+        modal,
+        loading
     }
 }
 </script>

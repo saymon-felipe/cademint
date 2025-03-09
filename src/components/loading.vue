@@ -26,7 +26,7 @@ export default {
 }
 
 .path {
-  stroke: var(--green-low); /* Cor do loader */
+  stroke: var(--blue); /* Cor do loader */
   stroke-linecap: round;
   animation: dash 1.5s ease-in-out infinite;
 }
