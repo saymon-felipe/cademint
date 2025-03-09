@@ -144,7 +144,7 @@
                         <hr>
                         <div class="user-change-password">
                             <p class="font-size-3-bold">Segurança</p>
-                            <button type="button" v-if="!reset_password_sent" v-on:click="requestResetPassword()" id="reset-password-button">Esqueci minha senha</button>
+                            <button type="button" v-if="!reset_password_sent" v-on:click="requestResetPassword()" id="reset-password-button">Redefinir minha senha</button>
                             <div class="reset-password-in-progress" v-if="reset_password_sent">
                                 <span class="material-icons">check_circle</span>
                                 <p class="font-size-4-bold">{{ password_response }}</p>
@@ -306,18 +306,21 @@ export default {
         requestResetPassword: function () {
             let self = this;
             let button = $("#reset-password-button");
-            button.html("Enviando...").attr("disabled", "disabled");
 
-            let data = {
-                email: self.$root.user.email
+            if (confirm("Deseja mesmo redefinir a sua senha?")) {
+                button.html("Enviando...").attr("disabled", "disabled");
+
+                let data = {
+                    email: self.$root.user.email
+                }
+
+                api.post("/users/forgot_password", data)
+                .then(function (response) {
+                    self.password_response = response.data.message;
+                    self.reset_password_sent = true;
+                    button.html("Esqueci minha senha").attr("disabled", false);
+                })
             }
-
-            api.post("/users/forgot_password", data)
-            .then(function (response) {
-                self.password_response = response.data.message;
-                self.reset_password_sent = true;
-                button.html("Esqueci minha senha").attr("disabled", false);
-            })
         },
         countCharacters: function () {
             let counter = $(".bio-counter");

@@ -472,11 +472,11 @@ html, body {
     .tabs-list-menu ul {
         list-style: none;
         display: flex;
+        gap: var(--space-8);
     }
 
         .tabs-list-menu ul li {
             cursor: pointer;
-            margin-right: 10px;
         }
 
 .tabs-list-menu .menu-item.selected .menu-underline {
