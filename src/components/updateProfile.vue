@@ -39,6 +39,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="user-informations">
+                        <h3 class="font-size-2-bold">{{ $root.user.nome }}</h3>
+                        <div class="user-medals">
+                            <div class="user-medal-container" v-for="(medal, index) in $root.user.user_medals" :key="index">
+                                <img :src="require('../assets/img/medal-' + medal.id + '.svg')" class="user-medal" :title="medal.medal_description">
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="tabs-list-menu">
                     <ul>
@@ -59,14 +67,6 @@
                 <div class="tabs-content">
                     <div class="account-informations">
                         <div class="profile-form-container">
-                            <div class="user-informations">
-                                <h3 class="font-size-2-bold">{{ $root.user.nome }}</h3>
-                                <div class="user-medals">
-                                    <div class="user-medal-container" v-for="(medal, index) in $root.user.user_medals" :key="index">
-                                        <img :src="require('../assets/img/medal-' + medal.id + '.svg')" class="user-medal" :title="medal.medal_description">
-                                    </div>
-                                </div>
-                            </div>
                             <div class="user-occupations" :style="loadingOccupations ? 'opacity: 0;' : ''">
                                 <p class="add-occupation-label" v-if="$root.user.user_occupations.length == 0 && !addOccupation">Adicione um cargo</p>
                                 <div class="occupation" v-for="(occupation, index) in $root.user.user_occupations" :key="index" :id="'cargo-' + index">
@@ -570,7 +570,7 @@ export default {
         this.requireUser(true).then(() => {
             this.loading = false;
             this.$nextTick(() => {
-                this.selectTab(2);
+                this.selectTab(0);
             })
         })
     },
@@ -811,6 +811,7 @@ export default {
     align-items: center;
     justify-content: center;
     margin-bottom: 2rem;
+    margin-top: 5rem;
 }
 
 .profile-form-container {
@@ -1235,13 +1236,13 @@ svg {
 
 .user-informations {
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin-left: var(--space-7);
 }
 
 .user-medals {
-    margin-left: 2rem;
-    width: 120px;
     height: 40px;
     display: flex;
     justify-content: space-between;
