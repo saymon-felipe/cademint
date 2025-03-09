@@ -21,26 +21,37 @@
                         <div class="user">
                             <div class="information-field">
                                 <p><span class="field-name">Usuário:</span> <span :class="!account.visible ? 'hidden' : ''"><strong>{{ account.user }}</strong></span></p>
-                                <span class="material-icons" v-if="account.visible" v-on:click="copyToClipboard(account.user)">content_copy</span>
+                                <span class="material-icons" v-if="account.visible" v-on:click="copyToClipboard(account.user, account.id)">content_copy</span>
                             </div>
                             <div class="information-field">
                                 <p><span class="field-name">Senha:</span> <span :class="!account.visible ? 'hidden' : ''"><strong>{{ account.password }}</strong></span></p>
-                                <span class="material-icons" v-if="account.visible" v-on:click="copyToClipboard(account.password)">content_copy</span>
+                                <span class="material-icons" v-if="account.visible" v-on:click="copyToClipboard(account.password, account.id)">content_copy</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <span class="material-icons" v-on:click="account.visible = !account.visible">{{ account.visible ? "visibility_off" : "visibility" }}</span>
+                <div class="account-actions">
+                    <span class="material-icons" v-on:click="account.visible = !account.visible">{{ account.visible ? "visibility" : "visibility_off" }}</span>
+                    <span class="material-icons" v-on:click="editAccount(account)">settings</span>
+                    <span class="material-icons" v-on:click="deleteAccount(account)">delete</span>
+                </div>
             </div>
         </div>
+        <modal v-if="showModal" :modaltitle="modalTitle" :modalbutton1="modalButton1" excludepath="/users/delete_account/" :modalbutton2="modalButton2" @closeModal="getAccounts(); closeModalFunction();">
+            <createAccountModalContent @savedContent="closeModalFunction(); getAccounts();" /> 
+        </modal>
     </div>
 </template>
 <script>
 import moment from 'moment';
-//import api from '../configs/api.js';
+import { globalMethods } from '../js/globalMethods';
+import api from '../configs/api.js';
+import createAccountModalContent from "./createAccountModalContent.vue";
+import modal from "./modal.vue";
 
 export default {
     name: "accountCenter",
+    mixins: [globalMethods],
     data() {
         return {
             searchString: "",
@@ -49,6 +60,15 @@ export default {
         }
     },
     methods: {
+        deleteAccount: function (account) {
+            this.showModalFunction("Excluir conta", "Excluir", "Cancelar", account);
+        },
+        editAccount: function (account) {
+            this.showModalFunction("Editar conta", "Salvar", "Cancelar", account);
+        },
+        addAccount: function () {
+            this.showModalFunction("Criar uma conta", "Criar", "Cancelar");
+        },
         filterAccounts: function () {
             if (this.searchString.trim() == "") {
                 this.filteredAccounts = this.accounts;
@@ -67,21 +87,25 @@ export default {
         lastAccess: function (date) {
             return moment(date).fromNow();
         },
-        copyToClipboard(text) {
+        copyToClipboard(text, account_id) {
             if (!navigator.clipboard) {
                 console.error("API Clipboard não suportada no navegador.");
                 return;
             }
 
             navigator.clipboard.writeText(text).then(() => {
-                alert("Copiado para a área de transferência!");
+                this.accessAccount(account_id);
+                console.log("Copiado para a área de transferência!");
             }).catch(err => {
                 console.error("Erro ao copiar: ", err);
             });
         },
+        accessAccount: function (account_id) {
+            api.get("/users/access_account/" + account_id);
+        },
         getAccounts: function () {
             let self = this;
-            let accounts = [
+            /*let accounts = [
                 {
                     id: 0,
                     user: "rabudinhaaa@gmail.com",
@@ -105,16 +129,20 @@ export default {
             ]
 
             self.accounts = accounts;
-                self.filteredAccounts = accounts;
+                self.filteredAccounts = accounts;*/
 
-            /*api.get("/users/return_accounts").then((response) => {
+            api.get("/users/return_accounts").then((response) => {
                 self.accounts = response.data.returnObj;
                 self.filteredAccounts = response.data.returnObj;
-            });*/
+            });
         }
     },
     mounted: function () {
         this.getAccounts();
+    },
+    components: {
+        createAccountModalContent,
+        modal
     }
 }
 </script>
@@ -203,6 +231,7 @@ export default {
 .user {
     display: flex;
     flex-direction: column;
+    gap: var(--space-3);
 }
 
 .information-field {
@@ -214,7 +243,6 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 6px;
     height: 36px;
 }
 
@@ -227,6 +255,12 @@ export default {
     font-size: 24px;
     cursor: pointer;
     color: var(--gray);
+}
+
+.account-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
 }
 
 .material-icons:hover {

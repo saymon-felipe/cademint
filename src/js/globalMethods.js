@@ -3,12 +3,22 @@ import api from '../configs/api.js';
 
 export const globalMethods = {
     methods: {
+        //Métodos response
+        resetResponse: function () {
+            this.response = "";
+            this.responseType = "";
+        },
+        setResponse: function (msg, type) {
+            this.response = msg;
+            this.responseType = type;
+        },
         //Métodos modal
-        showModalFunction: function (modalTitle, modalButton1, modalButton2) {
+        showModalFunction: function (modalTitle, modalButton1, modalButton2, contentObject = null) {
             this.modalTitle = modalTitle;
             this.modalButton1 = modalButton1;
             this.modalButton2 = modalButton2;
             this.showModal = true;
+            if (contentObject) this.$root.contentObject = JSON.parse(JSON.stringify(contentObject));
         },
         closeModalFunction: function () {
             this.closeModalContent();
@@ -19,6 +29,7 @@ export const globalMethods = {
                 this.modalTitle = "";
                 this.modalButton1 = "";
                 this.modalButton2 = "";
+                this.$root.contentObject = {id: 0};
             }, 400);
         },
         closeModalContent: function () {
@@ -278,7 +289,9 @@ export const globalMethods = {
             showModal: false,
             modalTitle: "",
             modalButton1: "",
-            modalButton2: ""
+            modalButton2: "",
+            response: "",
+            responseType: ""
         }
     }
 }

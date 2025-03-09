@@ -140,6 +140,10 @@ hr {
     color: var(--gray-text);
 }
 
+.vermelho {
+    color: var(--red);
+}
+
 .font-size-1 {
     font-size: 24px;
 }
@@ -211,7 +215,9 @@ hr {
 
 /* FIM NOVAS CLASSES DE TEXTO */
 
-
+.text-center {
+    text-align: center;
+}
 
 * {
     margin: 0;

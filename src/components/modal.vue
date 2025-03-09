@@ -6,8 +6,11 @@
                 <span class="material-icons" v-on:click="handleCloseModalContent()">close</span>
             </div>
             <div class="modal-body">
-                <div>
+                <div v-if="modaltitle.indexOf('Excluir') == -1">
                     <slot />
+                </div>
+                <div v-else>
+                    <excludeModalContent :excludepath="excludepath + $root.contentObject.id" @excludedContent="handleCloseModalContent()"></excludeModalContent>
                 </div>
             </div>
             <div class="modal-footer">
@@ -19,11 +22,12 @@
     </div>
 </template>
 <script>
+import excludeModalContent from "./excludeModalContent.vue";
 import $ from 'jquery';
 
 export default {
-    name: "modalComponent",
-    props: ["modaltitle", "modalbutton1", "modalbutton2"],
+    name: "modal",
+    props: ["modaltitle", "modalbutton1", "modalbutton2", "excludepath"],
     methods: {
         showModalContent: function () {
             let modal = $(".modal-container");
@@ -66,6 +70,9 @@ export default {
                 $("#modal-submit-button").removeAttr("disabled").removeClass("btn-loading");
             }
         })
+    },
+    components: {
+        excludeModalContent
     }
 }
 </script>
