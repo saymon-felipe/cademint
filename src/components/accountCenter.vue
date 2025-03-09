@@ -17,7 +17,7 @@
                     <div class="account-principal">
                         <img :src="account.image">
                         <div>
-                            <p class="font-size-4 preto">{{ account.type }}: {{ account.name }}</p>
+                            <p class="font-size-4 preto type-name">{{ account.type }}: {{ account.name }}</p>
                             <p class="font-size-6 cinza">{{ lastAccess(account.last_access) }}</p>
                         </div>
                     </div>
@@ -205,11 +205,8 @@ export default {
 }
 
 .account-principal-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
     flex: 1;
 }
 
@@ -221,8 +218,16 @@ export default {
 .account-principal img {
     width: 40px;
     height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 40px;
+    max-height: 40px;
     border-radius: 50%;
     margin-right: 10px;
+}
+
+.type-name {
+    text-transform: capitalize;
 }
 
 .account-informations {
