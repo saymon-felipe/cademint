@@ -711,7 +711,7 @@ export default {
 .update-profile {
     background: white;
     border-radius: 10px;
-    width: 70vw;
+    width: 90vw;
     min-width: 200px;
     max-width: 1000px;
     box-shadow: 0 0 0 2px var(--gray-soft);

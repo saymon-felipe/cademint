@@ -25,11 +25,11 @@
                         <div class="user">
                             <div class="information-field">
                                 <p><span class="field-name">Usuário:</span> <span :class="!account.visible ? 'hidden' : ''"><strong>{{ account.user }}</strong></span></p>
-                                <span class="material-icons" v-if="account.visible" v-on:click="copyToClipboard(account.user, account.id)">content_copy</span>
+                                <span class="material-icons" v-if="account.visible" v-on:click="copyToClipboard(account.user, account)">content_copy</span>
                             </div>
                             <div class="information-field">
                                 <p><span class="field-name">Senha:</span> <span :class="!account.visible ? 'hidden' : ''"><strong>{{ account.password }}</strong></span></p>
-                                <span class="material-icons" v-if="account.visible" v-on:click="copyToClipboard(account.password, account.id)">content_copy</span>
+                                <span class="material-icons" v-if="account.visible" v-on:click="copyToClipboard(account.password, account)">content_copy</span>
                             </div>
                         </div>
                     </div>
@@ -93,14 +93,15 @@ export default {
         lastAccess: function (date) {
             return moment(date).fromNow();
         },
-        copyToClipboard(text, account_id) {
+        copyToClipboard(text, account) {
             if (!navigator.clipboard) {
                 console.error("API Clipboard não suportada no navegador.");
                 return;
             }
 
             navigator.clipboard.writeText(text).then(() => {
-                this.accessAccount(account_id);
+                this.accessAccount(account.id);
+                account.visible = !account.visible;
                 console.log("Copiado para a área de transferência!");
             }).catch(err => {
                 console.error("Erro ao copiar: ", err);
@@ -282,6 +283,13 @@ export default {
 
 .material-icons:active {
     color: var(--black);
+}
+
+@media (max-width: 768px) {
+    .account-principal-container {
+        grid-template-columns: 1fr;
+        gap: var(--space-5);
+    }
 }
 
 </style>
