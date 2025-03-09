@@ -47,6 +47,7 @@
     --gray-high: #EEEEEE !important;
     --gray-soft: #e4e4e4 !important;
     --gray-soft-2: #E6E6E6 !important;
+    --gray-text: #666666 !important;
     --gray: #ADADAD !important;
     --gray-low: #808080 !important;
     --red-high: #ffe1db !important;
@@ -59,6 +60,37 @@
     --green-low: #76b672!important;
     --white: #ffffff !important;
     --black: #222222 !important;
+
+    /* BORDER RADIUS */
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+    --radius-full: 50%;
+
+    /* SPACING */
+    --space-1: 1px;
+    --space-2: 4px;
+    --space-3: 8px;
+    --space-4: 12px;
+    --space-5: 16px;
+    --space-6: 20px;
+    --space-7: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+
+    /* FONTSIZE */
+    --fontsize-xl: 46px;
+    --fontsize-lg: 34px;
+    --fontsize-md: 24px;
+    --fontsize-sm: 16px;
+    --fontsize-xs: 12px;
+
+    --boxshadow-default: 0 0 15px rgba(0, 0, 0, 0.2);
+
+    --overlay: rgba(0, 0, 0, 0.5);
 }
 
 input[type="range"] {
@@ -98,6 +130,14 @@ hr {
 
 * {
     font-family: Roboto;
+}
+
+.preto {
+    color: var(--black);
+}
+
+.cinza {
+    color: var(--gray-text);
 }
 
 .font-size-1 {
@@ -205,6 +245,7 @@ a:hover {
 
 html, body {
     min-height: 100%;
+    overflow-x: hidden;
 }
 
 .loading-page {
@@ -368,6 +409,33 @@ html, body {
     cursor: pointer;
     transition: all 0.4s;
     margin: 5px;
+}
+
+.btn-loading {
+    display: flex;
+    align-items: center;
+}
+
+.btn-loading::after {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    border: 5px solid var(--white);
+    border-top-color: var(--blue-low);
+    animation: spin 1s linear infinite;
+    margin-left: var(--space-3);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .primary {

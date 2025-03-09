@@ -299,14 +299,12 @@ export default {
             this.resetModalContentVariables();
 
             this.newSprint = true;
-            this.showModalFunction();
             this.setModalVariables("Configurar sprint");
         },
         viewHistoricSprints: function () {
             this.resetModalContentVariables();
 
             this.historySprint = true;
-            this.showModalFunction();
             this.setModalVariables("Sprints anteriores");
         },
         returnProjectStatus: function () {
@@ -873,8 +871,9 @@ export default {
         width: 100%;
         min-width: 100%;
         max-width: 100%;
-        min-height: 160px;
-        max-height: 280px;
+        height: 180px;
+        max-height: 180px;
+        min-height: 180px;
         margin: 1rem 0 2rem;
         align-items: flex-start;
     }
@@ -897,6 +896,10 @@ export default {
 
     .draggable-card {
         min-width: 230px;
+    }
+
+    .create-new-column {
+        margin-top: 2rem;
     }
 }
 </style>

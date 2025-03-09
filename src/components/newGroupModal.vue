@@ -1,48 +1,36 @@
 <template>
     <div class="new-group-container">
-        <div class="new-project-modal">
-            <div class="modal-header">
-                <h1>Criar grupo</h1>
-                <span class="material-icons" v-on:click="hideModal">close</span>
+        <form id="informations-form" @submit.prevent="createNewProject($event)" autocomplete="off">
+            <div class="form-group">
+                <label for="group_name">Nome do grupo</label>
+                <input type="text" id="group_name" placeholder="Nome" name="group_name" maxlength="50" title="Insira o nome do grupo" required>
             </div>
-            <div class="modal-body">
-                <form id="form_create_group" @submit.prevent="createNewProject($event)" autocomplete="off">
-                    <div class="form-group">
-                        <label for="group_name">Nome do grupo</label>
-                        <input type="text" id="group_name" placeholder="Nome" name="group_name" maxlength="50" title="Insira o nome do grupo" required>
+            <div class="form-group">
+                <label for="add_members">Adicionar membro</label>
+                <div class="add-users-container">
+                    <div class="selected-user" :style="selected_user.id_usuario != undefined ? 'display: block;' : ''">
+                        {{ selected_user.nome }}
+                        <span class="material-icons" v-on:click="clearInvite()">clear</span>
                     </div>
-                    <div class="form-group">
-                        <label for="add_members">Adicionar membro</label>
-                        <div class="add-users-container">
-                            <div class="selected-user" :style="selected_user.id_usuario != undefined ? 'display: block;' : ''">
-                                {{ selected_user.nome }}
-                                <span class="material-icons" v-on:click="clearInvite()">clear</span>
-                            </div>
-                            <input type="text" id="add_members" placeholder="Email ou usuario" maxlength="50" title="Pesquise e adicione um membro para o grupo" v-on:focusout="validateEmailInput($event)" v-model="searchParam" v-on:keyup="fillSearchParam($event)">
-                            <autoComplete :search-param="searchParam" v-if="searchParam != '' && !empty_search" @selectUser="selectUser($event)" @emptySearch="empty_search = true"></autoComplete>
-                        </div>
-                    </div>
-                    <input type="submit" value="" style="display: none;" id="submit-form">
-                </form>
-                <div class="image-container">
-                    <form enctype="multipart/form-data" @submit.prevent="uploadPhoto(formData)">
-                        <img :src="groupImage" class="group-image">
-                        <div class="image-buttons">
-                            <label class="change-group-image" for="photo">Adicionar foto do grupo</label>
-                            <input type="file" name="photo" id="photo" @change.prevent="preSendPhoto($event)" title="Envie uma foto nos formatos PNG ou JPG">
-                        </div>
-                        <input type="submit" value="" style="display: none;" id="submit-image-form">
-                    </form>
+                    <input type="text" id="add_members" placeholder="Email ou usuario" maxlength="50" title="Pesquise e adicione um membro para o grupo" v-on:focusout="validateEmailInput($event)" v-model="searchParam" v-on:keyup="fillSearchParam($event)">
+                    <autoComplete :search-param="searchParam" v-if="searchParam != '' && !empty_search" @selectUser="selectUser($event)" @emptySearch="empty_search = true"></autoComplete>
                 </div>
-                <div class="loading"></div>
-                <div class="response">{{ response }}</div>
             </div>
-            <div class="modal-footer">
-                <button class="create-button" v-on:click="submitForm()">Criar</button>
-                <button class="cancelate-button" v-on:click="hideModal">Cancelar</button>
-            </div>
+            <input type="submit" style="display: none;" id="submit-form">
+        </form>
+        <div class="image-container">
+            <form enctype="multipart/form-data" @submit.prevent="uploadPhoto(formData)">
+                <img :src="groupImage" class="group-image">
+                <div class="image-buttons">
+                    <label class="change-group-image" for="photo">Adicionar foto do grupo</label>
+                    <input type="file" name="photo" id="photo" @change.prevent="preSendPhoto($event)" title="Envie uma foto nos formatos PNG ou JPG">
+                </div>
+                <input type="submit" value="" style="display: none;" id="submit-image-form">
+            </form>
         </div>
-        <div class="overlay" v-if="showNewGroup" v-on:click="hideModal"></div>
+        <div class="loading"></div>
+        <div class="response">{{ response }}</div>
+        <button id="submit-button" v-on:click="submitForm()" style="display: none"></button>
     </div>
 </template>
 <script>
@@ -83,13 +71,8 @@ export default {
 
             api.patch("/projects/group_image/" + self.created_group.group_id, formData)
             .then(function () { 
-                setTimeout(() => {
-                    self.hideModal();
-                    $(".loading").hide();
-                    setTimeout(() => {
-                        self.$router.go();
-                    }, 400);
-                }, 1000);
+                self.$router.go();
+                self.$emit("savedContent");
             })
             .catch(function (error) {
                 $(".response").addClass("error");
@@ -177,6 +160,7 @@ export default {
                         $("#submit-image-form").click();
                     } else {
                         self.$router.go();
+                        self.$emit("savedContent");
                     }
                 })
                 .catch(function (error) {
@@ -186,26 +170,6 @@ export default {
                     self.hideModal();
                 })
             }
-        },
-        showModal: function () {
-            let container = $(".new-project-modal"), overlay = $(".new-group-container .overlay");
-            container.show();
-            overlay.show();
-            setTimeout(() => {
-                container.css("opacity", 1).css("transform", "translateY(0)");
-            }, 10);
-        },
-        hideModal: function () {
-            let container = $(".new-project-modal"), overlay = $(".new-group-container  .overlay");
-            container.css("transform", "translateY(-100px)").css("opacity", 0);
-            setTimeout(() => {
-                container.hide();
-                overlay.hide();
-                this.closeModal();
-            }, 400);
-        },
-        closeModal: function () {
-            this.$emit("showNewGroup");
         },
         preSendPhoto: function (event) {
             let file = event.target.files.item(0);
@@ -230,7 +194,6 @@ export default {
         }
     },
     mounted() {
-        this.showModal();
         this.groupImage = this.group_default_image;
         setTimeout(() => {
             $("#group_name").focus();
@@ -284,72 +247,24 @@ input[type='file'] {
     border: 1px solid var(--red) !important;
 }
 
-.overlay, .response {
+.response {
     display: block;
 }
 
-.new-project-modal {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    width: 70%;
-    max-width: 800px;
-    max-height: 600px;
-    height: fit-content;
-    background: var(--white);
-    border-radius: 10px;
-    transition: all 0.4s;
-    transform: translateY(-100px); 
-    opacity: 0;
-    z-index: 9999;
-    overflow: hidden;
+#informations-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-    .new-project-modal .modal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem;
-        border-bottom: 1px solid var(--gray-high);
-    }
-
-        .new-project-modal .modal-header h1 {
-            font-size: 1.2rem;
-            margin: 0;
-        }
-
-        .new-project-modal .modal-header .material-icons {
-            font-size: 1.2rem;
-            color: black!important;
-            cursor: pointer;
-            line-height: 1rem;
-        }
-
-.new-project-modal .modal-body {
-    height: calc(100% - 123px);
-    min-height: 450px;
-    position: relative;
-    padding: 15px;
-    overflow-y: scroll;
+form input {
+    width: 80%;
+    border-radius: 6px;
+    border: 1px solid var(--gray);
+    padding: 7px 13px;
+    margin: .5rem 0;
 }
-
-    .new-project-modal .modal-body #form_create_group {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-        .new-project-modal .modal-body form input {
-            width: 80%;
-            border-radius: 6px;
-            border: 1px solid var(--gray);
-            padding: 7px 13px;
-            margin: .5rem 0;
-        }
 
 .add-users-container {
     position: relative;
@@ -382,68 +297,4 @@ input[type='file'] {
         .add-users-container .selected-user span:hover {
             opacity: 0.7;
         }
-
-.new-project-modal .modal-footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 1rem;
-    text-align: end;
-    border-top: 1px solid var(--gray-high);
-    background: var(--white);
-}
-
-    .new-project-modal .modal-footer button {
-        border: none;
-        padding: 5px 15px;
-        margin: .5rem;
-        border-radius: 5px;
-        font-size: 1rem;
-        cursor: pointer;
-    }
-
-    .new-project-modal .modal-footer .create-button {
-        background: var(--blue);
-        color: white;
-    }
-
-        .new-project-modal .modal-footer .create-button:hover {
-            background: var(--blue-low);
-        }
-
-    .new-project-modal .modal-footer .cancelate-button {
-        background: var(--gray);
-        color: var(--white);
-    }
-
-        .new-project-modal .modal-footer .cancelate-button:hover {
-            background: var(--gray-low);
-        }
-
-@media (max-width: 976px) {
-    .new-project-modal {
-        width: 75%;
-        height: 65vh;
-    }
-}
-
-@media (max-width: 600px) {
-    .new-project-modal {
-        width: 98%;
-    }
-
-        .new-project-modal .modal-footer button {
-            font-size: .9rem;
-        }
-
-        .new-project-modal .modal-header h1, .new-project-modal .modal-header .material-icons {
-            font-size: 1rem;
-        }
-}
-
-@media (max-width: 437px) {
-    .new-project-modal .modal-body {
-        min-height: initial;
-    }
-}
 </style>

@@ -3,6 +3,29 @@ import api from '../configs/api.js';
 
 export const globalMethods = {
     methods: {
+        //Métodos modal
+        showModalFunction: function (modalTitle, modalButton1, modalButton2) {
+            this.modalTitle = modalTitle;
+            this.modalButton1 = modalButton1;
+            this.modalButton2 = modalButton2;
+            this.showModal = true;
+        },
+        closeModalFunction: function () {
+            this.closeModalContent();
+
+            setTimeout(() => {
+                this.showModal = false;
+
+                this.modalTitle = "";
+                this.modalButton1 = "";
+                this.modalButton2 = "";
+            }, 400);
+        },
+        closeModalContent: function () {
+            let modal = $(".modal-container");
+            modal.css("opacity", 0).css("transform", "translateY(-20vh)");
+        },
+        //Metodos autenticação
         setTemporaryEmail: function (email) { // Adiciona o email temporário em session storage.
             sessionStorage.setItem("temp_email", email);
         },
@@ -175,16 +198,6 @@ export const globalMethods = {
                 this.loadSystemVersion();
             }, 6 * 1000);
         },
-        showModalFunction: function () {
-            this.showModal = true;
-        },
-        resetModalVariables: function () {
-            this.modalName = "";
-        },
-        setModalVariables: function (modalName) {
-            this.resetModalVariables();
-            this.modalName = modalName;
-        },
         requireUser: function(reloadNow = false) { // Função retorna o usuário pelo id.
             return new Promise((resolve) => {
                 let self = this;
@@ -262,6 +275,10 @@ export const globalMethods = {
             default_user_image: api.defaults.baseURL + "/public/default-user-image.png",
             default_user_cover_image: api.defaults.baseURL + "/public/default-banner-image.png",
             group_default_image: api.defaults.baseURL + "/public/cademint-group.png",
+            showModal: false,
+            modalTitle: "",
+            modalButton1: "",
+            modalButton2: ""
         }
     }
 }

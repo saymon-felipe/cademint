@@ -1,25 +1,27 @@
 <template>
     <div class="upload">
         <div class="send">
-            <form class="send-photo" method="post" enctype="multipart/form-data" @submit.prevent="uploadPhoto(formData)">
+            <form class="send-photo" method="post" id="informations-form" enctype="multipart/form-data" @submit.prevent="uploadPhoto(formData)">
                 <div class="input-file-custom">
+                    <span>JPG, PNG</span>
                     <label for="photo" id="upload-button">
                         <span class="material-icons">cloud_upload</span>
                         Upload
                     </label>
-                    <span>JPG, PNG</span>
                 </div>
                 <h6 class="file-name" v-if="previewPhoto != ''">{{ fileName }}</h6>
-                <input type="file" name="photo" id="photo" accept="image/*" @change.prevent="preSendPhoto($event)" title="Envie uma foto nos formatos PNG ou JPG">
-                <button type="submit" id="send-photo-button" class="save-button" v-if="previewPhoto != ''">Enviar foto</button>
+                <input type="file" name="photo" id="photo" accept="image/*" @change.prevent="preSendPhoto($event)" title="Envie uma foto nos formatos PNG ou JPG" style="display: none;">
+                <button type="submit" id="submit-button" style="display: none;"></button>
             </form>
         </div>
         <div class="response">{{ response }}</div>
         <div class="photo-preview" v-if="previewPhoto != ''">
+            <button v-if="previewPhoto != '' && showRemovePhotoButton" v-on:click="cancelPhoto('#photo')" class="remove-photo">
+                <span class="material-icons">close</span>
+            </button>
             <img class="image-preview" :src="previewPhoto" alt="Pré-visualização da foto">
+            <div class="loading" v-if="loading"></div>
         </div>
-        <button v-if="previewPhoto != '' && showRemovePhotoButton" v-on:click="cancelPhoto('#photo')" class="remove-photo">Remover foto</button>
-        <div class="loading" v-if="loading"></div>
     </div>
 </template>
 <script>
@@ -44,6 +46,13 @@ export default {
     methods: {
         uploadPhoto: function (formData) {
             let self = this;
+
+            if (this.previewPhoto == "") {
+                $(".response").addClass("error");
+                self.response = "Selecione uma imagem";
+                $("#modal-submit-button").removeAttr("disabled").removeClass("btn-loading");
+                return;
+            }
 
             let dataTarget = $(".upload").attr("data_target");
             let path = '/users/';
@@ -73,9 +82,9 @@ export default {
 
             api.patch(path + target, formData)
             .then(function () { 
-                self.hideSendPhoto();
                 self.previewPhoto = "";
                 location.reload();
+                self.$emit("savedContent");
             })
             .catch(function (error) {
                 self.loading = false;
@@ -85,14 +94,6 @@ export default {
             .then(function () {
                 self.loading = false;
             })
-        },
-        hideSendPhoto: function () {
-            let modal = $(".upload");
-            modal.css("opacity", 0).css("transform", "translateY(-100px)");
-            setTimeout(() => {
-                modal.hide();
-                this.showSendPhotoContainer = false;
-            }, 400);
         },
         preSendPhoto: function (event) {
             let filePath = $("#photo").val(); // Busca o nome o nome do arquivo e o exibe.
@@ -127,36 +128,12 @@ export default {
 }
 </script>
 <style scoped>
-.upload {
-    background: white;
-    border-radius: 20px;
-    margin: auto;
-    width: 100vw;
-    height: 80vh;
-    max-width: 50rem;
-    max-height: 50rem;
-    min-width: 200px;
-    min-height: 500px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    z-index: 9999;
-    transition: all 0.4s;
-    transform: translateY(-100px);
-    opacity: 0;
-    display: none;
-    padding: 1.5rem;
-}
-
-.save-button, #upload-button {
+#upload-button {
     height: 30px;
 }
 
 #upload-button {
-    background: #00A2E8;
+    background: var(--blue);
     color: white;
     border-radius: 5px;
     padding: 6.5px 20px;
@@ -166,7 +143,7 @@ export default {
 }
 
     #upload-button:hover {
-        background: #0090ce;
+        background: var(--blue-low);
     }
 
     #upload-button > span {
@@ -180,8 +157,8 @@ export default {
 
 .send-photo {
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
 }
 
@@ -208,23 +185,6 @@ export default {
     align-items: center;
 }
 
-.save-button {
-    padding: 5px 15px;
-    margin-top: -6px;
-    text-align: center;
-    background: #56b335;
-    color: white;
-    text-transform: uppercase;
-    font-weight: 500;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-    .save-button:hover {
-        background: #4d9e2f;
-    }
-
 .response {
     font-size: 1rem;
 }
@@ -233,31 +193,31 @@ export default {
     display: flex;
     justify-content: center;
     margin-top: 1rem;
-    height: calc(100% - 185px);
     overflow: hidden;
+    position: relative;
 }
 
 .image-preview {
     width: 100%;
     border: 1px solid var(--gray-high);
     border-radius: 10px;
-    object-fit: cover;
+    object-fit: contain;
+    height: 312px;
 }
 
 .remove-photo {
     background: var(--red);
     color: var(--white);
-    padding: 6px 15px;
-    border-radius: 10px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     border: none;
     position: absolute;
-    bottom: 2rem;
-    left: 0;
-    right: 0;
-    margin: auto;
-    width: 7rem;
+    top: 1rem;
+    right: 1rem;
     cursor: pointer;
     transition: all 0.4s;
+    z-index: 2;
 }
 
     .remove-photo:hover {
@@ -266,21 +226,19 @@ export default {
 
 .loading {
     display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 1rem;
+    margin: auto;
 }
 
 input[type='file'] {
     display: none;
 }
 
-@media (max-width: 1128px) {
-    .upload {
-        width: 90vw;
-        height: 70vw;
-    }
-}
-
 @media (max-width: 550px) {
-    #send-photo-button {
+    #submit-button {
         height: 25px;
         font-size: .8rem;
         padding: 0 10px;
@@ -292,15 +250,8 @@ input[type='file'] {
 }
 
 @media (max-width: 472px) {
-    #send-photo-button {
+    #submit-button {
         margin-top: 0.5rem;
-    }
-}
-
-@media (max-width: 458px) {
-    .upload {
-        width: 90vw;
-        min-height: 450px;
     }
 }
 </style>

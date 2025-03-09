@@ -50,6 +50,10 @@
                             Configurações
                             <div class="menu-underline"></div>
                         </li>
+                        <li class="menu-item font-size-3" id="account-center" v-on:click="selectTab(2)">
+                            Central de contas
+                            <div class="menu-underline"></div>
+                        </li>
                     </ul>
                 </div>
                 <div class="tabs-content">
@@ -106,7 +110,7 @@
                         <div class="user-groups">
                             <div class="user-groups-header">
                                 <p class="font-size-3-bold">Meus grupos</p>
-                                <span class="material-icons" v-on:click="showNewGroup = true">add</span>
+                                <span class="material-icons" v-on:click="showNewGroupFunction()">add</span>
                             </div>
                             <div class="group" v-for="(group, index) in $root.user.user_groups" :key="index">
                                 <router-link :to="{ name: 'edit-groups', params: { id: group.groups_id } }">
@@ -174,6 +178,9 @@
                             </div>
                         </div>
                     </div>
+                    <div class="account-center">
+                        <accountCenter />
+                    </div>
                 </div>
             </div>
             
@@ -181,11 +188,13 @@
                 <img />
             </div>
 
-            <div class="overlay" v-on:click="hidePhoto(); hideSendPhoto(); hideExcludeAccountModal();" v-if="showExpandedPhoto || showSendPhotoContainer || showExcludeAccount"></div>
+            <div class="overlay" v-on:click="hidePhoto();" v-if="showExpandedPhoto"></div>
             <div class="wrapper" v-on:click="hideBannerDetails(); hidePhotoDetails();" v-if="showPhotoDetails || showBannerDetails"></div>
             
-            <newGroupModal v-if="showNewGroup" :showNewGroup="showNewGroup" @showNewGroup="showNewGroup = false" /> 
-            <uploadModal group="" v-if="showSendPhotoContainer"></uploadModal>
+            <modal v-if="showModal" :modaltitle="modalTitle" :modalbutton1="modalButton1" :modalbutton2="modalButton2" @closeModal="hideSendPhoto(); hideExcludeAccountModal(); hideNewGroupFunction(); closeModalFunction();">
+                <newGroupModal v-if="showNewGroup" :showNewGroup="showNewGroup" @savedContent="closeModalFunction(); hideSendPhoto(); hideNewGroupFunction();" /> 
+                <uploadModal :group="data_target" v-if="showSendPhotoContainer" @savedContent="closeModalFunction(); hideSendPhoto();"></uploadModal>
+            </modal>
         </div>
     </section>
 </template>
@@ -193,14 +202,17 @@
 import { globalMethods } from '../js/globalMethods';
 import api from '../configs/api.js';
 import $ from 'jquery';
+import modal from "./modal.vue";
 import uploadModal from './uploadImageModal.vue';
 import newGroupModal from './newGroupModal.vue';
+import accountCenter from "./accountCenter.vue";
 
 export default {
     name: "updateProfile",
     mixins: [globalMethods],
     data() {
         return {
+            data_target: "",
             showSubmit: false,
             showPhotoDetails: false,
             showBannerDetails: false,
@@ -263,20 +275,32 @@ export default {
         selectTab: function (menu) {
             let principal = $("#principal");
             let settings = $("#settings");
+            let accountCenter = $("#account-center");
             let accountInformations = $(".account-informations");
             let accountSettings = $(".account-settings");
+            let accountCenterContainer = $(".account-center");
 
             principal.removeClass("selected");
             settings.removeClass("selected");
+            accountCenter.removeClass("selected");
+            
+            accountInformations.hide();
+            accountSettings.hide();
+            accountCenterContainer.hide();
 
-            if (menu == 0) {
-                accountInformations.show();
-                accountSettings.hide();
-                principal.addClass("selected");
-            } else if (menu == 1) {
-                settings.addClass("selected");
-                accountInformations.hide();
-                accountSettings.show();
+            switch (menu) {
+                case 0:
+                    accountInformations.show();
+                    principal.addClass("selected");
+                    break;
+                case 1:
+                    settings.addClass("selected");
+                    accountSettings.show();
+                    break;
+                case 2:
+                    accountCenter.addClass("selected");
+                    accountCenterContainer.show();
+                    break;
             }
         },
         requestResetPassword: function () {
@@ -457,27 +481,22 @@ export default {
             })
         },
         showSendPhoto: function (banner = false) {
-            this.showSendPhotoContainer = true;
+            if (banner) {
+                this.data_target = "banner"
+            }
 
-            setTimeout(() => {
-                let modal = $(".upload");
-                modal.show();
-                if (banner) {
-                    modal.attr("data_target", "banner");
-                }
-                
-                setTimeout(() => {
-                    modal.css("opacity", 1).css("transform", "translateY(0)");
-                }, 10);
-            }, 10);
+            this.showModalFunction("Enviar foto", "Enviar", "Cancelar");
+            this.showSendPhotoContainer = true;
         },
         hideSendPhoto: function () {
-            let modal = $(".upload");
-            modal.css("opacity", 0).css("transform", "translateY(-100px)");
-            setTimeout(() => {
-                modal.hide();
-                this.showSendPhotoContainer = false;
-            }, 400);
+            this.showSendPhotoContainer = false;
+        },
+        showNewGroupFunction: function () {
+            this.showModalFunction("Criar grupo", "Criar", "Cancelar");
+            this.showNewGroup = true;
+        },
+        hideNewGroupFunction: function () {
+            this.showNewGroup = false;
         },
         showPhoto: function () {
             let modal = $(".modal-expanded-photo");
@@ -551,13 +570,15 @@ export default {
         this.requireUser(true).then(() => {
             this.loading = false;
             this.$nextTick(() => {
-                this.selectTab(0);
+                this.selectTab(2);
             })
         })
     },
     components: {
         uploadModal,
-        newGroupModal
+        newGroupModal,
+        accountCenter,
+        modal
     }
 }
 </script>
