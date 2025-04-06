@@ -144,7 +144,7 @@
                             </div>
                             <div class="comment-body">
                                 <div class="comment-text">
-                                    <span>{{ comment.desc_comentario }}</span>
+                                    <span v-html="formatLinks(comment.desc_comentario)"></span>
                                     <textarea v-model="comment.desc_comentario" v-on:focusout="handleSaveComment(comment, index)"></textarea>
                                 </div>
                                 <div class="comment-like" v-on:click="commentLike(comment.id_comentario)" :class="comment.user_has_liked == 1 ? 'liked' : 'unliked'">

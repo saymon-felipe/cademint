@@ -274,7 +274,16 @@ export const globalMethods = {
                     clearInterval(interval);
                 }
             }, 100)
-        }
+        },
+        //Formatação
+        formatLinks: function (string) {
+            const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/ig;
+            let replacedString = string.replace(urlPattern, function(url) {
+                return `<a href="${url}" target="_blank" style="text-decoration: underline; color: var(--blue-low); position: relative; z-index: 2;">${url}</a>`;
+            });
+
+            return replacedString.replace(/\n/g, '<br>');
+        },
     },
     mounted: function() {
         this.checkAndSetJwt();
