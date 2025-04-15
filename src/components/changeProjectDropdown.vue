@@ -31,6 +31,7 @@
 <script>
 import { globalMethods } from '../js/globalMethods';
 import ProjectListComponent from './projectListComponent.vue';
+import $ from 'jquery';
 
     export default {
         name: "changeProjectDropdown",
@@ -41,6 +42,19 @@ import ProjectListComponent from './projectListComponent.vue';
                 selectedProject: this.$root.user.user_groups[0],
                 toggleProjectsContainer: false,
                 currentProject: null
+            }
+        },
+        watch: {
+            toggleProjectsContainer: function () {
+                if (this.toggleProjectsContainer) {
+                    this.$nextTick(() => {
+                        let selectedProject = $(".project.selected");
+                
+                        if (selectedProject.length > 0) {
+                            selectedProject[0].scrollIntoView();
+                        }
+                    })
+                }
             }
         },
         computed: {
