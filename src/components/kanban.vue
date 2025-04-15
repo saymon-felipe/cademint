@@ -42,7 +42,7 @@
                 <div class="kanban-column" v-for="(column, index) in kanbanColumns" :key="index" :id="'column-' + column.id">
                     <div class="kanban-column-header">
                         <div class="column-informations">
-                            <input type="text" @focusout="renameColumn(column.id, $event); column.name = $event.target.value" class="rename-column-input" style="display: none;">
+                            <input type="text" v-on:keyup="handleRenameColumn(column.id, $event)" @focusout="renameColumn(column.id, $event); column.name = $event.target.value" class="rename-column-input" style="display: none;">
                             <p class="font-size-5 column-name">{{ column.name }}</p>
                             <span class="material-icons" v-on:click="showMoreOptions(column.id)">more_vert</span>
                             
@@ -70,64 +70,6 @@
                     <span class="material-icons">add</span>
                     <span>{{ kanbanColumns.length == 0 ? "Adicione uma coluna" : "Adicione outra coluna" }}</span>
                 </div>
-                <!--<div class="kanban-column" id="column-1">
-                    <div class="kanban-column-header">
-                        <p class="font-size-5">A fazer</p>
-                        <span class="material-icons new-task-icon" v-on:click="createTask(1)">add</span>
-                    </div>
-                    <div class="kanban-column-body">
-                        <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('todo', $event)" @drop="handleDrop('todo', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members" card_status="1" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
-                            <Draggable v-for="task in todoList" :key="task.id" class="draggable-card">
-                                <card :task="task" />
-                                <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
-                            </Draggable>
-                        </Container>
-                    </div>
-                </div>
-                <div class="kanban-column" id="column-2">
-                    <div class="kanban-column-header">
-                        <p class="font-size-5">Fazendo</p>
-                        <span class="material-icons new-task-icon" v-on:click="createTask(2)">add</span>
-                    </div>
-                    <div class="kanban-column-body">
-                        <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('doing', $event)" @drop="handleDrop('doing', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members" card_status="2" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
-                            <Draggable v-for="task in doingList" :key="task.id" class="draggable-card">
-                                <card :task="task" />
-                                <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
-                            </Draggable>
-                        </Container>
-                    </div>
-                </div>
-                <div class="kanban-column" id="column-3">
-                    <div class="kanban-column-header">
-                        <p class="font-size-5">Teste</p>
-                    </div>
-                    <div class="kanban-column-body">
-                        <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('test', $event)" @drop="handleDrop('test', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members" card_status="3" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
-                            <Draggable v-for="task in testList" :key="task.id" class="draggable-card">
-                                <card :task="task" />
-                                <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
-                            </Draggable>
-                        </Container>
-                    </div>
-                </div>
-                <div class="kanban-column" id="column-4">
-                    <div class="kanban-column-header">
-                        <p class="font-size-5">Concluído</p>
-                    </div>
-                    <div class="kanban-column-body">
-                        <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart('done', $event)" @drop="handleDrop('done', $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members" card_status="4" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
-                            <Draggable v-for="task in doneList" :key="task.id" class="draggable-card">
-                                <card :task="task" />
-                                <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
-                            </Draggable>
-                        </Container>
-                    </div>
-                </div>-->
             </div>
             <editTaskModal class="edit-task-container" v-if="show_edit_task" :task="edit_task" :group="project" @closeEditTaskModal="closeEditTask('.edit-task-container', $event)" />
             <div class="edit-task-wrapper" v-if="show_edit_task" v-on:click="closeEditTask('.edit-task-container', true)"></div>
@@ -231,6 +173,11 @@ export default {
                 column.find(".rename-column-input").show().focus();
                 column.find(".column-name").hide();
             })
+        },
+        handleRenameColumn: function (column_id, event) {
+            if (event.key == "Enter") {
+                this.renameColumn(column_id, event);
+            }
         },
         renameColumn: function (column_id, event) {
             let self = this;
