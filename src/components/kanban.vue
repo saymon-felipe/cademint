@@ -39,53 +39,58 @@
                 </div>
             </div>
             <div class="kanban-columns">
-                <div class="kanban-column" v-for="(column, index) in kanbanColumns" :key="index" :id="'column-' + column.id">
-                    <div class="kanban-column-header">
-                        <div class="column-informations">
-                            <div class="column-name-container">
-                                <input type="text" v-on:keyup="handleRenameColumn(column.id, $event)" @focusout="renameColumn(column.id, $event); column.name = $event.target.value" class="rename-column-input" style="display: none;">
-                                <p class="font-size-5 column-name">{{ column.name }}</p>
-                                <span class="material-icons" v-on:click="showMoreOptions(column.id)">more_vert</span>
-                                <div class="more-options">
-                                    <ul>
-                                        <li v-on:click="excludeColumn(column.id)">Excluir coluna</li>
-                                        <li v-on:click="showRenameColumn(column.id)">Renomear coluna</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="search-tasks-container">
-                                <span
-                                    class="material-icons"
-                                    v-if="!column.toggleSearchTasks"
-                                    @click="activateSearch(column, index)"
-                                    title="Busque tarefas por ID, descrição ou responsável"
-                                >
-                                    search
-                                </span>
+                <Container class="smooth-dnd-container horizontal" orientation="horizontal" @drop="handleColumnsUpdate" drag-handle-selector=".column-drag-handle" :get-child-payload="getChildPayload" @drag-start="handleColumnsDragStart($event)">
+                    <Draggable v-for="(column, index) in sortedColumns" :key="index" class="kanban-column">
+                        <div class="kanban-column"  :id="'column-' + column.id">
+                            <div class="kanban-column-header">
+                                <div class="column-informations">
+                                    <div class="column-name-container">
+                                        <input type="text" v-on:keyup="handleRenameColumn(column.id, $event)" @focusout="renameColumn(column.id, $event); column.name = $event.target.value" class="rename-column-input" style="display: none;">
+                                        <p class="font-size-5 column-name">{{ column.name }}</p>
+                                        <span class="material-icons" v-on:click="showMoreOptions(column.id)">more_vert</span>
+                                        <div class="more-options">
+                                            <ul>
+                                                <li v-on:click="excludeColumn(column.id)">Excluir coluna</li>
+                                                <li v-on:click="showRenameColumn(column.id)">Renomear coluna</li>
+                                            </ul>
+                                        </div>
+                                        <span class="material-icons column-drag-handle" style="cursor: grab;">drag_handle</span>
+                                    </div>
+                                    <div class="search-tasks-container">
+                                        <span
+                                            class="material-icons"
+                                            v-if="!column.toggleSearchTasks"
+                                            @click="activateSearch(column, index)"
+                                            title="Busque tarefas por ID, descrição ou responsável"
+                                        >
+                                            search
+                                        </span>
 
-                                <input
-                                    v-if="column.toggleSearchTasks"
-                                    :ref="el => searchInputs[index] = el"
-                                    type="text"
-                                    class="search-tasks-input"
-                                    placeholder="Pesquisar tarefas"
-                                    @keyup="searchTasks(column, $event)"
-                                    @focusout="column.toggleSearchTasks = false"
-                                />
+                                        <input
+                                            v-if="column.toggleSearchTasks"
+                                            :ref="el => searchInputs[index] = el"
+                                            type="text"
+                                            class="search-tasks-input"
+                                            placeholder="Pesquisar tarefas"
+                                            @keyup="searchTasks(column, $event)"
+                                            @focusout="column.toggleSearchTasks = false"
+                                        />
+                                    </div>
+                                </div>
+                                <span class="material-icons new-task-icon" v-on:click="createTask(column.id)">add</span>
+                            </div>
+                            <div class="kanban-column-body">
+                                <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart(column.id, $event)" @drop="handleDrop(column.id, $event)" :get-child-payload="getChildPayload">
+                                    <newTaskCard :group_users="project.group_members" :card_status="column.id" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
+                                    <Draggable v-for="task in column.filteredTasks" :key="task.id" class="draggable-card">
+                                        <card :task="task" />
+                                        <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
+                                    </Draggable>
+                                </Container>
                             </div>
                         </div>
-                        <span class="material-icons new-task-icon" v-on:click="createTask(column.id)">add</span>
-                    </div>
-                    <div class="kanban-column-body">
-                        <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart(column.id, $event)" @drop="handleDrop(column.id, $event)" :get-child-payload="getChildPayload">
-                            <newTaskCard :group_users="project.group_members" :card_status="column.id" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
-                            <Draggable v-for="task in column.filteredTasks" :key="task.id" class="draggable-card">
-                                <card :task="task" />
-                                <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
-                            </Draggable>
-                        </Container>
-                    </div>
-                </div>
+                    </Draggable>
+                </Container>
                 <div class="wrapper-container" v-on:click="hideMoreOptions()"></div>
                 <div class="create-new-column" v-on:click="createNewColumn()">
                     <span class="material-icons">add</span>
@@ -127,11 +132,14 @@ export default {
             is_loading: true,
             newSprint: false,
             historySprint: false,
-            draggind_card: {
+            dragging_card: {
                 status: '',
                 col: '',
                 index: -1,
                 cardData: {}
+            },
+            dragging_col: {
+                id: null
             },
             joined_group: false,
             current_project: null,
@@ -143,6 +151,7 @@ export default {
             modalName: "",
             showModal: false,
             kanbanColumns: [],
+            sortedColumns: [],
             projectStatus: 1,
             searchInputs: []
         }
@@ -269,6 +278,7 @@ export default {
             })
             .then((response) => {
                 self.kanbanColumns = response.data.returnObj;
+                self.sortedColumns = [...self.kanbanColumns].sort((a, b) => a.order - b.order);
                 self.filterKanbanCards();
 
                 if (returnTasks) {
@@ -370,7 +380,10 @@ export default {
             if (window.innerWidth > 720) {
                 return true;
             }
+
             $(".draggable-card").removeClass("smooth-dnd-draggable-wrapper");
+            $(".kanban-column").removeClass("smooth-dnd-draggable-wrapper");
+
             return false;
         },
         handleDragStart: function (col, dragResult) {
@@ -387,7 +400,7 @@ export default {
                     let currentColumn = this.kanbanColumns[i];
 
                     if (currentColumn.id == col) {
-                        this.draggind_card = {
+                        this.dragging_card = {
                             col,
                             index: payload.index,
                             cardData: currentColumn.tasks[payload.index - 1]
@@ -396,8 +409,61 @@ export default {
                 }
             }
         },
+        handleColumnsDragStart: function (dragResult) {
+            const {payload, isSource} = dragResult;
+
+
+            if (!this.verifyAllowDrop()) {
+                return;
+            }
+
+            sessionStorage.setItem("in_drag", "true");
+
+            if (isSource) {
+                this.dragging_col = {
+                    ...JSON.parse(JSON.stringify(this.sortedColumns[payload.index]))
+                }
+            }
+        },
+        handleColumnsUpdate: function (dropResult) {
+            const { removedIndex, addedIndex } = dropResult;
+
+            if (removedIndex === addedIndex) {
+                return;
+            }
+
+            let self = this;
+
+            let reorderedColumns = this.reorderColumns(addedIndex);
+
+            api.patch("/projects/columns/order", {
+                reorderedColumns: reorderedColumns
+            })
+            .then(() => {
+                self.returnColumns(false, true);
+                sessionStorage.setItem("in_drag", "false");
+            })
+        },
         handleDragEnd: function () {
             sessionStorage.setItem("in_drag", "false");
+        },
+        reorderColumns: function (addedIndex) {
+            let array = this.sortedColumns;
+
+            let currentIndex; 
+
+            for (let i = 0; i < array.length; i++) {
+                if (array[i].id == this.dragging_col.id) {
+                    currentIndex = i;
+                }
+            }
+
+            if (currentIndex == undefined) return [];
+            
+            const [movedObject] = array.splice(currentIndex, 1);
+            array.splice(addedIndex, 0, movedObject);
+
+            return array;
         },
         reorderTasks: function (addedIndex, col, lastCol) {
             let array, lastArray;
@@ -417,7 +483,7 @@ export default {
             let currentIndex; 
 
             for (let i = 0; i < lastArray.length; i++) {
-                if (lastArray[i].id == this.draggind_card.cardData.id) {
+                if (lastArray[i].id == this.dragging_card.cardData.id) {
                     currentIndex = i;
                 }
             }
@@ -439,14 +505,14 @@ export default {
                 return;
             }
 
-            let reorderedColumn = this.reorderTasks(addedIndex - 1, col, self.draggind_card.col);
+            let reorderedColumn = this.reorderTasks(addedIndex - 1, col, self.dragging_card.col);
 
             if (addedIndex != null) {
-                self.draggind_card.cardData.status_os = col;
-                self.task_list.push(self.draggind_card.cardData); 
+                self.dragging_card.cardData.status_os = col;
+                self.task_list.push(self.dragging_card.cardData); 
 
                 api.patch("/task/os_status", {
-                    id: self.draggind_card.cardData.id,
+                    id: self.dragging_card.cardData.id,
                     status_os: col,
                     reorderedColumn: reorderedColumn
                 })
@@ -575,6 +641,9 @@ export default {
 </script>
 
 <style scoped>
+.smooth-dnd-container.horizontal {
+    border-spacing: 1.5rem 0;
+}
 
 /* HEADER */
 
@@ -715,6 +784,12 @@ export default {
     overflow-x: auto;
 }
 
+.kanban-columns-container {
+    display: flex;
+    justify-content: flex-start;
+    min-width: fit-content;
+}
+
 .kanban-column {
     min-width: 330px;
     max-width: 330px;
@@ -727,7 +802,11 @@ export default {
 }
 
 .kanban-column:first-child {
-    margin-left: 0;
+    margin-left: -1.5rem;
+}
+
+.kanban-column:last-child {
+    margin-right: 0;
 }
 
 .create-new-column {
@@ -741,6 +820,7 @@ export default {
     border-radius: 6px;
     min-width: 330px;
     margin: 0 .8rem;
+    margin-left: -1.5rem;
 
     &:hover {
         background: var(--gray-soft);
@@ -802,6 +882,10 @@ export default {
     justify-content: space-between;
     min-height: 31px;
     margin-bottom: 10px;
+
+    &:hover .column-drag-handle {
+        opacity: 1;
+    }
 }
 
     .kanban-column-header p {
@@ -810,6 +894,11 @@ export default {
         margin-top: 3px;
         white-space: nowrap;
     }
+
+.column-drag-handle {
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
 
 .kanban-column-body {
     background: var(--gray-high);
