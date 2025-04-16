@@ -42,15 +42,36 @@
                 <div class="kanban-column" v-for="(column, index) in kanbanColumns" :key="index" :id="'column-' + column.id">
                     <div class="kanban-column-header">
                         <div class="column-informations">
-                            <input type="text" v-on:keyup="handleRenameColumn(column.id, $event)" @focusout="renameColumn(column.id, $event); column.name = $event.target.value" class="rename-column-input" style="display: none;">
-                            <p class="font-size-5 column-name">{{ column.name }}</p>
-                            <span class="material-icons" v-on:click="showMoreOptions(column.id)">more_vert</span>
-                            
-                            <div class="more-options">
-                                <ul>
-                                    <li v-on:click="excludeColumn(column.id)">Excluir coluna</li>
-                                    <li v-on:click="showRenameColumn(column.id)">Renomear coluna</li>
-                                </ul>
+                            <div class="column-name-container">
+                                <input type="text" v-on:keyup="handleRenameColumn(column.id, $event)" @focusout="renameColumn(column.id, $event); column.name = $event.target.value" class="rename-column-input" style="display: none;">
+                                <p class="font-size-5 column-name">{{ column.name }}</p>
+                                <span class="material-icons" v-on:click="showMoreOptions(column.id)">more_vert</span>
+                                <div class="more-options">
+                                    <ul>
+                                        <li v-on:click="excludeColumn(column.id)">Excluir coluna</li>
+                                        <li v-on:click="showRenameColumn(column.id)">Renomear coluna</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="search-tasks-container">
+                                <span
+                                    class="material-icons"
+                                    v-if="!column.toggleSearchTasks"
+                                    @click="activateSearch(column, index)"
+                                    title="Busque tarefas por ID, descrição ou responsável"
+                                >
+                                    search
+                                </span>
+
+                                <input
+                                    v-if="column.toggleSearchTasks"
+                                    :ref="el => searchInputs[index] = el"
+                                    type="text"
+                                    class="search-tasks-input"
+                                    placeholder="Pesquisar tarefas"
+                                    @keyup="searchTasks(column, $event)"
+                                    @focusout="column.toggleSearchTasks = false"
+                                />
                             </div>
                         </div>
                         <span class="material-icons new-task-icon" v-on:click="createTask(column.id)">add</span>
@@ -58,7 +79,7 @@
                     <div class="kanban-column-body">
                         <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart(column.id, $event)" @drop="handleDrop(column.id, $event)" :get-child-payload="getChildPayload">
                             <newTaskCard :group_users="project.group_members" :card_status="column.id" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
-                            <Draggable v-for="task in column.tasks" :key="task.id" class="draggable-card">
+                            <Draggable v-for="task in column.filteredTasks" :key="task.id" class="draggable-card">
                                 <card :task="task" />
                                 <div class="edit-task-wrapper-container" v-on:click="editTask(task)"></div>
                             </Draggable>
@@ -122,7 +143,8 @@ export default {
             modalName: "",
             showModal: false,
             kanbanColumns: [],
-            projectStatus: 1
+            projectStatus: 1,
+            searchInputs: []
         }
     },
     watch: {
@@ -136,6 +158,20 @@ export default {
         },
     },
     methods: {
+        activateSearch(column, index) {
+            column.toggleSearchTasks = true
+
+            this.$nextTick(() => {
+                this.searchInputs[index]?.focus()
+            })
+        },
+        searchTasks: function (column, event) {
+            column.filteredTasks = column.tasks.filter((task) => {
+                return  task.desc_os.toLowerCase().includes(event.target.value.toLowerCase()) || 
+                        task.id.toString().toLowerCase().includes(event.target.value.toLowerCase()) ||
+                        task.sponsor_name.toLowerCase().includes(event.target.value.toLowerCase());
+            })
+        },
         showMoreOptions: function (column_id) {
             $("#column-" + column_id + " .more-options").show();
             $(".wrapper-container").show();
@@ -154,11 +190,13 @@ export default {
                     let currentTask = this.task_list[j];
 
                     if (currentTask.status_os == currentColumn.id) {
+                        currentColumn.filteredTasks.push(currentTask);
                         currentColumn.tasks.push(currentTask);
                     }
                 }
 
                 currentColumn.tasks = currentColumn.tasks.sort((a, b) => a.task_index - b.task_index);
+                currentColumn.filteredTasks = currentColumn.filteredTasks.sort((a, b) => a.task_index - b.task_index);
             }
 
             this.is_loading = false;
@@ -711,8 +749,10 @@ export default {
 .column-informations {
     display: flex;
     align-items: center;
-    gap: 7px;
+    justify-content: space-between;
+    padding-right: 1rem;
     position: relative;
+    width: 100%;
 
     & span {
         cursor: pointer;
@@ -746,6 +786,13 @@ export default {
     }
 }
 
+.column-name-container {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    position: relative;
+}
+
 .kanban-column-header {
     width: 100%;
     max-width: calc(100vw - 25px);
@@ -760,6 +807,7 @@ export default {
         text-transform: uppercase;
         color: var(--gray-low);
         margin-top: 3px;
+        white-space: nowrap;
     }
 
 .kanban-column-body {
@@ -769,6 +817,12 @@ export default {
     border-radius: 6px;
     padding: 10px;
     overflow-y: auto;
+}
+
+.search-tasks-container {
+    display: grid;
+    place-items: center;
+    float: right;
 }
 
 .new-task-icon {
