@@ -900,6 +900,7 @@ export default {
 .column-drag-handle {
     opacity: 0;
     transition: opacity 0.4s ease-in-out;
+    margin-right: .9rem;
 }
 
 .kanban-column-body {
