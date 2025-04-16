@@ -185,6 +185,7 @@ export default {
                 let currentColumn = this.kanbanColumns[i];
 
                 currentColumn.tasks = [];
+                currentColumn.filteredTasks = [];
 
                 for (let j = 0; j < this.task_list.length; j++) {
                     let currentTask = this.task_list[j];
