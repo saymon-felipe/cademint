@@ -80,6 +80,7 @@
                                 <span class="material-icons new-task-icon" v-on:click="createTask(column.id)">add</span>
                             </div>
                             <div class="kanban-column-body">
+                                <p class="font-size-5" style="text-align: center; margin-top: 1rem; margin-bottom: -1rem;" v-if="column.filteredTasks.length == 0"><i>Arraste tarefas para cá</i></p>
                                 <Container group-name="kanban" class="task-list" @drag-end="handleDragEnd()" @drag-start="handleDragStart(column.id, $event)" @drop="handleDrop(column.id, $event)" :get-child-payload="getChildPayload">
                                     <newTaskCard :group_users="project.group_members" :card_status="column.id" :user="$root.user" @closeTask="closeNewTask($event)" class="new-card" />
                                     <Draggable v-for="task in column.filteredTasks" :key="task.id" class="draggable-card">
