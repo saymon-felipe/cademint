@@ -139,6 +139,7 @@
                                 <div class="comment-options-container">
                                     <ul>
                                         <li v-on:click="handleEditComment(index)">Editar</li>
+                                        <li v-on:click="deleteComment(comment.id_comentario)">Excluir</li>
                                     </ul>
                                 </div>
                             </div>
@@ -352,6 +353,16 @@ export default {
                 self.loadTaskComments(true);
                 input.attr("rows", "1");
                 input.val("");
+            }).catch(function(error){
+                console.log(error)
+            })
+        },
+        deleteComment: function (comment_id) {
+            let self = this;
+            
+            api.delete("/task/delete_task_comment/" + comment_id)
+            .then(function(){
+                self.loadTaskComments(true);
             }).catch(function(error){
                 console.log(error)
             })
