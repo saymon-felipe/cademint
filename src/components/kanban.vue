@@ -459,7 +459,7 @@ export default {
             }
 
             if (currentIndex == undefined) return [];
-            
+
             const [movedObject] = array.splice(currentIndex, 1);
             array.splice(addedIndex, 0, movedObject);
 
@@ -799,6 +799,7 @@ export default {
     flex-direction: column;
     align-items: center;
     margin: 0 .8rem;
+    max-height: calc(100vh - 172px);
 }
 
 .kanban-column:first-child {
@@ -950,11 +951,33 @@ export default {
         margin: 1rem .7rem .5rem;
     }
 
-    .kanban-columns {
+    .kanban-columns, .smooth-dnd-container.horizontal {
+        display: flex !important;
         flex-direction: column;
         width: 100%;
-        padding: 0;
+        padding: 0 .5rem;
         overflow-y: scroll;
+        overflow-x: hidden;
+        gap: 1rem;
+    }
+
+    .kanban-columns {
+        overflow: hidden;
+        gap: 0;
+    }
+
+    .kanban-column:first-child {
+        margin-left: initial !important;
+        margin-top: 0;
+    }
+
+    .kanban-column:last-child {
+        margin-right: initial !important;
+        margin-bottom: 0;
+    }
+
+    .column-drag-handle {
+        display: none;
     }
 
     .kanban-column {
@@ -972,10 +995,6 @@ export default {
         display: flex;
     }
 
-    .kanban-column-header {
-        margin-left: .7rem;
-    }
-
     .kanban-column-body {
         height: auto;
         width: 100%;
@@ -989,7 +1008,9 @@ export default {
     }
 
     .create-new-column {
-        margin-top: 2rem;
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+        margin-left: 0.5rem;
     }
 }
 </style>
