@@ -4,7 +4,7 @@ let url_api;
 
 const dev_environment = "http://192.168.15.43:3000"; //Ambiente de desenvolvimento.
 const test_environment = "https://coretest-cademint-0012d7964dfd.herokuapp.com"; //Ambiente de teste.
-const production_environment = ""; //Ambiente de produção.
+const production_environment = "https://core-cademint-a6ee13eafc1a.herokuapp.com"; //Ambiente de produção.
 
 // TROCA DO AMBIENTE DA API
 //
