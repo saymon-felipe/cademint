@@ -905,7 +905,6 @@ export default {
 
 .kanban-column-body {
     background: var(--gray-high);
-    min-height: 94%;
     width: 100%;
     border-radius: 6px;
     padding: 10px;
@@ -927,9 +926,15 @@ export default {
     cursor: pointer;
 }
 
-.draggable-card {
-    position: relative;
-    cursor: pointer;
+.task-list {
+    & .draggable-card {
+        position: relative;
+        cursor: pointer;
+
+        &:last-child ::v-deep .card-task {
+            margin-bottom: 0;
+        }
+    }
 }
 
 .edit-task-wrapper-container, .wrapper-container {
