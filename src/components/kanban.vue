@@ -191,8 +191,8 @@ export default {
             $(".wrapper-container").hide();
         },
         filterKanbanCards: function () {
-            for (let i = 0; i < this.kanbanColumns.length; i++) {
-                let currentColumn = this.kanbanColumns[i];
+            for (let i = 0; i < this.sortedColumns.length; i++) {
+                let currentColumn = this.sortedColumns[i];
 
                 currentColumn.tasks = [];
                 currentColumn.filteredTasks = [];
@@ -469,15 +469,15 @@ export default {
         reorderTasks: function (addedIndex, col, lastCol) {
             let array, lastArray;
 
-            for (let i = 0; i < this.kanbanColumns.length; i++) {
-                let currentColumn = this.kanbanColumns[i];
+            for (let i = 0; i < this.sortedColumns.length; i++) {
+                let currentColumn = this.sortedColumns[i];
 
                 if (currentColumn.id == col) {
-                    array = currentColumn.tasks;
+                    array = currentColumn.filteredTasks;
                 }
 
                 if (currentColumn.id == lastCol) {
-                    lastArray = currentColumn.tasks;
+                    lastArray = currentColumn.filteredTasks;
                 }
             }
 
