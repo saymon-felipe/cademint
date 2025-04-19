@@ -236,8 +236,8 @@ export default {
         background: transparent;
         padding: .2rem .5rem;
         cursor: pointer;
-        right: 1.5rem;
-        top: 59px;
+        right: 7px;
+        top: 56px;
     }
 
         .show-password .material-icons {
