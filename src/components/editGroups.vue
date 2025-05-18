@@ -195,6 +195,8 @@ export default {
             .then(function () {
                 self.requireGroup(idParam).then((results) => {
                     self.group = results;
+                }).catch(() => {
+                    self.$router.push("/home/update-profile");
                 })
             })
         },

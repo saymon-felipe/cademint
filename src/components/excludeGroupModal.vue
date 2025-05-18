@@ -4,10 +4,10 @@
             <p class="font-size-2-bold">Tem certeza que deseja excluir o grupo?</p>
             <div class="buttons">
                 <button class="confirm" v-on:click="excludeGroup()">Sim, excluir</button>
-                <button class="cancelate" v-on:click="hideModal()">Não, cancelar</button>
+                <button class="cancelate" v-on:click="hideModalFunction()">Não, cancelar</button>
             </div>
         </div>
-        <div class="overlay" v-on:click="hideModal()"></div>
+        <div class="overlay" v-on:click="hideModalFunction()"></div>
     </div>
 </template>
 <script>
@@ -20,13 +20,13 @@ export default {
     props: ['exclude', 'group'],
     mixins: [globalMethods],
     methods: {
-        showModal: function () {
+        showModalFunction: function () {
             let container = $(".exclude-group-modal");
             let overlay = $(".exclude-group-wrapper .overlay");
             container.css("transform", "translateY(0)").css("opacity", 1);
             overlay.show();
         },
-        hideModal: function (excluded = false) {
+        hideModalFunction: function (excluded = false) {
             let container = $(".exclude-group-modal");
             let overlay = $(".exclude-group-wrapper .overlay");
             container.css("transform", "translateY(-100px)").css("opacity", 0);
@@ -50,16 +50,16 @@ export default {
                 if (current_project.group_id == self.group.group_id) { // Se o id do grupo que está sendo excluido for igual ao que está em session storage, o que está armazenado é deletado.
                     self.removeCurrentProjectInLocalStorage();
                 }
-                self.hideModal(true);
+                self.hideModalFunction(true);
             }).catch((error) => {
                 console.log(error)
             })
         },
     },
     mounted: function () {
-        setTimeout(() => {
-            this.showModal();
-        }, 10);
+       setTimeout(() => {
+        this.showModalFunction();
+       }, 10)
     }
 }
 </script>

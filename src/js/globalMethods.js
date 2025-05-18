@@ -51,7 +51,9 @@ export const globalMethods = {
             self.removeCurrentProjectInLocalStorage();
             self.removeJwtFromLocalStorage();
             if (!not_return) {
-                self.$router.push("/login");
+                if (window.location.pathname != "/login") {
+                    self.$router.push("/login");
+                }
             }
         },
         setJwtInLocalStorage: function (jwt) { // Armazena o token JWT em local storage. 
@@ -224,7 +226,7 @@ export const globalMethods = {
             })
         },
         requireGroup: function(group_id) { // Função retorna o grupo pelo id.
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 let self = this;
                 let data = {
                     group_id: group_id
@@ -232,6 +234,8 @@ export const globalMethods = {
                 api.post("/projects/return_group", data).then((response) => {
                     self.group = response.data.returnObj;
                     resolve(self.group);
+                }).catch((error) => {
+                    reject(error);
                 })
             })
         },
