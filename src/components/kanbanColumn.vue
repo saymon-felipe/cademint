@@ -170,6 +170,7 @@
       },
       createTask() {
         this.$emit('create-task', this.column.id);
+        $(`#column-${this.column.id} .kanban-column-body`).css("overflow-y", "visible");
       },
       closeNewTask(emmit_event) {
         const newTaskCard = $(`#column-${this.column.id} .new-card`);
@@ -181,6 +182,7 @@
             this.$emit('edit-task', emmit_event);
           }
         }, 400);
+        $(`#column-${this.column.id} .kanban-column-body`).css("overflow-y", "auto");
       },
       getChildPayload(index) {
         return {
