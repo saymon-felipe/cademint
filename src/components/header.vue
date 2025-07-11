@@ -144,7 +144,7 @@ export default {
     mounted() {
         setTimeout(() => {
             this.is_loading = false;
-        }, 20)
+        }, 200)
 
         if (window.location.href.indexOf("/home") != -1) {
             let url = new URLSearchParams(window.location.search);
