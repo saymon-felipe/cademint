@@ -193,7 +193,6 @@ export const globalMethods = {
 
             if (loadNow) {
                 this.$root.app_version = newAppVersion;
-                return;
             }
             
             let inMaintenanceElement = $(".in-maintenance-element");
