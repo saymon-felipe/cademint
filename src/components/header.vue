@@ -10,7 +10,7 @@
         <router-link to="/home" v-if="$route.path.indexOf('/home') == -1">
             <i class="fas fa-arrow-circle-left return"></i>
         </router-link>
-        <div class="title-container" :title="$root.app_version">
+        <div class="title-container" :title="$root.app_version" v-if="!is_loading">
             <router-link to="/home">
                 <div class="header-images" v-on:click="goToHome()">
                     <img src="../assets/img/cademint-icon-blue.png" />
@@ -18,6 +18,7 @@
                 </div>
             </router-link>
         </div>
+        <div v-else>&nbsp;</div>
         <changeProjectDropdown v-if="showProjectDropdown" :gid="gid" />
         <div class="menu-wrapper" v-on:click="showResponsiveMenu = false; showMenu = false;"></div>
         <div class="go-to-user-profile">
@@ -78,7 +79,7 @@ export default {
     },
     methods: {
         goToHome: function () {
-            if (this.$router.path == "/home") {
+            if (this.$router.currentRoute.path == "/home") {
                 return;
             }
 
@@ -141,6 +142,10 @@ export default {
         }
     },
     mounted() {
+        setTimeout(() => {
+            this.is_loading = false;
+        }, 20)
+
         if (window.location.href.indexOf("/home") != -1) {
             let url = new URLSearchParams(window.location.search);
 
