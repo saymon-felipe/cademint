@@ -87,7 +87,7 @@ export const globalMethods = {
                             $(".in-maintenance-element").show();
                         }, 700); 
                         setTimeout(self.checkIfUserIsAuthenticated, 60 * 1000); // Se o sistema estiver em manutenção e cair na página de manutenção, depois de 60 segundos é feita uma nova verificação.
-                        return;
+                        resolve();
                     } else {
                         api.get("/users/checkJWT", { // Se ja estiver logado no sistema e acessar a página de login, é checkado a valia do token JWT e então redirecionado para a index.
                             headers: {
@@ -189,20 +189,30 @@ export const globalMethods = {
             }
         },
         loadSystemVersion: async function(loadNow = false) {
-            let newAppVersion = await api.get("/system").then(response => response.data.response.system_version);
+            let response = await api.get("/system").then(response => response.data.response);
 
             if (loadNow) {
-                this.$root.app_version = newAppVersion;
+                this.$root.app_version = response.system_version;
             }
             
             let inMaintenanceElement = $(".in-maintenance-element");
             let newVersionElement = $(".new-version-availabe");
 
             if (inMaintenanceElement && newVersionElement) {
-                if (this.$root.app_version != newAppVersion) {
+                if (this.$root.app_version != response.system_version) {
                     inMaintenanceElement.hide();
                     newVersionElement.show();
-                    this.$root.app_version = newAppVersion;
+                    this.$root.app_version = response.system_version;
+                }
+            }
+
+            if (response.in_maintenance) {
+                if (window.location.pathname.indexOf("/maintenance") == -1) {
+                    this.$router.push("/maintenance");
+                } 
+            } else {
+                if (window.location.pathname.indexOf("/maintenance") != -1) {
+                    this.$router.push("/home");
                 }
             }
 
