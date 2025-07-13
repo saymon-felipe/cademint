@@ -47,7 +47,7 @@ export default {
                             return;
                         }, 1000);
                     }).catch(() => {
-                        self.response = "Erro ao entrar no grupo";
+                        self.response = "Convite inválido ou expirado";
                         $(".response").addClass("error");
                     })
                 } else {

@@ -66,7 +66,7 @@
                                 <span class="font-size-3">{{ member.pending_user_email }}</span>
                             </div>
                             <span class="material-icons hourglass-icon">hourglass_top</span>
-                            <span class="material-icons delete-invitation" v-on:click="excludeInvitation(group.group_id, member, index)" v-if="havePermission">clear</span>
+                            <span class="material-icons delete-invitation" v-on:click="excludeInvitation(group.group_id, member.pending_user_email, index)" v-if="havePermission">clear</span>
                         </div>
                     </div>
                 </div>
