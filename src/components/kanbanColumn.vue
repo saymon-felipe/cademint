@@ -150,7 +150,14 @@
         }
       },
       renameColumn(event) {
-        const name = event.target.value;
+        event.preventDefault();
+
+        const name = $('#column-' + this.column.id + " .rename-column-input").val();
+        
+        if (name && name.trim() == "") {
+          return;
+        }
+
         $('.rename-column-input').hide();
         $('.column-name').show();
   
@@ -159,6 +166,7 @@
           column_id: this.column.id,
           name: name
         });
+
         $('.rename-column-input').val('');
       },
       excludeColumn() {
