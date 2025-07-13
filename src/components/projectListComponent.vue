@@ -53,11 +53,14 @@ import { globalMethods } from '../js/globalMethods';
     border-radius: 6px;
     object-fit: cover;
     border: 1px solid var(--gray-soft);
+    flex-shrink: 0;
 }
 
 .project-header {
     display: flex;
     align-items: center;
+    flex-grow: 1;
+    min-width: 0;
 }
 
 .project {
@@ -68,6 +71,7 @@ import { globalMethods } from '../js/globalMethods';
     cursor: pointer;
     position: relative;
     justify-content: space-between;
+    width: 100%;
 
     &:hover {
         background: var(--gray-high);
@@ -81,10 +85,14 @@ import { globalMethods } from '../js/globalMethods';
 .project-informations {
     flex-direction: column;
     align-items: flex-start !important;
+    flex-grow: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     & p {
-        margin-left: 33px;
-        max-width: 270px;
+        padding-left: 33px;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
@@ -111,11 +119,13 @@ import { globalMethods } from '../js/globalMethods';
         position: relative;
         z-index: 2;
         box-shadow: 0 0 0 3px var(--blue);
+        flex-shrink: 0;
     }
 
     & img {
         margin-left: -.7rem;
         margin-bottom: -3px;
+        flex-shrink: 0;
     }
 }
 </style>

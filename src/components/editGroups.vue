@@ -1,5 +1,5 @@
 <template>
-    <div class="edit-groups">
+    <div class="page-content">
         <div class="group-header">
             <p class="font-size-3-bold">{{ havePermission ? 'Editar grupo (' + group.nome + ')' : 'Ver grupo (' + group.nome + ')' }}</p>
             <div class="delete-group" v-on:click="excludeGroupModal(group.group_id)" v-if="$root.user.user_groups.length > 1 && group.group_owner == $root.user.id_usuario && havePermission">
@@ -394,24 +394,6 @@ export default {
 
     .overlay {
         display: block;
-    }
-
-    .edit-groups {
-        background: white;
-        border-radius: 10px;
-        width: 70vw;
-        min-width: 200px;
-        max-width: 1000px;
-        box-shadow: 0 0 0 2px var(--gray-soft);
-        position: relative;
-        margin: 70px auto 40px auto;
-        padding: 20px 25px;
-    }
-
-    @media (max-width: 720px) {
-        .edit-groups {
-            width: 90%;
-        }
     }
 
     .group-informations {

@@ -600,6 +600,10 @@ export default {
     justify-content: space-between;
 }
 
+.modal-header-buttons {
+    display: flex;
+}
+
 .save-task-button, .close-modal-button, .exclude-task-button {
     border-radius: 50%;
     width: 38px;

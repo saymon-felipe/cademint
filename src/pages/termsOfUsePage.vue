@@ -1,10 +1,10 @@
 <template>
     <div class="help-page">
         <div class="help-header">
-            <router-link to="/login" class="back">
+            <a v-on:click="$router.back()" class="back">
                 <span class="material-icons">arrow_back</span>
-                <p class="font-size-4">Voltar para o login</p>
-            </router-link>
+                <p class="font-size-4">Voltar</p>
+            </a>
             <img src="../assets/img/logo-cademint-v2-reduced.png">
         </div>
         <div class="content-container">
@@ -136,6 +136,7 @@ p {
     position: absolute;
     left: 1rem;
     color: var(--blue);
+    cursor: pointer;
 }
 
     .back span {

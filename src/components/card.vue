@@ -133,6 +133,7 @@ export default {
         max-width: 220px;
         margin: 0;
         height: 100%;
+        min-height: 153px;
     }
 
     .sponsor {

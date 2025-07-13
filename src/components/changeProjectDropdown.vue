@@ -109,6 +109,7 @@ import $ from 'jquery';
     height: 27px;
     border-radius: 6px;
     object-fit: cover;
+    flex-shrink: 0;
 }
 
 .current-project {
@@ -150,12 +151,14 @@ import $ from 'jquery';
     right: 0;
     margin: auto;
     width: fit-content;
+    max-width: 100vw;
     background: var(--white);
     border-radius: 6px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     z-index: 6;
     max-height: 50vh;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .project-members {
@@ -186,5 +189,15 @@ import $ from 'jquery';
 .my-projects > p, .other-projects > p {
     padding-left: 1rem;
     padding-top: 1rem;
+}
+
+@media (max-width: 720px) {
+    .current-project-informations {    
+        min-width: 0;
+    }
+
+    .projects-list {
+        max-height: calc(100vh - 56.59px);
+    }
 }
 </style>

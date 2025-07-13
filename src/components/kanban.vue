@@ -46,6 +46,7 @@
                         :groupMembers="project.group_members || []"
                         :user="$root.user"
                         :projectId="current_project.group_id"
+                        :isResponsive="isResponsive"
                         @drag-start="handleDragStart"
                         @drop="handleDrop"
                         @drag-end="handleDragEnd"
@@ -140,6 +141,11 @@ export default {
             }, 100);
         },
     },
+    computed: {
+        isResponsive() {
+            return window.innerWidth <= 720;
+        }
+    },
     methods: {
         handleRenameColumn: function (data) {
             let self = this;
@@ -192,25 +198,33 @@ export default {
                 project_id: self.current_project.group_id
             })
             .then(() => {
-                self.returnColumns(false, false);
+                self.returnColumns(false, false).then(() => {
+                    $(".smooth-dnd-container.horizontal").animate({
+                        scrollTop: 999999
+                    }, 800);
+                });
             });
         },
         returnColumns: function (initial = false, returnTasks = true) {
-            let self = this;
+            return new Promise((resolve) => {
+                let self = this;
 
-            api.post("/projects/columns", {
-                project_id: self.current_project.group_id
+                api.post("/projects/columns", {
+                    project_id: self.current_project.group_id
+                })
+                .then((response) => {
+                    self.kanbanColumns = response.data.returnObj;
+                    self.sortedColumns = [...self.kanbanColumns].sort((a, b) => a.order - b.order);
+                    self.filterKanbanCards();
+
+                    if (returnTasks) {
+                        self.returnProjectStatus();
+                        self.getAllOs(!initial);
+                    }
+
+                    resolve();
+                });
             })
-            .then((response) => {
-                self.kanbanColumns = response.data.returnObj;
-                self.sortedColumns = [...self.kanbanColumns].sort((a, b) => a.order - b.order);
-                self.filterKanbanCards();
-
-                if (returnTasks) {
-                    self.returnProjectStatus();
-                    self.getAllOs(!initial);
-                }
-            });
         },
         resetModalContentVariables: function () {
             this.newSprint = false;
@@ -302,7 +316,7 @@ export default {
             }, 300);
         },
         verifyAllowDrop: function () {
-            if (window.innerWidth > 720) {
+            if (!this.isResponsive) {
                 return true;
             }
 
@@ -736,6 +750,7 @@ export default {
         padding: 0 .5rem;
         overflow-y: scroll;
         overflow-x: hidden;
+        height: 95%;
         gap: 1rem;
     }
 

@@ -1,6 +1,6 @@
 <template>
     <section class="update-profile-container" v-if="!loading">
-        <div class="update-profile">
+        <div class="page-content">
             <div class="user-banner" :style="'background-image: url(' + $root.user.user_cover_image + '); background-position-y: center;'">
                 <div class="change-banner" v-on:click="toggleBannerDetails()">
                     <span class="material-icons">edit</span>
@@ -711,21 +711,7 @@ export default {
         object-fit: cover;
     }
 
-.update-profile {
-    background: white;
-    border-radius: 10px;
-    width: 90vw;
-    min-width: 200px;
-    max-width: 1000px;
-    box-shadow: 0 0 0 2px var(--gray-soft);
-    position: relative;
-    margin: 70px 0 20px 0;
-}
-
 @media (max-width: 720px) {
-    .update-profile {
-        width: 90%;
-    }
     .modal-expanded-photo {
         width: 95vw;
         padding: .5rem;
@@ -802,7 +788,6 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     margin-top: -90px;
-    padding: 0 2rem;
 }
 
     .informations-container hr {
@@ -821,8 +806,15 @@ export default {
     width: 100%;
 }
 
-@media (max-width: 580px) {
+@media (max-width: 720px) {
+    .user-banner {
+        width: 100vw !important;
+        margin-left: -1rem !important;
+        margin-top: -1rem !important;
+    }
+}
 
+@media (max-width: 580px) {
     .informations-container {
         display: flex;
         flex-direction: column;
@@ -981,7 +973,9 @@ export default {
 /* NOVO VISUAL DO PERFIL */
 .user-banner {
     height: 200px;
-    width: 100%;
+    width: calc(100% + 4rem);
+    margin-left: -2rem;
+    margin-top: -2rem;
     border-radius: 10px 10px 0 0;
     background: var(--gray-high);
     overflow: hidden;

@@ -371,9 +371,8 @@ export default {
 }
 
 .account-principal-container {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    flex: 1;
+    display: flex;
+    align-items: center;
 }
 
 .account-principal {
@@ -403,7 +402,7 @@ export default {
 }
 
 .account-data {
-    flex: 1;
+    width: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -465,8 +464,30 @@ export default {
 
 @media (max-width: 768px) {
     .account-principal-container {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         gap: var(--space-5);
+        flex-grow: 1;
+        min-width: 0;
+        align-items: start;
+    }
+
+    .account {
+        gap: 10px;
+    }
+
+    .information-field {
+        & p {
+            display: flex;
+            gap: 5px;
+            width: 100%;
+
+            & span:last-child {
+                flex-grow: 1;
+                min-width: 0;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+        }
     }
 }
 </style>

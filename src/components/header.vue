@@ -586,6 +586,10 @@ export default {
         padding: .5rem;
         right: -7px;
     }
+
+    .header {
+        padding: 0.5rem;
+    }
 } 
 
 @media (max-width: 417px) {
@@ -613,10 +617,6 @@ export default {
 @media (max-width: 363px) {
     .page-title {
         font-size: 1.4rem;
-    }
-
-    .header {
-        padding: 0.5rem;
     }
 }
 </style>

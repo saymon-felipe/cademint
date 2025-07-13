@@ -50,7 +50,7 @@
             style="text-align: center; margin-top: 1rem; margin-bottom: -1rem;"
             v-if="column.filteredTasks.length == 0"
           >
-            <i>Arraste tarefas para cá</i>
+            <i v-if="!newTask">{{ isResponsive ? "Atribua tarefas a esta coluna" : "Arraste tarefas para cá" }}</i>
           </p>
           <Container
             group-name="kanban"
@@ -107,11 +107,16 @@
       projectId: {
         type: [String, Number],
         required: true
+      },
+      isResponsive: {
+        type: Boolean,
+        required: true
       }
     },
     data() {
       return {
-        searchInput: null
+        searchInput: null,
+        newTask: false
       };
     },
     methods: {
@@ -177,6 +182,7 @@
         });
       },
       createTask() {
+        this.newTask = true;
         this.$emit('create-task', this.column.id);
         $(`#column-${this.column.id} .kanban-column-body`).css("overflow-y", "visible");
       },
@@ -185,6 +191,7 @@
         newTaskCard.css('opacity', 0);
         setTimeout(() => {
           newTaskCard.hide();
+          this.newTask = false;
           if (emmit_event != undefined) {
             emmit_event.user_owner_name = this.user.nome;
             this.$emit('edit-task', emmit_event);
@@ -300,6 +307,11 @@
     display: grid;
     place-items: center;
     float: right;
+  }
+
+  .search-tasks-input {
+    margin: 0 !important;
+    height: 30px !important;
   }
   
   .new-task-icon {
