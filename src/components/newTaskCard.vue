@@ -27,7 +27,8 @@ export default {
         return {
             task_description: "",
             sponsor_id: 2, // Id do usuario "QUALQUER"
-            sponsor_photo: ""
+            sponsor_photo: "",
+            creating_task: false
         }
     },
     props: ["group_users", "user", "card_status"],
@@ -83,21 +84,33 @@ export default {
                     status_os: this.card_status,
                     group_id: this.getCurrentProjectInLocalStorage("new-card").group_id
                 }
-                this.createInitialTask(temporary_task);
-                this.resetCardBeforeClose();
+                this.createInitialTask(temporary_task).then(() => {
+                    this.resetCardBeforeClose();
+                });
+                
                 return;
             } 
+
             this.resetCardBeforeClose();
             this.$emit("closeTask");
         },
         createInitialTask: function (task_object) {
-            let self = this;
+            return new Promise((resolve) => {
+                let self = this;
 
-            api.post("/task", task_object)// Requisição cria nova tarefa com os dados do formulário.
-            .then(function(response){
-                self.$emit("closeTask", response.data.returnObj.created_task);
-            }).catch(function(error){
-                console.log(error)
+                if (!this.creating_task) {
+                    this.creating_task = true;
+                } else {
+                    return;
+                }
+
+                api.post("/task", task_object)// Requisição cria nova tarefa com os dados do formulário.
+                .then(function(response){
+                    resolve();
+                    self.$emit("closeTask", response.data.returnObj.created_task);
+                }).catch(function(error){
+                    console.log(error)
+                })
             })
         },
         resetCardBeforeClose: function () {
