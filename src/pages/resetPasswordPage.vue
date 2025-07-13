@@ -66,7 +66,7 @@
         </div>
         <div class="footer">
             <div class="copyright">
-                <p class="font-size-5">Copyright © 2022 Cademint</p>
+                <p class="font-size-5">Copyright © {{ year }} Cademint</p>
             </div>
             <div class="footer-links">
                 <router-link to="/help" class="redirect">Ajuda</router-link> -
@@ -93,7 +93,8 @@ export default {
             invalidToken: false,
             passwordChanged: false,
             token: null,
-            response: ""
+            response: "",
+            year: new Date().getFullYear()
         }
     },
     watch: {

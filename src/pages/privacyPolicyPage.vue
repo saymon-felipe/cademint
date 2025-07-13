@@ -50,7 +50,7 @@
         </div>
         <div class="footer">
             <div class="copyright">
-                <p class="font-size-5">Copyright © 2022 Cademint</p>
+                <p class="font-size-5">Copyright © {{ year }} Cademint</p>
             </div>
             <div class="footer-links">
                 <router-link to="/terms-of-use" class="redirect">Termos de uso</router-link>
@@ -62,6 +62,11 @@
 
 export default {
     name: "privacyPolicyPage",
+    data() {
+        return {
+            year: new Date().getFullYear()
+        }
+    }
 }
 </script>
 <style scoped>
