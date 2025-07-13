@@ -32,7 +32,7 @@ import $ from 'jquery';
 export default {
     name: "uploadImageModal",
     mixins: [globalMethods],
-    props: ['group'],
+    props: ['group', "data_target"],
     data() {
         return {
             loading: false,
@@ -54,11 +54,10 @@ export default {
                 return;
             }
 
-            let dataTarget = $(".upload").attr("data_target");
             let path = '/users/';
             let target = "upload_photo";
 
-            switch (dataTarget) {
+            switch (this.data_target) {
                 case 'banner':
                     target = "upload_banner";
                     break;
@@ -72,11 +71,11 @@ export default {
             self.loading = true;
             self.showRemovePhotoButton = false;
 
-            if (dataTarget == "banner") {
+            if (this.data_target == "banner") {
                 self.removePhoto(true, true);
             }
 
-            if (dataTarget != "group" && dataTarget != "banner") {
+            if (this.data_target != "group" && this.data_target != "banner") {
                 self.removePhoto(true);
             }
 

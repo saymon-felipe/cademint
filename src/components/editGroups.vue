@@ -73,8 +73,10 @@
                 <p class="font-size-4 response">{{ response }}</p>
             </div>
         </div>
-        <div class="overlay" v-on:click="hideEditGroupImage()" v-if="showSendPhotoContainer"></div>
-        <uploadModal :group="group" v-if="showSendPhotoContainer"></uploadModal>
+
+        <modal v-if="showModal" :modaltitle="modalTitle" :modalbutton1="modalButton1" :modalbutton2="modalButton2" @closeModal="closeModalFunction(); hideGroupImage();">
+            <uploadModal :group="group" :data_target="data_target" v-if="showSendPhotoContainer" @savedContent="closeModalFunction(); hideGroupImage();"></uploadModal>
+        </modal>
     </div>
 </template>
 <script>
@@ -85,12 +87,14 @@ import uploadModal from './uploadImageModal.vue';
 import autoComplete from './autoComplete.vue';
 import excludeGroupModal from './excludeGroupModal.vue';
 import leaveGroupModal from './leaveGroupModal.vue';
+import modal from "./modal.vue";
 
 export default {
     name: "editGroups",
     mixins: [globalMethods],
     data() {
         return {
+            data_target: "group",
             user: {
                 user_groups: []
             },
@@ -286,25 +290,12 @@ export default {
             this.selected_user = event;
             this.searchParam = "";
         },
-        hideEditGroupImage: function () {
-            let modal = $(".upload");
-            modal.css("opacity", 0).css("transform", "translateY(-100px)");
-            setTimeout(() => {
-                modal.hide();
-                this.showSendPhotoContainer = false;
-            }, 400);
-        },
         editGroupImage: function () {
+            this.showModalFunction("Alterar foto", "Salvar", "Cancelar");
             this.showSendPhotoContainer = true;
-
-            setTimeout(() => {
-                let modal = $(".upload");
-                modal.show();
-                modal.attr("data_target", "group");
-                setTimeout(() => {
-                    modal.css("opacity", 1).css("transform", "translateY(0)");
-                }, 10);
-            }, 10);
+        },
+        hideGroupImage: function () {
+            this.showSendPhotoContainer = false;
         },
         countCharacters: function () {
             let counter = $(".description_counter");
@@ -379,7 +370,8 @@ export default {
         uploadModal,
         autoComplete,
         excludeGroupModal,
-        leaveGroupModal
+        leaveGroupModal,
+        modal
     }
 }
 </script>

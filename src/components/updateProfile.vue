@@ -193,7 +193,7 @@
             
             <modal v-if="showModal" :modaltitle="modalTitle" :modalbutton1="modalButton1" :modalbutton2="modalButton2" @closeModal="hideSendPhoto(); hideExcludeAccountModal(); hideNewGroupFunction(); closeModalFunction();">
                 <newGroupModal v-if="showNewGroup" :showNewGroup="showNewGroup" @savedContent="closeModalFunction(); hideSendPhoto(); hideNewGroupFunction();" /> 
-                <uploadModal :group="data_target" v-if="showSendPhotoContainer" @savedContent="closeModalFunction(); hideSendPhoto();"></uploadModal>
+                <uploadModal :data_target="data_target" v-if="showSendPhotoContainer" @savedContent="closeModalFunction(); hideSendPhoto();"></uploadModal>
             </modal>
         </div>
     </section>
