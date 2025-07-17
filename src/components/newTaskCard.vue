@@ -72,6 +72,8 @@ export default {
                 }
             }
 
+            let promises = [];
+            
             if (this.task_description.trim().length > 0) {
                 let temporary_task = {
                     desc_os: this.task_description,
@@ -84,15 +86,18 @@ export default {
                     status_os: this.card_status,
                     group_id: this.getCurrentProjectInLocalStorage("new-card").group_id
                 }
-                this.createInitialTask(temporary_task).then(() => {
-                    this.resetCardBeforeClose();
-                });
-                
-                return;
-            } 
 
-            this.resetCardBeforeClose();
-            this.$emit("closeTask");
+                promises.push(
+                    this.createInitialTask(temporary_task)
+                )
+            } else {
+                promises.push(new Promise((resolve) => { resolve(); }));
+            }
+
+            Promise.all(promises).then(() => {
+                this.resetCardBeforeClose();
+                this.$emit("closeTask");
+            })
         },
         createInitialTask: function (task_object) {
             return new Promise((resolve) => {
@@ -114,11 +119,10 @@ export default {
             })
         },
         resetCardBeforeClose: function () {
-            setTimeout(() => {
-                this.task_description = "";
-                this.sponsor_id = 2;
-                this.sponsor_photo = "";
-            }, 400);
+            this.task_description = "";
+            this.sponsor_id = 2;
+            this.sponsor_photo = "";
+            this.creating_task = false;
         }
     },
     mounted() {
