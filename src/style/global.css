@@ -536,3 +536,21 @@ html, body {
     width: 100%;
     min-width: 300px;
 }
+
+.input-search {
+    position: relative;
+
+    &::after {
+        content: "search";
+        font-family: 'Material Icons';
+        vertical-align: middle;
+        position: absolute;
+        right: var(--space-3);
+        top: 0;
+        bottom: 0;
+        height: 100%;
+        display: grid;
+        place-items: center;
+        margin: auto;
+    }
+}

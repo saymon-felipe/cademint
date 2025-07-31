@@ -5,9 +5,9 @@
             <div class="project-informations">
                 <span>
                     <span class="status-item" :class="chooseProjectStatus(project.status)" :title="chooseProjectStatus(project.status, true)"></span>
-                    <span class="font-size-4">{{ project.group_name }}</span>
+                    <span class="font-size-4" :title="project.group_name">{{ project.group_name }}</span>
                 </span>
-                <p class="font-size-6" v-if="project.group_description != ''" style="color: var(--gray);">{{ project.group_description }}</p>
+                <p class="font-size-6" v-if="project.group_description != ''" style="color: var(--gray);" :title="project.group_description">{{ project.group_description }}</p>
             </div>
         </div>
         <div class="project-members">
@@ -87,15 +87,18 @@ import { globalMethods } from '../js/globalMethods';
     align-items: flex-start !important;
     flex-grow: 1;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 
-    & p {
-        padding-left: 33px;
+    & p, & span {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
+        width: 100%;
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    & p {
+        padding-left: 33px;
     }
 }
 

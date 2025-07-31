@@ -83,6 +83,7 @@ export default {
             .then(function () { 
                 self.previewPhoto = "";
                 location.reload();
+                self.requireUser(true);
                 self.$emit("savedContent");
             })
             .catch(function (error) {

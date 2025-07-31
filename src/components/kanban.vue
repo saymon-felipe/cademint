@@ -261,6 +261,7 @@ export default {
                 status: projectStatus
             }).then(() => {
                 self.returnProjectStatus();
+                self.requireUser(true);
             });
         },
         toggleProjectStatus: function () {

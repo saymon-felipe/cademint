@@ -18,12 +18,22 @@
         <div class="projects-wrapper" v-if="toggleProjectsContainer" v-on:click="toggleProjectsContainer = !toggleProjectsContainer"></div>
         <div class="projects-list" v-if="toggleProjectsContainer">
             <div class="my-projects">
-                <p class="font-size-h5">Meus projetos</p>
-                <ProjectListComponent :project="project" @selected="selectThisGroup($event.id, $event.name)" :isSelected="isSelectedProject(project.groups_id)" v-for="(project, index) in myProjects" :key="index" />
+                <div class="my-projects-header">
+                    <p class="font-size-h5">Meus projetos</p>
+                    <div class="input-search">
+                        <input type="text" placeholder="Procurar" v-model="filterMyProjectsString" />
+                    </div>
+                </div>
+                <ProjectListComponent :project="project" @selected="selectThisGroup($event.id, $event.name)" :isSelected="isSelectedProject(project.groups_id)" v-for="(project, index) in filteredMyProjects" :key="index" />
             </div>
             <div class="other-projects" v-if="otherProjects.length > 0">
-                <p class="font-size-h5">Projetos que faço parte</p>
-                <ProjectListComponent :project="project" @selected="selectThisGroup($event.id, $event.name)" :isSelected="isSelectedProject(project.groups_id)" v-for="(project, index) in otherProjects" :key="index" />
+                <div class="my-projects-header">
+                    <p class="font-size-h5">Projetos que faço parte</p>
+                    <div class="input-search">
+                        <input type="text" placeholder="Procurar" v-model="filterOtherProjectsString" />
+                    </div>
+                </div>
+                <ProjectListComponent :project="project" @selected="selectThisGroup($event.id, $event.name)" :isSelected="isSelectedProject(project.groups_id)" v-for="(project, index) in filteredOtherProjects" :key="index" />
             </div>
         </div>
     </div>
@@ -41,20 +51,11 @@ import $ from 'jquery';
             return {
                 selectedProject: this.$root.user.user_groups[0],
                 toggleProjectsContainer: false,
-                currentProject: null
-            }
-        },
-        watch: {
-            toggleProjectsContainer: function () {
-                if (this.toggleProjectsContainer) {
-                    this.$nextTick(() => {
-                        let selectedProject = $(".project.selected");
-                
-                        if (selectedProject.length > 0) {
-                            selectedProject[0].scrollIntoView();
-                        }
-                    })
-                }
+                currentProject: null,
+                filterMyProjectsString: "",
+                filterOtherProjectsString: "",
+                filteredMyProjects: [],
+                filteredOtherProjects: [],
             }
         },
         computed: {
@@ -65,7 +66,50 @@ import $ from 'jquery';
                 return this.$root.user.user_groups.filter((group) => { return group.group_owner != this.$root.user.id_usuario })
             }
         },
+        watch: {
+            "$root.user": {
+                handler() {
+                    this.filterMyProjects();
+                    this.filterOtherProjects();
+                },
+                deep: true
+            },
+            filterMyProjectsString: function () {
+                this.filterMyProjects();
+                
+            },
+            filterOtherProjectsString: function () {
+                this.filterOtherProjects();
+            },
+            toggleProjectsContainer: function () {
+                if (this.toggleProjectsContainer) {
+                    this.$nextTick(() => {
+                        let selectedProject = $(".project.selected");
+                
+                        if (selectedProject.length > 0) {
+                            selectedProject[0].scrollIntoView({ behavior: "smooth" });
+                        }
+                    })
+                }
+            }
+        },
         methods: {
+            filterMyProjects: function () {
+                this.filteredMyProjects = this.myProjects.filter((project) => {
+                    let condition = project.group_name.toLowerCase().includes(this.filterMyProjectsString.toLowerCase()) ||
+                                    project.group_description.toLowerCase().includes(this.filterMyProjectsString.toLowerCase());
+
+                    return condition;
+                })
+            },
+            filterOtherProjects: function () {
+                this.filteredOtherProjects = this.otherProjects.filter((project) => {
+                    let condition = project.group_name.toLowerCase().includes(this.filterOtherProjectsString.toLowerCase()) ||
+                                    project.group_description.toLowerCase().includes(this.filterOtherProjectsString.toLowerCase());
+
+                    return condition;
+                })
+            },
             isSelectedProject: function (group_id) {
                 return group_id == this.selectedProject.groups_id;
             },
@@ -88,6 +132,9 @@ import $ from 'jquery';
         },
         mounted: function () {
             this.checkProjectInLocalStorage();
+
+            this.filteredMyProjects = this.myProjects;
+            this.filteredOtherProjects = this.otherProjects;
         },
         components: {
             ProjectListComponent
@@ -102,6 +149,28 @@ import $ from 'jquery';
     top: 0;
     left: 0;
     z-index: 5;
+}
+
+.my-projects-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4);
+    white-space: nowrap;
+    gap: var(--space-4);
+
+    & input {
+        width: 200px !important;
+    }
+
+    & > p {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
+        flex-grow: 1;
+        min-width: 0;
+    }
 }
 
 .project-image {
@@ -150,8 +219,8 @@ import $ from 'jquery';
     left: 0;
     right: 0;
     margin: auto;
-    width: fit-content;
-    max-width: 100vw;
+    width: 98vw;
+    max-width: 500px;
     background: var(--white);
     border-radius: 6px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
@@ -184,11 +253,6 @@ import $ from 'jquery';
         margin-left: -.7rem;
         margin-bottom: -3px;
     }
-}
-
-.my-projects > p, .other-projects > p {
-    padding-left: 1rem;
-    padding-top: 1rem;
 }
 
 @media (max-width: 720px) {

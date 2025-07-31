@@ -218,7 +218,7 @@ export const globalMethods = {
 
             setTimeout(() => {
                 this.loadSystemVersion();
-            }, 6 * 1000);
+            }, 10 * 1000);
         },
         requireUser: function(reloadNow = false) { // Função retorna o usuário pelo id.
             return new Promise((resolve) => {

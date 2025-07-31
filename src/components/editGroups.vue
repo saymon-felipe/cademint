@@ -334,6 +334,7 @@ export default {
             api.patch('/projects/edit_group', data)
             .then(function () {
                 self.group_name = value;
+                self.requireUser(true);
             })
             .catch(function (error) {
                 console.log(error)
@@ -360,6 +361,7 @@ export default {
             api.patch('/projects/edit_group', data)
             .then(function () {
                 self.group_description = value;
+                self.requireUser(true);
             })
             .catch(function (error) {
                 console.log(error)
