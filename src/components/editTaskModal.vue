@@ -145,8 +145,15 @@
                             </div>
                             <div class="comment-body">
                                 <div class="comment-text">
-                                    <span v-html="formatLinks(comment.desc_comentario)"></span>
-                                    <textarea v-model="comment.desc_comentario" v-on:focusout="handleSaveComment(comment, index)"></textarea>
+                                    <span :ref="'commentText-' + index" v-html="formatLinks(comment.desc_comentario)" :class="{ 'expanded': comment.isExpanded }"></span>
+                                    <textarea v-model="comment.desc_comentario" rows="5" v-on:focusout="handleSaveComment(comment, index)"></textarea>
+                                    <button
+                                        v-if="comment.needsTruncation"
+                                        @click="toggleCommentExpansion(comment)"
+                                        class="expand-collapse-button"
+                                    >
+                                        {{ comment.isExpanded ? 'Ler menos' : 'Ler mais' }}
+                                    </button>
                                 </div>
                                 <div class="comment-like" v-on:click="commentLike(comment.id_comentario)" :class="comment.user_has_liked == 1 ? 'liked' : 'unliked'">
                                     <span class="material-icons like-icon">thumb_up</span>
@@ -169,6 +176,7 @@
         </div>
     </aside>
 </template>
+
 <script>
 import {globalMethods} from '../js/globalMethods.js';
 import $ from 'jquery';
@@ -188,11 +196,11 @@ export default {
             ],
             selected_priority: this.task.priority,
             selected_size: this.task.size,
-            selected_status:  this.task.status_os,
+            selected_status: this.task.status_os,
             task_create_date: this.task.task_create_date,
             haveChanges: false,
             changed_task: {},
-            task_comments: {},
+            task_comments: [],
             viewComments: true,
             viewHours: false,
             statusList: []
@@ -226,6 +234,7 @@ export default {
 
             textarea.show();
             $("#comment-" + index + " .comment-text span").hide();
+            $("#comment-" + index + " .expand-collapse-button").hide();
 
             this.toggleCommentContainer(index);
 
@@ -255,7 +264,6 @@ export default {
             let commentOptions = $("#comment-" + index + " .comment-options-container");
             let wrapper = $("#comment-" + index + " .comment-options-wrapper");
             
-
             if (commentOptions.is(":visible")) {
                 commentOptions.hide();
                 wrapper.hide();
@@ -305,7 +313,7 @@ export default {
                 task_comment_id: task_comment_id
             }
 
-            api.post("/task/like_task_comment", data, { // Requisição que atualiza a tarefa com os novos dados.
+            api.post("/task/like_task_comment", data, {
                 headers: {
                     Authorization: jwt
                 }
@@ -344,7 +352,7 @@ export default {
                 id_task: self.task.id
             }
             
-            api.post("/task/task_comment", comment, { // Requisição que atualiza a tarefa com os novos dados.
+            api.post("/task/task_comment", comment, {
                 headers: {
                     Authorization: jwt
                 }
@@ -372,17 +380,30 @@ export default {
             let data = {
                 id_task: self.task.id
             }
-            api.post("/task/get_task_comment", data, { // Requisição que atualiza a tarefa com os novos dados.
+            api.post("/task/get_task_comment", data, {
                 headers: {
                     Authorization: jwt
                 }
             })
             .then(function(response){
-                self.task_comments = response.data.returnObj.comentarios;
+                self.task_comments = response.data.returnObj.comentarios.map(comment => {
+                    return {
+                        ...comment,
+                        isExpanded: false,
+                        needsTruncation: false
+                    };
+                });
+
+                self.$nextTick(() => {
+                    self.checkCommentTruncation();
+                });
+                
                 if (programatic) {
-                    $(".edit-task-inner").animate({
-                        scrollTop: 9999999
-                    }, 500);
+                    self.$nextTick(() => { // Garante que o scroll ocorra após a renderização e o cálculo de truncamento
+                        $(".edit-task-inner").animate({
+                            scrollTop: 9999999
+                        }, 500);
+                    });
                 }
             }).catch(function(error){
                 console.log(error)
@@ -394,7 +415,7 @@ export default {
         saveTaskChanges: function () {
             let self = this, jwt = "Bearer " + self.getJwtFromLocalStorage();
 
-            api.patch("/task", self.changed_task, { // Requisição que atualiza a tarefa com os novos dados.
+            api.patch("/task", self.changed_task, {
                 headers: {
                     Authorization: jwt
                 }
@@ -590,10 +611,55 @@ export default {
             } else {
                 input.attr("rows", 4);
             }
-        }
+        },
+        toggleCommentExpansion(comment) {
+            this.$set(comment, 'isExpanded', !comment.isExpanded);
+            if (comment.isExpanded) {
+                this.$nextTick(() => {
+                    const commentElement = $(`#comment-${this.task_comments.indexOf(comment)}`);
+                    if (commentElement.length) {
+                        const innerContainer = $(".edit-task-inner");
+                        const currentScrollTop = innerContainer.scrollTop();
+                        const commentOffsetTop = commentElement.position().top;
+                        const commentHeight = commentElement.outerHeight();
+                        const containerHeight = innerContainer.height();
+
+                        if ((commentOffsetTop + commentHeight) > (currentScrollTop + containerHeight)) {
+                            innerContainer.animate({
+                                scrollTop: currentScrollTop + (commentOffsetTop + commentHeight) - (currentScrollTop + containerHeight) + 20
+                            }, 300);
+                        }
+                    }
+                });
+            }
+        },
+        checkCommentTruncation(indexToCheck = null) {
+            this.$nextTick(() => {
+                const comments = indexToCheck !== null ? [this.task_comments[indexToCheck]] : this.task_comments;
+
+                comments.forEach((comment) => {
+                    const actualIndex = indexToCheck !== null ? indexToCheck : this.task_comments.indexOf(comment);
+                    const commentSpan = this.$refs[`commentText-${actualIndex}`];
+
+                    if (commentSpan && commentSpan.length > 0) {
+                        const spanElement = commentSpan[0];
+                        const originalIsExpanded = comment.isExpanded;
+
+                        this.$set(comment, 'isExpanded', false);
+                        
+                        this.$nextTick(() => {
+                            const isTruncated = spanElement.scrollHeight > spanElement.clientHeight;
+                            this.$set(comment, 'needsTruncation', isTruncated);
+                            this.$set(comment, 'isExpanded', originalIsExpanded);
+                        });
+                    }
+                });
+            });
+        },
     }
 }
 </script>
+
 <style scoped>
 .edit-task-header {
     display: flex;
@@ -613,7 +679,7 @@ export default {
     border: 2px solid var(--white);
     transition: all 0.4s;
     margin: 0 3px;
-}  
+}   
 
 .exclude-task-button {
     background: var(--red-high);
@@ -875,8 +941,11 @@ export default {
 
 .comment-text {
     margin: 10px 0;
-    overflow: hidden;
     width: 100%;
+}
+
+.comment-text span {
+    overflow: hidden;
     display: -webkit-box;
     word-break: break-word;
     -webkit-line-clamp: 5;
@@ -886,6 +955,27 @@ export default {
     .comment-text textarea {
         display: none;
     }
+
+.comment-text span.expanded {
+    -webkit-line-clamp: unset; 
+    display: block; 
+}
+
+.expand-collapse-button {
+    background: none;
+    border: none;
+    color: var(--blue-low);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    margin-top: 5px;
+    display: block;
+    text-align: left;
+}
+
+.expand-collapse-button:hover {
+    text-decoration: underline;
+}
 
 .comment-like {
     padding: 5px;
