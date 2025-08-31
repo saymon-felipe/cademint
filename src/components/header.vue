@@ -40,7 +40,7 @@
                 </div>
             </div>
             <div class="go-to-user-profile-inner" v-on:click="showMenu = !showMenu">
-                <img class="avatar-p avatar-header" :src="$root.user.profile_photo">
+                <div class="avatar-p avatar-header background-image" :style="`background-image: url('${$root.user.profile_photo}')`"></div>
                 <h3>Olá, <span class="user-name">{{ $root.user.nome }}</span></h3>
                 <span class="material-icons profile-more-options">expand_more</span>
                 <div class="profile-more-options-container">

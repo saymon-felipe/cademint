@@ -1,7 +1,7 @@
 <template>
     <div class="project" :class="isSelected ? 'selected' : ''" v-on:click="selectProject()">
         <div class="project-header">
-            <img class="project-image" :src="project.image">
+            <div class="project-image background-image" :style="`background-image: url('${project.image}')`"></div>
             <div class="project-informations">
                 <span>
                     <span class="status-item" :class="chooseProjectStatus(project.status)" :title="chooseProjectStatus(project.status, true)"></span>
@@ -12,7 +12,7 @@
         </div>
         <div class="project-members">
             <div v-for="(member, index) in project.group_members" :key="index">
-                <img v-if="index < 3" :src="member.profile_photo" class="avatar-pp" :title="member.nome">
+                <div v-if="index < 3" class="avatar-pp background-image" :style="`background-image: url('${member.profile_photo}')`" :title="member.nome"></div>
             </div>
             <div class="more-users" v-if="project.group_members.length > 3">
                 + {{ project.group_members.length - 3 }}
@@ -49,10 +49,9 @@ import { globalMethods } from '../js/globalMethods';
 
 .project-image {
     width: 50px;
-    height: 47px;
+    aspect-ratio: 1/1;
     border-radius: 6px;
-    object-fit: cover;
-    border: 1px solid var(--gray-soft);
+    outline: 1px solid var(--gray-soft);
     flex-shrink: 0;
 }
 
@@ -64,8 +63,7 @@ import { globalMethods } from '../js/globalMethods';
 }
 
 .project {
-    padding: .5rem 1rem;
-    margin: .5rem 0;
+    padding: .7rem 1rem;
     border-bottom: 1px solid var(--gray-soft);
     color: var(--black);
     cursor: pointer;
@@ -125,7 +123,7 @@ import { globalMethods } from '../js/globalMethods';
         flex-shrink: 0;
     }
 
-    & img {
+    & .background-image {
         margin-left: -.7rem;
         margin-bottom: -3px;
         flex-shrink: 0;

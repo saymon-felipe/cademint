@@ -20,7 +20,7 @@
         </form>
         <div class="image-container">
             <form enctype="multipart/form-data" @submit.prevent="uploadPhoto(formData)">
-                <img :src="groupImage" class="group-image">
+                <div class="group-image background-image" :style="`background-image: url('${groupImage}')`"></div>
                 <div class="image-buttons">
                     <label class="change-group-image" for="photo">Adicionar foto do grupo</label>
                     <input type="file" name="photo" id="photo" @change.prevent="preSendPhoto($event)" title="Envie uma foto nos formatos PNG ou JPG">

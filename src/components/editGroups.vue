@@ -16,7 +16,7 @@
         
         <div class="group-informations">
             <div class="image-container">
-                <img :src="group.image" class="group-image">
+                <div class="group-image background-image" :style="`background-image: url('${group.image}')`"></div>
                 <div class="image-buttons" v-if="havePermission">
                     <button type="button" class="change-group-image" v-on:click="editGroupImage()">Editar foto do grupo</button>
                     <button type="button" class="exclude-group-image" v-if="group.image != group_default_image" v-on:click="removePhoto(false, false, true, group.group_id)">Excluir foto</button>
@@ -52,7 +52,7 @@
                     <div class="user" v-for="user in group_users" :key="user.id_usuario">
                         <div class="user-container" v-if="user.id_usuario != 1 && user.id_usuario != 2">
                             <div class="principal">
-                                <img :src="user.profile_photo" class="avatar-p">
+                                <div class="avatar-p background-image" :style="`background-image: url('${user.profile_photo}')`"></div>
                                 <span class="font-size-3">{{ user.nome }}</span>
                             </div>
                             <span class="admin" v-if="user.id_usuario == group.group_owner">Admin</span>

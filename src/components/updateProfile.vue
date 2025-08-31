@@ -17,7 +17,7 @@
             <div class="informations-container">
                 <div class="user-image">
                     <div class="user-image-container">
-                        <img :src="$root.user.profile_photo" class="profile-avatar">
+                        <div class="profile-avatar background-image" :style="`background-image: url('${$root.user.profile_photo}')`"></div>
                         <div class="user-level-badge">Nível {{$root.user.user_level}}</div>
                         <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="170px" height="170px">
                             <defs>
@@ -115,7 +115,7 @@
                             <div class="group" v-for="(group, index) in $root.user.user_groups" :key="index">
                                 <router-link :to="{ name: 'edit-groups', params: { id: group.groups_id } }">
                                 <div class="group">
-                                    <img :src="group.image">
+                                    <div class="background-image" :style="`background-image: url('${group.image}')`"></div>
                                     <h4>{{ group.group_name }}</h4>
                                 </div>
                             </router-link>
@@ -889,13 +889,12 @@ export default {
     align-items: center;
 }
 
-    .group img {
-        width: 45px;
-        height: 45px;
+    .group .background-image {
+        width: 50px;
+        aspect-ratio: 1/1;
         border-radius: 50%;
         box-shadow: 0 0 0 4px var(--blue);
         margin-right: 2rem;
-        object-fit: cover;
     }
 
 .user-image-container {

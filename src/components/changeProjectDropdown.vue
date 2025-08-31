@@ -3,12 +3,12 @@
         <div class="current-project" v-on:click="toggleProjectsContainer = !toggleProjectsContainer">
             <span class="material-icons">sync</span>
             <div class="current-project-informations">
-                <img class="project-image small" :src="selectedProject.image">
+                <div class="project-image small background-image" :style="`background-image: url('${selectedProject.image}')`"></div>
                 <span>{{ selectedProject.group_name }}</span>
             </div>
             <div class="project-members">
                 <div v-for="(member, index) in selectedProject.group_members" :key="index">
-                    <img v-if="index < 3" :src="member.profile_photo" class="avatar-pp" :title="member.nome">
+                    <div class="avatar-pp background-image" :title="member.nome" v-if="index < 3" :style="`background-image: url('${member.profile_photo}')`"></div>
                 </div>
                 <div class="more-users" v-if="selectedProject.group_members.length > 3">
                     + {{ selectedProject.group_members.length - 3 }}
@@ -249,9 +249,8 @@ import $ from 'jquery';
         box-shadow: 0 0 0 3px var(--blue);
     }
 
-    & img {
+    & .background-image {
         margin-left: -.7rem;
-        margin-bottom: -3px;
     }
 }
 
