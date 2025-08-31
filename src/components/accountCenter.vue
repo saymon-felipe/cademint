@@ -15,7 +15,7 @@
             <div class="account" v-for="account in filteredAccounts" :key="account.id">
                 <div class="account-principal-container">
                     <div class="account-principal">
-                        <img :src="account.image">
+                        <div class="background-image" :style="`background-image: url('${account.image}')`"></div>
                         <div>
                             <p class="font-size-4 preto type-name">{{ account.type }}: {{ account.name }}</p>
                             <p class="font-size-6 cinza">{{ lastAccess(account.last_access) }}</p>
@@ -64,6 +64,7 @@
                                 </span>
                             </div>
                         </div>
+                        <p v-if="error[account.id]" class="error-message">{{ error[account.id] }}</p>
                     </div>
                 </div>
                 <div class="account-actions">
@@ -75,7 +76,6 @@
                     <span class="material-icons" @click="editAccount(account)">settings</span>
                     <span class="material-icons" @click="deleteAccount(account)">delete</span>
                 </div>
-                <p v-if="error[account.id]" class="error-message">{{ error[account.id] }}</p>
             </div>
         </div>
         <modal v-if="showModal" :modaltitle="modalTitle" :modalbutton1="modalButton1" excludepath="/users/delete_account/" :modalbutton2="modalButton2" @closeModal="getAccounts(); closeModalFunction();">
@@ -224,6 +224,10 @@ export default {
                 this.$set(this.error, accountId, errorMessage);
                 this.$set(this.passwordVisible, accountId, false); // Garante que não fique visível em caso de erro
                 this.$set(this.userVisible, accountId, false); // Oculta o usuário também em caso de erro
+
+                setTimeout(() => {
+                    this.$set(this.error, accountId, "");
+                }, 10000)
             } finally {
                 this.$set(this.revealing, accountId, false);
                 // Limpe os dados temporários da sessão (chaves AES e session ID)
@@ -373,23 +377,24 @@ export default {
 .account-principal-container {
     display: flex;
     align-items: center;
+    flex: 1;
 }
 
 .account-principal {
     display: flex;
     align-items: center;
+    width: 40%;
+    margin-right: 1rem;
 }
 
-.account-principal img {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
-    max-width: 40px;
-    max-height: 40px;
+.account-principal .background-image {
+    width: 50px;
+    max-width: 50px;
+    aspect-ratio: 1/1;
     border-radius: 50%;
     margin-right: 10px;
-    object-fit: cover;
+    background-color: var(--gray-soft);
+    flex-shrink: 0;
 }
 
 .type-name {
