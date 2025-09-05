@@ -35,7 +35,7 @@
                             <span class="material-icons customized-select-icon">expand_more</span>
                         </div>
                         <div class="customized-select-option-group sponsor-select">
-                            <div class="customized-option" :class="selected_sponsor[0].id_usuario == member.id_usuario ? 'selected' : ''" :user_id="member.id_usuario" v-for="(member, index) in group.group_members" :key="index" v-on:click="selected_sponsor = [member, '']; toggleSponsorSelect(); computeChanges('sponsor', member.id_usuario, member.nome)">
+                            <div class="customized-option" :class="selected_sponsor[0].id_usuario == member.id_usuario ? 'selected' : ''" :user_id="member.id_usuario" v-for="member in group.group_members" :key="member.id_usuario" v-on:click="selected_sponsor = [member, '']; toggleSponsorSelect(); computeChanges('sponsor', member.id_usuario, member.nome)">
                                 <img :src="member.profile_photo" class="avatar-pp">
                                 <span>{{member.nome}}</span>
                             </div>
@@ -94,7 +94,7 @@
                             <span class="material-icons customized-select-icon">expand_more</span>
                         </div>
                         <div class="customized-select-option-group status-select">
-                            <div v-for="(column, index) in statusList" :key="index" class="customized-option" :status="column.id" :class="selected_status == column.id ? 'selected' : ''" v-on:click="selected_status = column.id; toggleStatusSelect(); computeChanges('status', column.id)">
+                            <div v-for="column in statusList" :key="column.id" class="customized-option" :status="column.id" :class="selected_status == column.id ? 'selected' : ''" v-on:click="selected_status = column.id; toggleStatusSelect(); computeChanges('status', column.id)">
                                 <span>{{ column.name }}</span>
                             </div>
                         </div>
@@ -123,7 +123,7 @@
                 </div>
                 <div class="tabs-content">
                     <div class="comments-list" v-if="task.id != undefined && viewComments">
-                        <div class="comment" v-for="(comment, index) in task_comments" :key="index" :id="'comment-' + index">
+                        <div class="comment" v-for="(comment, index) in task_comments" :key="comment.id" :id="'comment-' + index">
                             <div class="comment-header">
                                 <div class="comment-header-inner">
                                     <div class="author-photo">

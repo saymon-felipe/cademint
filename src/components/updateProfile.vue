@@ -42,7 +42,7 @@
                     <div class="user-informations">
                         <h3 class="font-size-2-bold">{{ $root.user.nome }}</h3>
                         <div class="user-medals">
-                            <div class="user-medal-container" v-for="(medal, index) in $root.user.user_medals" :key="index">
+                            <div class="user-medal-container" v-for="medal in $root.user.user_medals" :key="medal.id">
                                 <img :src="require('../assets/img/medal-' + medal.id + '.svg')" class="user-medal" :title="medal.medal_description">
                             </div>
                         </div>
@@ -69,7 +69,7 @@
                         <div class="profile-form-container">
                             <div class="user-occupations" :style="loadingOccupations ? 'opacity: 0;' : ''">
                                 <p class="add-occupation-label" v-if="$root.user.user_occupations.length == 0 && !addOccupation">Adicione um cargo</p>
-                                <div class="occupation" v-for="(occupation, index) in $root.user.user_occupations" :key="index" :id="'cargo-' + index">
+                                <div class="occupation" v-for="(occupation, index) in $root.user.user_occupations" :key="occupation.occupation_name" :id="'cargo-' + index">
                                     <p class="font-size-5">{{ occupation.occupation_name }}</p>
                                     <div class="exclude-occupation" v-on:click="excludeOccupation(occupation.occupation_name, index)">
                                         <span class="material-icons">clear</span>
@@ -83,7 +83,7 @@
                         <div class="user-achievements">
                             <p class="font-size-3-bold user-achievements-title">Conquistas</p>
                             <div class="user-achievements-container">
-                                <div class="achievement" v-for="(achievement, index) in $root.user.user_achievements" :key="index" :title="achievement.achievements_description">
+                                <div class="achievement" v-for="achievement in $root.user.user_achievements" :key="achievement.id" :title="achievement.achievements_description">
                                     <div class="achievement-icon">
                                         <span class="material-icons">
                                             {{ findAchievementIcon(achievement.achievements_name) }}
@@ -112,7 +112,7 @@
                                 <p class="font-size-3-bold">Meus grupos</p>
                                 <span class="material-icons" v-on:click="showNewGroupFunction()">add</span>
                             </div>
-                            <div class="group" v-for="(group, index) in $root.user.user_groups" :key="index">
+                            <div class="group" v-for="group in $root.user.user_groups" :key="group.groups_id">
                                 <router-link :to="{ name: 'edit-groups', params: { id: group.groups_id } }">
                                 <div class="group">
                                     <div class="background-image" :style="`background-image: url('${group.image}')`"></div>

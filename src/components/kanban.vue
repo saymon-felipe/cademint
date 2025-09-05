@@ -40,8 +40,8 @@
             <div class="kanban-columns">
                 <Container class="smooth-dnd-container horizontal" orientation="horizontal" @drop="handleColumnsUpdate" drag-handle-selector=".column-drag-handle" :get-child-payload="getChildPayload" @drag-start="handleColumnsDragStart($event)" :lock-axis="'x'">
                     <KanbanColumn
-                        v-for="(column, index) in sortedColumns"
-                        :key="index"
+                        v-for="column in sortedColumns"
+                        :key="column.id"
                         :column="column"
                         :groupMembers="project.group_members || []"
                         :user="$root.user"

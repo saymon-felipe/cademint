@@ -8,7 +8,7 @@
         </div>
         <div class="new-task-members-wrapper" v-on:click="toggleMembersContainer"></div>
         <div class="new-task-members">
-            <div class="project-member" v-for="(member, index) in group_users" :key="index" v-on:click="selectSponsor(member)">
+            <div class="project-member" v-for="member in group_users" :key="member.id_usuario" v-on:click="selectSponsor(member)">
                 <img :src="member.profile_photo" class="avatar-p">
                 <span>{{member.nome}}</span>
             </div>

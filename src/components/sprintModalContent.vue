@@ -33,7 +33,7 @@
                 </div>
                 <div class="users" v-if="users">
                     <label>Membros do grupo</label>
-                    <div class="group-member" v-for="(user, index) in groupUsers" v-bind:key="index">
+                    <div class="group-member" v-for="user in groupUsers" v-bind:key="user.id_usuario">
                         <div class="user-informations">
                             <img :src="user.profile_photo" class="avatar-p">
                             <span>{{ user.nome }}</span>

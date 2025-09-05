@@ -59,7 +59,7 @@
                             <span class="material-icons exclude-user" v-if="user.id_usuario != group.group_owner && havePermission" v-on:click="excludeUser(group.group_id, user.id_usuario)">clear</span>
                         </div>
                     </div>
-                    <div v-for="(member, index) in group.pending_users" :key="index" class="user" :id="'invited-member-' + index">
+                    <div v-for="(member, index) in group.pending_users" :key="member.id_usuario" class="user" :id="'invited-member-' + index">
                         <div class="user-container" v-if="member != ''">
                             <div class="principal">
                                 <img :src="default_user_image" class="avatar-p" :alt="'Imagem de ' + member">

@@ -7,7 +7,7 @@
                 <span>{{ selectedProject.group_name }}</span>
             </div>
             <div class="project-members">
-                <div v-for="(member, index) in selectedProject.group_members" :key="index">
+                <div v-for="(member, index) in selectedProject.group_members" :key="member.id_usuario">
                     <div class="avatar-pp background-image" :title="member.nome" v-if="index < 3" :style="`background-image: url('${member.profile_photo}')`"></div>
                 </div>
                 <div class="more-users" v-if="selectedProject.group_members.length > 3">
@@ -24,7 +24,7 @@
                         <input type="text" placeholder="Procurar" v-model="filterMyProjectsString" />
                     </div>
                 </div>
-                <ProjectListComponent :project="project" @selected="selectThisGroup($event.id, $event.name)" :isSelected="isSelectedProject(project.groups_id)" v-for="(project, index) in filteredMyProjects" :key="index" />
+                <ProjectListComponent :project="project" @selected="selectThisGroup($event.id, $event.name)" :isSelected="isSelectedProject(project.groups_id)" v-for="project in filteredMyProjects" :key="project.id" />
             </div>
             <div class="other-projects" v-if="otherProjects.length > 0">
                 <div class="my-projects-header">
@@ -33,7 +33,7 @@
                         <input type="text" placeholder="Procurar" v-model="filterOtherProjectsString" />
                     </div>
                 </div>
-                <ProjectListComponent :project="project" @selected="selectThisGroup($event.id, $event.name)" :isSelected="isSelectedProject(project.groups_id)" v-for="(project, index) in filteredOtherProjects" :key="index" />
+                <ProjectListComponent :project="project" @selected="selectThisGroup($event.id, $event.name)" :isSelected="isSelectedProject(project.groups_id)" v-for="project in filteredOtherProjects" :key="project.id" />
             </div>
         </div>
     </div>
@@ -59,7 +59,7 @@ import $ from 'jquery';
             }
         },
         computed: {
-            myProjects: function () {                
+            myProjects: function () {              
                 return this.$root.user.user_groups.filter((group) => { return group.group_owner == this.$root.user.id_usuario })
             },
             otherProjects: function () {

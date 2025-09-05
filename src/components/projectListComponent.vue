@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="project-members">
-            <div v-for="(member, index) in project.group_members" :key="index">
+            <div v-for="(member, index) in project.group_members" :key="member.id_usuario">
                 <div v-if="index < 3" class="avatar-pp background-image" :style="`background-image: url('${member.profile_photo}')`" :title="member.nome"></div>
             </div>
             <div class="more-users" v-if="project.group_members.length > 3">

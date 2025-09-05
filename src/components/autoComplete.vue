@@ -1,6 +1,6 @@
 <template>
     <div class="cademint-autocomplete">
-        <div class="user" v-for="(user, index) in user_list" :key="index" v-on:click="selectUser(user)">
+        <div class="user" v-for="user in user_list" :key="user.nome" v-on:click="selectUser(user)">
             <img :src="user.profile_photo" class="avatar-p">
             <div class="informations">
                 <p class="font-size-4-bold">{{ user.nome }}</p>
